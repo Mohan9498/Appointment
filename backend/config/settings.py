@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 # external
 'rest_framework',
 'corsheaders',
+'api',
 
 # apps
 'accounts',

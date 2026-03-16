@@ -8,7 +8,7 @@ const [date,setDate] = useState(new Date());
 
 const bookAppointment = async ()=>{
 
-await API.post("appointments/",{
+await API.post("http://127.0.0.1:8000/api/appointments/",{
 
 date:date
 
