@@ -1,3 +1,9 @@
-from django.test import TestCase
+from django.urls import path
+from .views import AppointmentView,ApproveAppointment
 
-# Create your tests here.
+urlpatterns = [
+
+path('appointments/',AppointmentView.as_view()),
+path('appointments/<int:id>/approve/',ApproveAppointment.as_view()),
+
+]

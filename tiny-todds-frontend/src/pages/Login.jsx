@@ -25,8 +25,11 @@ function Login() {
 
       alert("Login successful");
 
-      navigate("/StudentDashboard");
-
+      if (res.data.is_admin) {
+      navigate("/admin");
+    } else {
+      navigate("/client");
+    }
     } catch (error) {
 
       alert("Invalid credentials");

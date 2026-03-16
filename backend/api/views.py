@@ -21,7 +21,9 @@ class LoginView(APIView):
             return Response({
                 "message": "Login successful",
                 "access": str(refresh.access_token),
-                "refresh": str(refresh)
+                "refresh": str(refresh),
+                "username": user.username,
+                "is_admin": user.is_staff
             })
 
         return Response({"error": "Invalid credentials"}, status=401)
@@ -30,19 +32,15 @@ class LoginView(APIView):
 class AppointmentView(APIView):
 
     def get(self, request):
-
         appointments = Appointment.objects.all()
         serializer = AppointmentSerializer(appointments, many=True)
-
         return Response(serializer.data)
 
-
     def post(self, request):
-
         serializer = AppointmentSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Appointment booked"})
+            return Response(serializer.data)
 
         return Response(serializer.errors)

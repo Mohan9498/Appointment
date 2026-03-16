@@ -1,6 +1,7 @@
-from django.urls import path
-from .views import AppointmentView
+from django.contrib import admin
+from django.urls import path, include
 
 urlpatterns = [
-    path('appointments/', AppointmentView.as_view()),
+    path("admin/", admin.site.urls),
+    path("api/", include("api.urls")),   # only here
 ]

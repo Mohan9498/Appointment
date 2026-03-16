@@ -18,11 +18,10 @@ class Migration(migrations.Migration):
             name='Appointment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
                 ('date', models.DateField()),
-                ('time', models.TimeField()),
-                ('status', models.CharField(default='pending', max_length=20)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='api_appointments', to=settings.AUTH_USER_MODEL)),
+                ('time', models.CharField(max_length=50)),
+                ('status', models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')], default='Pending', max_length=20)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='appointments', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

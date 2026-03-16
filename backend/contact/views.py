@@ -1,3 +1,16 @@
-from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import Contact
+from .serializers import ContactSerializer
 
-# Create your views here.
+class ContactView(APIView):
+
+    def post(self, request):
+
+        serializer = ContactSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message":"Message sent"})
+
+        return Response(serializer.errors)
