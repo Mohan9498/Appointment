@@ -10,6 +10,7 @@ class Appointment(models.Model):
     )
 
     name = models.CharField(max_length=100)
+    email = models.EmailField(default="info@tinytodds.com")
     date = models.DateField()
     time = models.TimeField()
 
