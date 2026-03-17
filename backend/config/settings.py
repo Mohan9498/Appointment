@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -89,14 +91,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 DATABASES = {
- 'default': {
-   'ENGINE': 'django.db.backends.postgresql',
-   'NAME': 'appointment',
-   'USER': 'postgres',
-   'PASSWORD': '1234',
-   'HOST': 'localhost',
-   'PORT': '5432',
- }
+    'default': dj_database_url.parse(
+        "postgresql://backend_gwgl_user:sYxKCQPiiaAlSOh6dcLX3ATMlaCCAhPC@dpg-d6sgburuibrs73eb0rng-a.oregon-postgres.render.com/backend_gwgl"
+    )
 }
 
 # Password validation
@@ -137,6 +134,8 @@ STATIC_URL = 'static/'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+
+DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
