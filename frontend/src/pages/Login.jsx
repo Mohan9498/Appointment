@@ -24,9 +24,9 @@ const handleLogin = async (e) => {
     localStorage.setItem("refresh", res.data.refresh);
 
     if (res.data.is_admin) {
-      navigate("/admin-dashboard");
-    } else {
-      navigate("/client-dashboard");
+      navigate("/admin");
+    } else { 
+      navigate("/client");
     }
 
   } catch (error) {

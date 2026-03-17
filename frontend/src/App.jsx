@@ -11,32 +11,37 @@ import Register from "./pages/Register";
 import AdminDashboard from "./dashboards/AdminDashboard";
 import ClientDashboard from "./dashboards/ClientDashboard";
 
+// Optional: 404 page
+function NotFound() {
+  return <h1>404 - Page Not Found</h1>;
+}
+
 function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
 
-return (
+        {/* Public Pages */}
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/programs" element={<Programs />} />
+        <Route path="/appointment" element={<Appointment />} />
+        <Route path="/contact" element={<Contact />} />
 
-<BrowserRouter>
+        {/* Auth */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-<Routes>
+        {/* Dashboards */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/client" element={<ClientDashboard />} />
 
-<Route path="/" element={<Home />} />
-<Route path="/about" element={<About />} />
-<Route path="/programs" element={<Programs />} />
-<Route path="/appointment" element={<Appointment />} />
-<Route path="/contact" element={<Contact />} />
+        {/* Catch all (IMPORTANT for Vercel + UX) */}
+        <Route path="*" element={<NotFound />} />
 
-<Route path="/login" element={<Login />} />
-<Route path="/register" element={<Register />} />
-
-<Route path="/admin" element={<AdminDashboard />} />
-<Route path="/client" element={<ClientDashboard />} />
-
-</Routes>
-
-</BrowserRouter>
-
-);
-
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
