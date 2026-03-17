@@ -14,7 +14,7 @@ const handleLogin = async (e) => {
   e.preventDefault();   // prevents GET request
 
   try {
-
+    
     const res = await API.post("accounts/login/", {
       username,
       password

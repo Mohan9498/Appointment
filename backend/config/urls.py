@@ -23,6 +23,8 @@ def home(request):
 
 urlpatterns = [
 
+    path('', home),   
+
     path('admin/', admin.site.urls, name="admin-panel"),
 
     path("api/accounts/", include("accounts.urls")),
