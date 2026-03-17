@@ -8,7 +8,7 @@ return(
 
 <div>
 
-<h2 className="text-xl font-bold">
+<h2 className="text-blue-400 font-bold">
 
 Tiny Todds Therapy
 
