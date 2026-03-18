@@ -32,7 +32,13 @@ class LoginView(APIView):
 class AppointmentView(APIView):
 
     def get(self, request):
-        appointments = Appointment.objects.all()
+        date = request.GET.get("date")
+
+        if date:
+            appointments = Appointment.objects.filter(date=date)
+        else:
+            appointments = Appointment.objects.all()
+
         serializer = AppointmentSerializer(appointments, many=True)
         return Response(serializer.data)
 

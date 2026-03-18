@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./calendar-modern.css";
+import "./calendar.css";
 
 const ALL_SLOTS = [
   "10:00 AM",

@@ -25,11 +25,11 @@ urlpatterns = [
 
     path('', home),   
 
-    path('admin/', admin.site.urls, name="admin-panel"),
+    path('admin/', admin.site.urls),
 
     path("api/accounts/", include("accounts.urls")),
-    path("api/appointments/", include("appointments.urls")),
     path("api/programs/", include("programs.urls")),
     path("api/contact/", include("contact.urls")),
 
+    path("api/", include("api.urls")),   # ✅ ADD THIS LINE
 ]

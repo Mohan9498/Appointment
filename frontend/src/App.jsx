@@ -7,6 +7,7 @@ import Appointment from "./pages/Appointment";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProgramDetails from "./pages/ProgramDetails";
 
 import AdminDashboard from "./dashboards/AdminDashboard";
 import ClientDashboard from "./dashboards/ClientDashboard";
@@ -27,6 +28,7 @@ function App() {
         <Route path="/programs" element={<Programs />} />
         <Route path="/appointment" element={<Appointment />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/programs/:name" element={<ProgramDetails />} />
 
         {/* Auth */}
         <Route path="/login" element={<Login />} />

@@ -13,7 +13,6 @@ function Hero() {
 
         {/* Left Content */}
         <div>
-
           <h1 className="text-5xl md:text-6xl font-semibold leading-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             Build Better <br />
             Communication <br />
@@ -26,11 +25,11 @@ function Hero() {
           </p>
 
           {/* Buttons */}
-          <div className="mt-10 flex gap-4">
+          <div className="mt-10 flex flex-wrap gap-4">
 
             <Link
               to="/appointment"
-              className="px-7 py-3 rounded-full bg-accent text-black font-medium text-sm tracking-wide
+              className="px-7 py-3 rounded-full bg-accent text-white font-medium text-sm tracking-wide
               hover:scale-105 hover:shadow-[0_0_30px_rgba(0,255,170,0.4)] transition duration-300"
             >
               Book Session →
@@ -39,30 +38,27 @@ function Hero() {
             <Link
               to="/programs"
               className="px-7 py-3 rounded-full border border-gray-700 text-gray-300
-              hover:bg-white hover:text-black transition duration-300"
+              hover:bg-white hover:shadow-[0_0_30px_rgba(0,255,170,0.4)] hover:text-black transition duration-300"
             >
               Explore Programs
             </Link>
 
           </div>
-
         </div>
 
         {/* Right Image */}
         <div className="relative">
-
           <img
             src="https://img.freepik.com/free-vector/child-therapy-concept_23-2148655382.jpg"
+            alt="Child Therapy"
             className="rounded-2xl shadow-2xl transform hover:scale-105 transition duration-500"
           />
 
           {/* Image Glow */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-accent/20 to-transparent blur-xl opacity-40"></div>
-
         </div>
 
       </div>
-
     </section>
   );
 }
