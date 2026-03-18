@@ -12,17 +12,6 @@ return(
 
 <Navbar/>
 
-<div className="text-center mt-20">
-
-<h1 className="text-4xl font-bold text-blue-700">
-Tiny Todds Therapy Care
-</h1>
-
-<p className="mt-4 text-gray-600">
-Helping children grow through specialized therapy programs
-</p>
-
-</div>
 <Hero/>
 
 <Services/>
@@ -30,10 +19,11 @@ Helping children grow through specialized therapy programs
 <CTA/>
 
 <Footer/>
+
 </div>
 
 )
 
 }
 
-export default Home;
+export default Home

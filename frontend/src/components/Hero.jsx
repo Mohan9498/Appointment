@@ -1,65 +1,70 @@
 import { Link } from "react-router-dom";
 
-function Hero(){
+function Hero() {
+  return (
+    <section className="relative min-h-screen flex items-center bg-[#0a0a0a] overflow-hidden">
 
-return(
+      {/* Glow Background */}
+      <div className="absolute inset-0 flex justify-center items-center">
+        <div className="w-[600px] h-[600px] bg-accent/20 blur-[160px] rounded-full"></div>
+      </div>
 
-<section className="bg-accent">
+      <div className="relative max-w-7xl mx-auto grid md:grid-cols-2 gap-12 px-6 py-20 items-center">
 
-<div className="max-w-7xl mx-auto grid md:grid-cols-2 items-center gap-10 p-10">
+        {/* Left Content */}
+        <div>
 
-<div>
+          <h1 className="text-5xl md:text-6xl font-semibold leading-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            Build Better <br />
+            Communication <br />
+            for Your Child
+          </h1>
 
-<h1 className="text-5xl font-bold text-gray-800 leading-tight">
+          <p className="mt-6 text-gray-400 text-lg max-w-md">
+            Advanced therapy programs designed to help children grow,
+            learn and communicate effectively with confidence.
+          </p>
 
-Helping Children  
-Grow & Communicate Better
+          {/* Buttons */}
+          <div className="mt-10 flex gap-4">
 
-</h1>
+            <Link
+              to="/appointment"
+              className="px-7 py-3 rounded-full bg-accent text-black font-medium text-sm tracking-wide
+              hover:scale-105 hover:shadow-[0_0_30px_rgba(0,255,170,0.4)] transition duration-300"
+            >
+              Book Session →
+            </Link>
 
-<p className="mt-6 text-gray-600">
+            <Link
+              to="/programs"
+              className="px-7 py-3 rounded-full border border-gray-700 text-gray-300
+              hover:bg-white hover:text-black transition duration-300"
+            >
+              Explore Programs
+            </Link>
 
-Tiny Todds Therapy Care provides specialized speech,
-cognitive and developmental therapy programs designed
-for children's growth.
+          </div>
 
-</p>
+        </div>
 
-<div className="mt-6 flex gap-4">
+        {/* Right Image */}
+        <div className="relative">
 
-<Link
-to="/appointment"
-className="bg-primary text-white px-6 py-3 rounded-lg"
->
+          <img
+            src="https://img.freepik.com/free-vector/child-therapy-concept_23-2148655382.jpg"
+            className="rounded-2xl shadow-2xl transform hover:scale-105 transition duration-500"
+          />
 
-Book Consultation
+          {/* Image Glow */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-accent/20 to-transparent blur-xl opacity-40"></div>
 
-</Link>
+        </div>
 
-<Link
-to="/programs"
-className="border border-primary text-primary px-6 py-3 rounded-lg"
->
+      </div>
 
-View Programs
-
-</Link>
-
-</div>
-
-</div>
-
-{/* <img
-src="https://img.freepik.com/free-vector/child-speech-therapy-concept_23-2148655356.jpg"
-className="rounded-xl shadow"
-/> */}
-
-</div>
-
-</section>
-
-)
-
+    </section>
+  );
 }
 
-export default Hero
+export default Hero;

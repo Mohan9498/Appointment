@@ -1,64 +1,93 @@
-function Footer(){
+import { Link } from "react-router-dom";
 
-return(
+function Footer() {
+  return (
+    <footer className="bg-[#0a0a0a] text-gray-400 pt-16 pb-6">
 
-<footer className="bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12">
 
-<div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10 p-10">
+        {/* Brand */}
+        <div>
+          <h2 className="text-white text-2xl font-semibold tracking-wide">
+            Tiny Todds Therapy
+          </h2>
 
-<div>
+          <p className="mt-4 text-sm leading-relaxed">
+            Helping children grow with care, compassion, and expert therapy
+            programs designed for a brighter future.
+          </p>
+        </div>
 
-<h2 className="text-blue-400 font-bold">
+        {/* Links */}
+        <div>
+          <h3 className="text-white mb-4 text-sm uppercase tracking-wider">
+            Explore
+          </h3>
 
-Tiny Todds Therapy
+          <div className="flex flex-col gap-2 text-sm">
+            <Link to="/about" className="hover:text-white transition">
+              About
+            </Link>
+            <Link to="/programs" className="hover:text-white transition">
+              Programs
+            </Link>
+            <Link to="/appointment" className="hover:text-white transition">
+              Book Appointment
+            </Link>
+            <Link to="/contact" className="hover:text-white transition">
+              Contact
+            </Link>
+          </div>
+        </div>
 
-</h2>
+        {/* Programs */}
+        <div>
+          <h3 className="text-white mb-4 text-sm uppercase tracking-wider">
+            Programs
+          </h3>
 
-<p className="text-gray-400 mt-2">
+          <div className="flex flex-col gap-2 text-sm">
+            <p className="hover:text-white transition cursor-pointer">
+              Speech Therapy
+            </p>
+            <p className="hover:text-white transition cursor-pointer">
+              Cognitive Program
+            </p>
+            <p className="hover:text-white transition cursor-pointer">
+              Day Care
+            </p>
+          </div>
+        </div>
 
-Supporting children's development through specialized
-therapy programs.
+        {/* Contact */}
+        <div>
+          <h3 className="text-white mb-4 text-sm uppercase tracking-wider">
+            Contact
+          </h3>
 
-</p>
+          <div className="text-sm space-y-2">
+            <p>Chennai, India</p>
+            <p>+91 9876543210</p>
+            <p>support@tinytodds.com</p>
+          </div>
 
-</div>
+          {/* Social Icons */}
+          <div className="flex gap-4 mt-5 text-lg">
+            <span className="hover:text-white cursor-pointer">🌐</span>
+            <span className="hover:text-white cursor-pointer">📷</span>
+            <span className="hover:text-white cursor-pointer">💼</span>
+          </div>
+        </div>
 
-<div>
+      </div>
 
-<h3 className="font-semibold mb-3">Services</h3>
+      {/* Divider */}
+      <div className="border-t border-gray-800 mt-12 pt-6 text-center text-sm text-gray-500">
+        © 2026 Tiny Todds Therapy. All rights reserved.
+      </div>
 
-<ul className="space-y-2 text-gray-400">
-
-<li>Speech Therapy</li>
-<li>Cognitive Therapy</li>
-<li>Child Development</li>
-
-</ul>
-
-</div>
-
-<div>
-
-<h3 className="font-semibold mb-3">Contact</h3>
-
-<p className="text-gray-400">Chennai, India</p>
-<p className="text-gray-400">+91 9876543210</p>
-<p className="text-gray-400">info@tinytodds.com</p>
-
-</div>
-
-</div>
-
-<div className="text-center text-gray-500 py-4 border-t border-gray-700">
-
-© 2026 Tiny Todds Therapy Care
-
-</div>
-
-</footer>
-
-)
-
+    </footer>
+  );
 }
 
-export default Footer
+export default Footer;
