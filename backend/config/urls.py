@@ -31,5 +31,5 @@ urlpatterns = [
     path("api/programs/", include("programs.urls")),
     path("api/contact/", include("contact.urls")),
 
-    path("api/", include("api.urls")),   # ✅ ADD THIS LINE
+    path("api/", include("api.urls")),   
 ]
