@@ -16,12 +16,18 @@ class ApproveAppointment(APIView):
 
 class AppointmentView(APIView):
 
-    def get(self,request):
-
-        appointments = Appointment.objects.all()
-        serializer = AppointmentSerializer(appointments,many=True)
-
-        return Response(serializer.data)
+    def get(self, request):
+        date = request.GET.get("date")
+        if date:
+            appointments = Appointment.objects.filter(date=date)
+            booked_slots = [a.time for a in appointments]
+            
+            return Response({
+                "booked_slots": booked_slots
+            })
+            appointments = Appointment.objects.all()
+            serializer = AppointmentSerializer(appointments, many=True)
+            return Response(serializer.data)
 
     def post(self,request):
 

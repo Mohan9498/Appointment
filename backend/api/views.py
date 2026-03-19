@@ -44,9 +44,8 @@ class AppointmentView(APIView):
 
     def post(self, request):
         serializer = AppointmentSerializer(data=request.data)
-
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)   
             return Response(serializer.data)
-
+        
         return Response(serializer.errors)
