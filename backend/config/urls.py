@@ -23,13 +23,13 @@ def home(request):
 
 urlpatterns = [
 
-    path('', home),   
+    path('', home),
 
-    path('admin/', admin.site.urls),
+    path("api/", include("api.urls")),   
 
     path("api/accounts/", include("accounts.urls")),
     path("api/programs/", include("programs.urls")),
     path("api/contact/", include("contact.urls")),
 
-    path("api/", include("api.urls")),   
+    path('admin/', admin.site.urls),
 ]

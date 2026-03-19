@@ -31,6 +31,7 @@ function Login() {
 
       localStorage.setItem("token", res.data.access);
       localStorage.setItem("refresh", res.data.refresh);
+      localStorage.setItem("is_admin", res.data.is_admin);
 
       if (res.data.is_admin) {
         navigate("/admin");

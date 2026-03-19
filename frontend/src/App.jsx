@@ -11,8 +11,12 @@ import ProgramDetails from "./pages/ProgramDetails";
 
 import AdminDashboard from "./dashboards/AdminDashboard";
 import ClientDashboard from "./dashboards/ClientDashboard";
+import AdminAppointments from "./dashboards/AdminAppointments"; // ✅ ADD THIS
 
-// Optional: 404 page
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "react-hot-toast";
+
+//  404 page
 function NotFound() {
   return <h1>404 - Page Not Found</h1>;
 }
@@ -20,9 +24,13 @@ function NotFound() {
 function App() {
   return (
     <BrowserRouter>
+
+      {/*  Toast must be OUTSIDE Routes */}
+      <Toaster position="top-right" />
+
       <Routes>
 
-        {/* Public Pages */}
+        {/*  Public Pages */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/programs" element={<Programs />} />
@@ -30,15 +38,22 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/programs/:name" element={<ProgramDetails />} />
 
-        {/* Auth */}
+        {/*  Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Dashboards */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/client" element={<ClientDashboard />} />
+        {/*  Protected Dashboards */}
 
-        {/* Catch all (IMPORTANT for Vercel + UX) */}
+        {/*  Admin only */}
+        <Route path="/admin" element={ <ProtectedRoute adminOnly={true}> <AdminDashboard /> </ProtectedRoute> } />
+
+        {/*  Admin appointments  */}
+        <Route path="/admin/appointments" element={ <ProtectedRoute adminOnly={true}>  <AdminAppointments /> </ProtectedRoute> } />
+
+        {/*  Client */}
+        <Route path="/client" element={ <ProtectedRoute>   <ClientDashboard />  </ProtectedRoute> } />
+
+        {/*  404 fallback */}
         <Route path="*" element={<NotFound />} />
 
       </Routes>

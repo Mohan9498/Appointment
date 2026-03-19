@@ -11,13 +11,21 @@ class ApproveAppointment(APIView):
     def post(self, request, id):
         try:
             appointment = Appointment.objects.get(id=id)
-            appointment.status = "Approved"
+
+            action = request.data.get("action")
+
+            if action == "reject":
+                appointment.status = "rejected"
+            else:
+                appointment.status = "approved"
+
             appointment.save()
 
-            return Response(
-                {"message": "Appointment approved"},
-                status=status.HTTP_200_OK
-            )
+            return Response({
+                "message": "Appointment updated",
+                "id": appointment.id,
+                "status": appointment.status
+            }, status=status.HTTP_200_OK)
 
         except Appointment.DoesNotExist:
             return Response(

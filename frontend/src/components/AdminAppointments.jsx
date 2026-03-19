@@ -1,41 +1,88 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import AdminAnalytics from "./AdminAnalytics";
+import toast from "react-hot-toast";
 
 function AdminAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
   const [filter, setFilter] = useState("all");
 
+  //  Fetch appointments
   const fetchAppointments = async () => {
     try {
       const res = await API.get("appointments/");
       setAppointments(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.log(err);
+      toast.error("Failed to fetch appointments");
     }
   };
 
+  //  INITIAL LOAD + WEBSOCKET
   useEffect(() => {
     fetchAppointments();
+
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/appointments/");
+
+    socket.onopen = () => {
+      console.log(" WebSocket connected");
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      console.log(" Realtime update:", data);
+
+      //  Toast notification from backend
+      if (data.message) {
+        toast.success(data.message);
+      }
+
+      //  Refresh instantly
+      fetchAppointments();
+    };
+
+    socket.onerror = (err) => {
+      console.log("WebSocket error:", err);
+    };
+
+    socket.onclose = () => {
+      console.log("❌ WebSocket disconnected");
+    };
+
+    return () => socket.close();
   }, []);
 
+  //  Approve / Reject
   const updateStatus = async (id, action) => {
     try {
       setLoadingId(id);
 
       await API.post(`approve/${id}/`, { action });
 
+      //  Optimistic update
       setAppointments((prev) =>
         prev.map((item) =>
           item.id === id
-      ? { ...item, status: action === "reject" ? "rejected" : "approved" }
-      : item
-    )
-  ); 
+            ? {
+                ...item,
+                status: action === "reject" ? "rejected" : "approved",
+              }
+            : item
+        )
+      );
+
+      //  Toast
+      if (action === "reject") {
+        toast.error("Appointment rejected");
+      } else {
+        toast.success("Appointment approved");
+      }
 
     } catch (err) {
       console.log(err);
-      alert("Failed to update appointment");
+      toast.error("Failed to update appointment");
     } finally {
       setLoadingId(null);
     }
@@ -54,22 +101,17 @@ function AdminAppointments() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f172a] to-black p-6">
-      
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
 
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">
-            Appointment Management
-          </h1>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
+          <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
 
-          {/* FILTERS */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {["all", "pending", "approved", "rejected"].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-1 rounded-full text-sm capitalize transition ${
+                className={`px-4 py-2 rounded-full text-sm capitalize transition ${
                   filter === f
                     ? "bg-white text-black"
                     : "bg-white/10 text-gray-300 hover:bg-white/20"
@@ -81,34 +123,31 @@ function AdminAppointments() {
           </div>
         </div>
 
-        {/* LIST */}
-        <div className="space-y-4">
+        <AdminAnalytics appointments={appointments} />
 
+        <div className="space-y-4">
           {filteredAppointments.length === 0 ? (
-            <div className="text-center py-20 text-gray-400">
-              <p className="text-lg">No appointments found</p>
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-gray-400 backdrop-blur-xl">
+              No appointments found.
             </div>
           ) : (
             filteredAppointments.map((item) => (
               <div
                 key={item.id}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:scale-[1.01] transition"
+                className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition hover:bg-white/[0.07]"
               >
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-                  {/* USER INFO */}
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  
                   <div>
-                    <p className="text-white font-semibold text-lg">
-                      {item.user || "User"}
+                    <p className="text-lg font-semibold text-white">
+                      {item.user || item.username || "User"}
                     </p>
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="mt-1 text-sm text-gray-400">
                       {item.date} • {item.time}
                     </p>
                   </div>
 
-                  {/* STATUS + ACTIONS */}
                   <div className="flex items-center gap-3 flex-wrap">
-
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${statusStyle[item.status]}`}
                     >
@@ -122,7 +161,7 @@ function AdminAppointments() {
                           disabled={loadingId === item.id}
                           className="px-4 py-2 rounded-full bg-green-500 text-black font-medium hover:opacity-90 disabled:opacity-50"
                         >
-                          {loadingId === item.id ? "..." : "Approve"}
+                          {loadingId === item.id ? "Updating..." : "Approve"}
                         </button>
 
                         <button
@@ -130,7 +169,7 @@ function AdminAppointments() {
                           disabled={loadingId === item.id}
                           className="px-4 py-2 rounded-full bg-red-500 text-white font-medium hover:opacity-90 disabled:opacity-50"
                         >
-                          {loadingId === item.id ? "..." : "Reject"}
+                          {loadingId === item.id ? "Updating..." : "Reject"}
                         </button>
                       </>
                     )}
@@ -140,9 +179,7 @@ function AdminAppointments() {
               </div>
             ))
           )}
-
         </div>
-
       </div>
     </div>
   );

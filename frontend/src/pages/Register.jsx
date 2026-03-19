@@ -35,8 +35,9 @@ function Register() {
       navigate("/login");
 
     } catch (error) {
-      console.log(error);
-      alert("Registration failed");
+         console.log(error.response?.data);  
+         alert(error.response?.data?.error || "Registration failed");
+
     } finally {
       setLoading(false);
     }
