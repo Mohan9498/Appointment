@@ -63,28 +63,32 @@ function Appointment() {
 
   // Booking API
   const bookAppointment = async () => {
-    if (!selectedTime) {
-      alert("Please select a time slot");
-      return;
-    }
+  if (!selectedTime) {
+    alert("Please select a time slot");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
+  // 👇 THIS FIXES INP (lets UI update first)
+  setTimeout(async () => {
     try {
-      await API.post("/api/appointments/", {
+      await API.post("appointments/", {
         date: date.toISOString().split("T")[0],
         time: selectedTime,
       });
 
       setSuccess("✅ Appointment request sent!");
       setSelectedTime("");
+
     } catch (err) {
       console.log(err);
       alert("Booking failed");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
-  };
+  }, 0);
+};
 
   return (
     <div className="min-h-screen bg-[#e4a6a6bd] py-20 px-6">
