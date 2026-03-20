@@ -5,7 +5,7 @@ const BASE_URL =
   window.location.hostname === "localhost" ? "http://127.0.0.1:8000/api/"    : "https://your-backend-url/api/";
 
 const API = axios.create({
-  baseURL: BASE_URL,
+  baseURL: "http://10.60.184.164:8000/api/"
 });
 
 
