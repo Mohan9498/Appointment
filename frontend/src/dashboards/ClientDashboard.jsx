@@ -8,7 +8,7 @@ const [appointments,setAppointments] = useState([])
 
 useEffect(()=>{
 
-API.get("appointments/my/")
+API.get("appointments/")
 .then(res => setAppointments(res.data))
 
 },[])
