@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function CTA() {
   return (
-    <section className="relative bg-[#0a0a0a] py-28 text-center overflow-hidden">
+    <section className="relative bg-[#bb94ce] py-28 text-center overflow-hidden">
 
       {/* Glow Background */}
       <div className="absolute inset-0 flex justify-center">
@@ -17,14 +17,14 @@ function CTA() {
         </h2>
 
         {/* Subtitle */}
-        <p className="mt-5 text-gray-400 text-lg">
+        <p className="mt-5 text-gray-500 text-lg">
           Book a consultation today and take the first step toward growth and confidence.
         </p>
 
         {/* Button */}
         <Link
           to="/appointment"
-          className="mt-10 inline-block px-8 py-3 rounded-full bg-accent text-black font-medium text-sm tracking-wide 
+          className="mt-10 inline-block px-8 py-3 rounded-full bg-accent text-amber-100 font-medium text-sm tracking-wide 
           hover:scale-105 hover:shadow-[0_0_30px_rgba(0,255,170,0.4)] transition duration-300"
         >
           Book Appointment →

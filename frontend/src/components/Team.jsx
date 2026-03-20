@@ -3,16 +3,16 @@ function Team() {
   const team = ["Therapist 1", "Therapist 2", "Therapist 3"];
 
   return (
-    <section className="py-20">
+    <section className="py-20 bg-[#c77777]">
 
       <h2 className="text-3xl font-bold text-center mb-10">
         Our Therapists
       </h2>
 
-      <div className="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto px-6">
+      <div className="grid md:grid-cols-3 gap-6 w-full px-6">
 
         {team.map((t, i) => (
-          <div key={i} className="bg-white p-6 rounded-xl shadow text-center">
+          <div key={i} className="bg-white p-6 rounded-2xl shadow text-center">
             <img
               src="https://img.freepik.com/free-vector/doctor"
               className="rounded-full w-24 mx-auto"

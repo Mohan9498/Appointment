@@ -3,9 +3,9 @@ import { MessageCircle, Instagram, Mail, Chrome } from "lucide-react";
 
 function Footer() {
   return (
-    <footer className="bg-[#0a0a0a] text-gray-400 pt-16 pb-6">
+    <footer className="bg-[#b7f6a9] text-gray-400 pt-16 pb-6">
 
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12">
+      <div className="w-full px-6 grid md:grid-cols-4 gap-12">
 
         {/* Brand */}
         <div>

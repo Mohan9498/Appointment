@@ -26,7 +26,7 @@ function Services() {
       {/* Background Glow */}
       <div className="absolute top-[-100px] left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] bg-accent/10 blur-[150px] rounded-full"></div>
 
-      <div className="relative max-w-7xl mx-auto px-6">
+      <div className="relative w-full px-6">
 
         {/* Heading */}
         <div className="text-center mb-16">

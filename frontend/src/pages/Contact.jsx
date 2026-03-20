@@ -59,7 +59,7 @@ function Contact() {
         <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-sky-100 blur-3xl opacity-70" />
         <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-slate-200 blur-3xl opacity-60" />
 
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative w-full px-6">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="pt-4">
               <p className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-medium text-slate-600 shadow-sm backdrop-blur">

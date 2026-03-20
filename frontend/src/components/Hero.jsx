@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center bg-[#0a0a0a] overflow-hidden">
+    <section className="relative min-h-screen flex items-center bg-[#d8d2d2bd] overflow-hidden">
 
       {/* Glow Background */}
       <div className="absolute inset-0 flex justify-center items-center">

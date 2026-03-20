@@ -8,7 +8,7 @@ function Gallery() {
   ];
 
   return (
-    <section className="bg-[#0a0a0a] py-20">
+    <section className="bg-[#a7e2d6] py-20">
 
       <h2 className="text-3xl md:text-4xl text-center font-semibold mb-12 text-white">
         Our Activities
