@@ -11,7 +11,7 @@ import ProgramDetails from "./pages/ProgramDetails";
 
 import AdminDashboard from "./dashboards/AdminDashboard";
 import ClientDashboard from "./dashboards/ClientDashboard";
-import AdminAppointments from "./dashboards/AdminAppointments"; // ✅ ADD THIS
+import AdminAppointments from "./components/AdminAppointments"; // ✅ ADD THIS
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";

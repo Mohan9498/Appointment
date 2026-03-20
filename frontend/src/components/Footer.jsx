@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { MessageCircle, Instagram, Mail, Chrome } from "lucide-react";
 
 function Footer() {
   return (
@@ -72,10 +73,28 @@ function Footer() {
           </div>
 
           {/* Social Icons */}
-          <div className="flex gap-4 mt-5 text-lg">
-            <span className="hover:text-white cursor-pointer">🌐</span>
-            <span className="hover:text-white cursor-pointer">📷</span>
-            <span className="hover:text-white cursor-pointer">💼</span>
+          <div className="flex gap-4 mt-5">
+
+            {/* WhatsApp */}
+            <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
+              <MessageCircle className="cursor-pointer hover:text-green-400" />
+            </a>
+
+            {/* Instagram */}
+            <a href="https://instagram.com" target="_blank" rel="noreferrer">
+              <Instagram className="cursor-pointer hover:text-pink-500" />
+            </a>
+
+            {/* Gmail */}
+            <a href="mailto:support@tinytodds.com">
+              <Mail className="cursor-pointer hover:text-red-500" />
+            </a>
+
+            {/* Google */}
+            <a href="https://google.com" target="_blank" rel="noreferrer">
+              <Chrome className="cursor-pointer hover:text-blue-500" />
+            </a>
+
           </div>
         </div>
 
