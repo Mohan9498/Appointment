@@ -74,7 +74,7 @@ function Appointment() {
       try {
         await API.post("appointments/", {
           date: date.toISOString().split("T")[0],
-          time: selectedTime,
+          time: convertTo24Hour(selectedTime)
         });
 
         setSuccess("✅ Appointment request sent!");

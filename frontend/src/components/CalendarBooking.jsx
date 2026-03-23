@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
+import API from "../services/api";
 import "react-calendar/dist/Calendar.css";
 import "./calendar.css";
 
@@ -16,7 +17,9 @@ function CalendarBooking() {
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState("");
   const [bookedSlots, setBookedSlots] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // Simulated booked slots
   useEffect(() => {
     const random = Math.random();
 
@@ -27,11 +30,13 @@ function CalendarBooking() {
     setSelectedTime("");
   }, [date]);
 
+  // Disable past dates
   const isPastDate = (date) => {
     const today = new Date();
     return date < new Date(today.setHours(0, 0, 0, 0));
   };
 
+  // Disable past time slots
   const isPastTime = (slot) => {
     const now = new Date();
     const selected = new Date(date);
@@ -46,6 +51,50 @@ function CalendarBooking() {
     if (modifier === "AM" && hours === 12) hours = 0;
 
     return hours <= now.getHours();
+  };
+
+  // ✅ Convert time to backend format
+  const convertTo24Hour = (slot) => {
+    if (!slot) return "";
+    
+    let [time, modifier] = slot.split(" ");  
+    let [hours, minutes] = time.split(":");
+      
+    hours = parseInt(hours);
+    
+    if (modifier === "PM" && hours !== 12) hours += 12
+    if (modifier === "AM" && hours === 12) hours = 0;
+    
+    return `${hours.toString().padStart(2, "0")}:${minutes}:00`;
+  };
+
+  // ✅ Booking function
+  const handleBooking = async () => {
+    if (!selectedTime) {
+      alert("Please select a time slot");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await API.post("appointments/", {
+        date: date.toISOString().split("T")[0],
+        time: convertTo24Hour(selectedTime), // ✅ FIXED
+      });
+
+      alert("Booking successful ✅");
+
+      setBookedSlots((prev) => [...prev, selectedTime]);
+      setSelectedTime("");
+
+    } catch (err) {
+      console.log("FULL ERROR:", err);
+      console.log("SERVER ERROR:", err.response?.data); // ✅ THIS
+      alert(JSON.stringify(err.response?.data)); // 👈 show exact error
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,19 +112,6 @@ function CalendarBooking() {
             onChange={setDate}
             value={date}
             tileDisabled={({ date }) => isPastDate(date)}
-            tileContent={({ date }) => {
-              const random = Math.random();
-
-              let color = "bg-green-400";
-              if (random < 0.3) color = "bg-red-500";
-              else if (random < 0.6) color = "bg-yellow-400";
-
-              return (
-                <div className="flex justify-center mt-1">
-                  <span className={`w-1.5 h-1.5 rounded-full ${color}`}></span>
-                </div>
-              );
-            }}
             className="modern-calendar"
           />
         </div>
@@ -105,16 +141,12 @@ function CalendarBooking() {
                   className={` 
                     p-2.5 rounded-lg text-xs font-medium transition-all duration-300
 
-                     ${isSelected
-
+                    ${isSelected
                       ? "bg-gradient-to-r from-blue-400 to-indigo-500 text-black shadow-md scale-105"
-                      
                       : "bg-white/5 border border-white/10 text-gray-200"}
 
-                     ${isBooked || isPast
-
+                    ${isBooked || isPast
                       ? "opacity-30 cursor-not-allowed"
-
                       : "hover:scale-105 hover:bg-gradient-to-r hover:from-blue-400 hover:to-indigo-500 hover:text-black"}
                   `}
                 >
@@ -137,13 +169,14 @@ function CalendarBooking() {
 
           {/* CTA */}
           <button
-            disabled={!selectedTime}
+            onClick={handleBooking}
+            disabled={!selectedTime || loading}
             className="mt-6 w-full py-3 rounded-full font-semibold
             bg-gradient-to-r from-blue-400 to-indigo-500 text-black
             hover:scale-105 transition duration-300
             disabled:opacity-30"
           >
-            Confirm Booking →
+            {loading ? "Booking..." : "Confirm Booking →"}
           </button>
 
         </div>

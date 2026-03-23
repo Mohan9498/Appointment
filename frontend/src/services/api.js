@@ -15,6 +15,8 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
+  console.log("TOKEN:", token); // 👈 CHECK THIS
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -22,18 +24,16 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// ✅ Handle refresh + errors safely
+// ✅ Handle refresh token
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // 🔁 Try refresh ONLY once
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url.includes("login") &&
-      !originalRequest.url.includes("register")
+      !originalRequest.url.includes("login")
     ) {
       originalRequest._retry = true;
 
@@ -42,15 +42,13 @@ API.interceptors.response.use(
       if (refresh) {
         try {
           const res = await axios.post(`${BASE_URL}token/refresh/`, {
-            refresh: refresh,
+            refresh,
           });
 
           const newAccess = res.data.access;
 
-          // ✅ Save new token
           localStorage.setItem("token", newAccess);
 
-          // ✅ Retry request
           originalRequest.headers.Authorization = `Bearer ${newAccess}`;
           return API(originalRequest);
 
@@ -58,18 +56,6 @@ API.interceptors.response.use(
           console.log("❌ Refresh token expired");
         }
       }
-    }
-
-    // ❌ Logout ONLY if truly unauthorized (not login/register)
-    if (
-      error.response?.status === 401 &&
-      !originalRequest.url.includes("login") &&
-      !originalRequest.url.includes("register")
-    ) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refresh");
-
-      window.location.href = "/login";
     }
 
     return Promise.reject(error);

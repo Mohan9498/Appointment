@@ -23,7 +23,7 @@ alert("Appointment booked. Waiting for admin approval.")
 
 return(
 
-<div className="max-w-6xl mx-auto p-10">
+<div className="max-w-12xl mx-auto p-10">
 
 <h1 className="text-3xl font-bold mb-8">
 Client Dashboard

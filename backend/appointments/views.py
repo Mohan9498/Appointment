@@ -19,7 +19,6 @@ class IsAdminUserCustom(BasePermission):
 
 # ✅ LOGIN
 class LoginView(APIView):
-
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
@@ -48,10 +47,10 @@ class LoginView(APIView):
 
 # ✅ REGISTER
 class RegisterView(APIView):
-
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
+        email = request.data.get("email")  # ✅ optional but useful
 
         if not username or not password:
             return Response(
@@ -74,6 +73,7 @@ class RegisterView(APIView):
         user = User.objects.create_user(
             username=username,
             password=password,
+            email=email,   # ✅ store email
             is_staff=False
         )
 
@@ -86,52 +86,49 @@ class RegisterView(APIView):
         )
 
 
-# ✅ APPOINTMENTS (FIXED FOR ADMIN + USER)
+# ✅ APPOINTMENTS
 class AppointmentView(APIView):
-
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         date = request.GET.get("date")
 
-        # ✅ ADMIN → see ALL
         if request.user.is_staff:
-            if date:
-                appointments = Appointment.objects.filter(date=date)
-            else:
-                appointments = Appointment.objects.all()
-
-        # ✅ USER → own only
+            appointments = Appointment.objects.filter(date=date) if date else Appointment.objects.all()
         else:
-            if date:
-                appointments = Appointment.objects.filter(user=request.user, date=date)
-            else:
-                appointments = Appointment.objects.filter(user=request.user)
+            appointments = Appointment.objects.filter(user=request.user, date=date) if date else Appointment.objects.filter(user=request.user)
 
         serializer = AppointmentSerializer(appointments, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = AppointmentSerializer(data=request.data)
-
+        data = request.data.copy()
+        # ✅ Auto-fill fields
+        data["name"] = request.user.username
+        data["email"] = request.user.email or "test@email.com"
+        
+        serializer = AppointmentSerializer(data=data)
+        
         if serializer.is_valid():
             appointment = serializer.save(
                 user=request.user,
-                status="pending"   # ✅ default status
+                status="pending"
             )
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+            
+            return Response(
+                AppointmentSerializer(appointment).data,
+                status=status.HTTP_201_CREATED
+            )
+            
         return Response(
             {"error": serializer.errors},
             status=status.HTTP_400_BAD_REQUEST
         )
 
 
-# ✅ APPROVE / REJECT (FIXED)
+# ✅ APPROVE / REJECT
 class ApproveAppointment(APIView):
-
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUserCustom]
 
@@ -141,7 +138,6 @@ class ApproveAppointment(APIView):
         try:
             appointment = Appointment.objects.get(id=id)
 
-            # ✅ HANDLE BOTH ACTIONS
             if action == "reject":
                 appointment.status = "rejected"
             else:
