@@ -1,11 +1,12 @@
 .modern-calendar {
-  background: #0a0a0a;
-  border: 1px solid #1f1f1f;
+  background: linear-gradient(135deg, rgba(117,152,241,0.4), rgba(15,23,42,0.9));
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 20px;
   padding: 18px;
   color: white;
   width: 100%;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
 /* Navigation */
@@ -16,25 +17,25 @@
 }
 
 .react-calendar__navigation button {
-  background: #111;
-  color: #ccc;
-  border: 1px solid #222;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #ddd;
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   padding: 6px 12px;
   font-size: 13px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .react-calendar__navigation button:hover {
-  background: #1a1a1a;
-  color: white;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: black;
 }
 
 /* Weekdays */
 .react-calendar__month-view__weekdays {
   text-align: center;
   font-size: 11px;
-  color: #666;
+  color: #94a3b8;
   margin-bottom: 8px;
 }
 
@@ -42,7 +43,7 @@
 .react-calendar__tile {
   border-radius: 14px;
   padding: 12px 0;
-  color: #aaa;
+  color: #cbd5e1;
   font-size: 14px;
   transition: all 0.25s ease;
   position: relative;
@@ -50,22 +51,23 @@
 
 /* Hover */
 .react-calendar__tile:hover {
-  background: rgba(255,255,255,0.08);
-  color: white;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: black;
+  transform: scale(1.05);
 }
 
 /* Today */
 .react-calendar__tile--now {
-  border: 1px solid #00FFAA;
+  border: 1px solid #3b82f6;
   color: white;
 }
 
 /* Selected */
 .react-calendar__tile--active {
-  background: #00FFAA !important;
+  background: linear-gradient(135deg, #3b82f6, #6366f1) !important;
   color: black !important;
   font-weight: 600;
-  box-shadow: 0 0 20px rgba(0,255,170,0.6);
+  box-shadow: 0 0 20px rgba(59,130,246,0.6);
 }
 
 /* Disabled */
@@ -81,5 +83,5 @@
 
 /* Smooth UI */
 .react-calendar * {
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }

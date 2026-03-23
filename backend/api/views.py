@@ -14,18 +14,24 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 
-#  ADMIN PERMISSION
+# ✅ ADMIN PERMISSION
 class IsAdminUserCustom(BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.is_staff
 
 
-# LOGIN
+# ✅ LOGIN
 class LoginView(APIView):
 
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
+
+        if not username or not password:
+            return Response(
+                {"error": "Username and password are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         user = authenticate(username=username, password=password)
 
@@ -43,12 +49,24 @@ class LoginView(APIView):
         return Response({"error": "Invalid credentials"}, status=401)
 
 
-#  REGISTER
+# ✅ REGISTER
 class RegisterView(APIView):
 
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
+
+        if not username or not password:
+            return Response(
+                {"error": "All fields are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if len(password) < 4:
+            return Response(
+                {"error": "Password must be at least 4 characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if User.objects.filter(username=username).exists():
             return Response(
@@ -63,12 +81,15 @@ class RegisterView(APIView):
         )
 
         return Response(
-            {"message": "User registered successfully"},
+            {
+                "message": "User registered successfully",
+                "username": user.username
+            },
             status=status.HTTP_201_CREATED
         )
 
 
-#  APPOINTMENT (PROTECTED)
+# ✅ APPOINTMENT (FIXED FOR ADMIN + USER)
 class AppointmentView(APIView):
 
     authentication_classes = [JWTAuthentication]
@@ -77,10 +98,19 @@ class AppointmentView(APIView):
     def get(self, request):
         date = request.GET.get("date")
 
-        if date:
-            appointments = Appointment.objects.filter(date=date)
+        # 🔥 ADMIN → ALL DATA
+        if request.user.is_staff:
+            if date:
+                appointments = Appointment.objects.filter(date=date)
+            else:
+                appointments = Appointment.objects.all()
+
+        # 🔥 USER → OWN DATA
         else:
-            appointments = Appointment.objects.filter(user=request.user)
+            if date:
+                appointments = Appointment.objects.filter(user=request.user, date=date)
+            else:
+                appointments = Appointment.objects.filter(user=request.user)
 
         serializer = AppointmentSerializer(appointments, many=True)
         return Response(serializer.data)
@@ -89,9 +119,12 @@ class AppointmentView(APIView):
         serializer = AppointmentSerializer(data=request.data)
 
         if serializer.is_valid():
-            appointment = serializer.save(user=request.user)
+            appointment = serializer.save(
+                user=request.user,
+                status="pending"   # ✅ FIXED DEFAULT STATUS
+            )
 
-            # 🔥 REAL-TIME CREATE EVENT
+            # 🔥 REAL-TIME CREATE
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 "appointments",
@@ -105,21 +138,34 @@ class AppointmentView(APIView):
                 }
             )
 
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors)
+        return Response(
+            {"error": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
-#  APPROVE APPOINTMENT (ADMIN ONLY )
+# ✅ APPROVE / REJECT (FIXED)
 class ApproveAppointment(APIView):
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUserCustom]
 
     def post(self, request, id):
+        action = request.data.get("action")
+
         try:
             appointment = Appointment.objects.get(id=id)
-            appointment.status = "Approved"
+
+            # 🔥 HANDLE BOTH ACTIONS
+            if action == "reject":
+                appointment.status = "rejected"
+                message = "Appointment rejected"
+            else:
+                appointment.status = "approved"
+                message = "Appointment approved"
+
             appointment.save()
 
             # 🔥 REAL-TIME UPDATE
@@ -131,13 +177,13 @@ class ApproveAppointment(APIView):
                     "data": {
                         "id": appointment.id,
                         "status": appointment.status,
-                        "message": "Appointment approved"
+                        "message": message
                     }
                 }
             )
 
             return Response(
-                {"message": "Appointment approved"},
+                {"message": message},
                 status=status.HTTP_200_OK
             )
 

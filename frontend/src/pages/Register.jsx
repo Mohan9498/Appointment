@@ -28,16 +28,33 @@ function Register() {
     try {
       setLoading(true);
 
-      await API.post("register/", formData);
+      const res = await API.post("register/", formData);
 
       alert("Registration successful");
-
       navigate("/login");
 
-    } catch (error) {
-         console.log(error.response?.data);  
-         alert(error.response?.data?.error || "Registration failed");
-
+    }catch (error) {
+      
+      console.log("FULL ERROR:", error);
+      console.log("ERROR DATA:", error.response?.data);
+      
+      let message = "Registration failed";
+      
+      if (!error.response) {
+        // ❌ Network issue
+        message = "Server not running or unreachable";
+      } 
+      else if (error.response.data?.error) {
+        // ✅ Custom backend error 
+        message = error.response.data.error;
+      } 
+      else if (typeof error.response.data === "object") { 
+         // ✅ Serializer errors 
+         const firstKey = Object.keys(error.response.data)[0];
+         message = error.response.data[firstKey][0];
+      }
+      
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -48,7 +65,7 @@ function Register() {
 
       <div className="grid min-h-screen lg:grid-cols-2">
 
-        {/* LEFT SIDE (UI SAME AS LOGIN) */}
+        {/* LEFT SIDE */}
         <div className="relative hidden lg:flex overflow-hidden bg-slate-950 text-white">
 
           <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800" />
@@ -92,7 +109,7 @@ function Register() {
           </div>
         </div>
 
-        {/* RIGHT SIDE FORM */}
+        {/* RIGHT SIDE */}
         <div className="flex items-center justify-center px-6 py-10 bg-gradient-to-br from-white via-slate-50 to-sky-50">
 
           <div className="w-full max-w-md">
@@ -116,7 +133,7 @@ function Register() {
 
             </div>
 
-            {/* FORM CARD */}
+            {/* FORM */}
             <div className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 md:p-8 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur">
 
               <form onSubmit={handleRegister} className="space-y-5">

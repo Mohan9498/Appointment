@@ -1,14 +1,17 @@
 import axios from "axios";
 
-// ✅ Automatically choose backend URL
+// ✅ Auto detect environment
 const BASE_URL =
-  window.location.hostname === "localhost" ? "http://127.0.0.1:8000/api/"    : "https://your-backend-url/api/";
+  window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000/api/"
+    : "https://your-backend-url/api/";
 
+// ✅ Create instance
 const API = axios.create({
-  baseURL: "http://10.60.184.164:8000/api/"
+  baseURL: BASE_URL,
 });
 
-
+// ✅ Attach access token
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
@@ -19,13 +22,19 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+// ✅ Handle refresh + errors safely
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // 🔁 Try refresh ONLY once
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("login") &&
+      !originalRequest.url.includes("register")
+    ) {
       originalRequest._retry = true;
 
       const refresh = localStorage.getItem("refresh");
@@ -38,24 +47,30 @@ API.interceptors.response.use(
 
           const newAccess = res.data.access;
 
-         
+          // ✅ Save new token
           localStorage.setItem("token", newAccess);
 
-         
+          // ✅ Retry request
           originalRequest.headers.Authorization = `Bearer ${newAccess}`;
           return API(originalRequest);
 
         } catch (err) {
-          console.log("Refresh failed");
+          console.log("❌ Refresh token expired");
         }
       }
     }
 
-    
-    localStorage.removeItem("token");
-    localStorage.removeItem("refresh");
+    // ❌ Logout ONLY if truly unauthorized (not login/register)
+    if (
+      error.response?.status === 401 &&
+      !originalRequest.url.includes("login") &&
+      !originalRequest.url.includes("register")
+    ) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refresh");
 
-    window.location.href = "/login";
+      window.location.href = "/login";
+    }
 
     return Promise.reject(error);
   }

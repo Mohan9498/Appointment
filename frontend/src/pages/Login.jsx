@@ -23,27 +23,30 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    
     try {
-      setLoading(true);
+      setLoading(true)
 
       const res = await API.post("login/", formData);
 
-      localStorage.setItem("token", res.data.access);
-      localStorage.setItem("refresh", res.data.refresh);
-      localStorage.setItem("is_admin", res.data.is_admin);
-
-      if (res.data.is_admin) {
-        navigate("/admin");
-      } else {
-        navigate("/client");
-      }
+          //  Save tokens
+          localStorage.setItem("token", res.data.access);
+          localStorage.setItem("refresh", res.data.refresh);
+          localStorage.setItem("is_admin", res.data.is_admin);
+          
+          //  Redirect
+          if (res.data.is_admin) {
+            navigate("/admin");
+          } else {
+            navigate("/client");
+          }
+        
     } catch (error) {
-      console.log(error);
-      alert("Invalid username or password");
-    } finally {
-      setLoading(false);
-    }
+       console.log(error); 
+       alert("Invalid username or password"); 
+      } finally { 
+        setLoading(false); 
+      }
   };
 
   return (
