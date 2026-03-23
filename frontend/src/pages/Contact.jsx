@@ -128,7 +128,7 @@ function Contact() {
                     <div>
                       <p className="text-sm text-slate-500">Hours</p>
                       <p className="font-semibold text-slate-900">
-                        Mon - Sat, 9 AM - 6 PM
+                        Mon - Sat, 10 AM - 8 PM
                       </p>
                     </div>
                   </div>
@@ -139,7 +139,7 @@ function Contact() {
             <div className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 md:p-8 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur">
               <div className="mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
-                  Send a message
+                  Send a message 0
                 </h2>
                 <p className="mt-2 text-slate-500">
                   Fill in your details and we’ll get back to you soon.

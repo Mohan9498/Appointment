@@ -13,15 +13,15 @@ function Hero() {
 
         {/* Left Content */}
         <div>
-          <h1 className="text-5xl md:text-6xl font-semibold leading-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight bg-gradient-to-r from-blue-200   via-purple-200 to-green-200 bg-clip-text text-transparent">
             Build Better <br />
             Communication <br />
             for Your Child
           </h1>
 
-          <p className="mt-6 text-gray-400 text-lg max-w-md">
+          <p className="mt-6 text-blue-400 text-base md:text-lg max-w-lg leading-relaxed">
             Advanced therapy programs designed to help children grow,
-            learn and communicate effectively with confidence.
+            learn, and communicate effectively with confidence.
           </p>
 
           {/* Buttons */}
