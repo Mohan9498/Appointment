@@ -25,7 +25,7 @@ class LoginView(APIView):
 
     def post(self, request):
         try:
-            print("DATA:", request.data)  # 🔍 debug
+            print("DATA:", request.data)  #  debug
 
             username = request.data.get("username")
             password = request.data.get("password")
@@ -55,7 +55,7 @@ class LoginView(APIView):
             })
 
         except Exception as e:
-            print("🔥 LOGIN ERROR:", str(e))
+            print(" LOGIN ERROR:", str(e))
             return Response(
                 {"error": "Server error"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -102,7 +102,7 @@ class RegisterView(APIView):
         )
 
 
-# ✅ APPOINTMENT (FIXED FOR ADMIN + USER)
+#  APPOINTMENT (FIXED FOR ADMIN + USER)
 class AppointmentView(APIView):
 
     authentication_classes = [JWTAuthentication]
@@ -111,14 +111,14 @@ class AppointmentView(APIView):
     def get(self, request):
         date = request.GET.get("date")
 
-        # 🔥 ADMIN → ALL DATA
+        #  ADMIN → ALL DATA
         if request.user.is_staff:
             if date:
                 appointments = Appointment.objects.filter(date=date)
             else:
                 appointments = Appointment.objects.all()
 
-        # 🔥 USER → OWN DATA
+        #  USER → OWN DATA
         else:
             if date:
                 appointments = Appointment.objects.filter(user=request.user, date=date)
@@ -129,34 +129,39 @@ class AppointmentView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = AppointmentSerializer(data=request.data)
+        print("DATA:", request.data)  #  debug
+
+        #  Inject required fields BEFORE validation
+        data = request.data.copy()
+        data["user"] = request.user.id
+        data["name"] = request.user.username
+        data["email"] = request.user.email or "test@gmail.com"
+        data["status"] = "pending"
+
+        serializer = AppointmentSerializer(data=data)
 
         if serializer.is_valid():
-            appointment = serializer.save(
-                user=request.user,
-                status="pending"   # ✅ FIXED DEFAULT STATUS
-            )
+            appointment = serializer.save()
 
-            # 🔥 REAL-TIME CREATE
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                "appointments",
-                {
-                    "type": "send_update",
-                    "data": {
-                        "id": appointment.id,
-                        "status": appointment.status,
-                        "message": "New appointment created"
-                    }
-                }
-            )
+            #  REAL-TIME CREATE (WebSocket)
+            # channel_layer = get_channel_layer()
+            # async_to_sync(channel_layer.group_send)(
+            #     "appointments",
+            #     {
+            #         "type": "send_update",
+            #         "data": {
+            #             "id": appointment.id,
+            #             "status": appointment.status,
+            #             "message": "New appointment created"
+            #         }
+            #     }
+            # )
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=201)
 
-        return Response(
-            {"error": serializer.errors},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        print("ERRORS:", serializer.errors)  #  debug errors
+
+        return Response(serializer.errors, status=400)
 
 
 #  APPROVE / REJECT (FIXED)

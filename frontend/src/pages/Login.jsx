@@ -13,8 +13,6 @@ function Login() {
     password: "",
   });
 
-  
-
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -32,12 +30,12 @@ function Login() {
       setLoading(true);
       
       const res = await API.post("login/", formData);
-      // ✅ Save tokens
+      //  Save tokens
       localStorage.setItem("token", res.data.access);
       localStorage.setItem("refresh", res.data.refresh);
       localStorage.setItem("is_admin", res.data.is_admin);
-      localStorage.setItem("username", res.data.username); // ✅ ADD THIS
-      // ✅ Save user in Zustand
+      localStorage.setItem("username", res.data.username); 
+      //  Save user in Zustand
       loginStore.login(
         {
           username: res.data.username,
@@ -46,7 +44,7 @@ function Login() {
         res.data.access
       );
   
-      // ✅ Redirect
+      //  Redirect
       if (res.data.is_admin) {
         navigate("/admin");
       } else {

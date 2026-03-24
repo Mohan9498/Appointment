@@ -23,11 +23,20 @@ function CalendarBooking() {
   const formatTime = (time) => {
     const [hourMin, period] = time.split(" ");
     let [hour, minute] = hourMin.split(":");
-
+    
     if (period === "PM" && hour !== "12") hour = parseInt(hour) + 12;
     if (period === "AM" && hour === "12") hour = "00";
+    
+    return `${hour}:${minute}:00`;
+  };
 
-    return `${hour.toString().padStart(2, "0")}:${minute}:00`;
+  const book = async (data) => {
+    const formattedDate = data.date.toISOString().split("T")[0];
+    
+    await API.post("appointments/", {
+      date: formattedDate,
+      time: formatTime(data.time),
+    });
   };
 
   // Simulated booked slots

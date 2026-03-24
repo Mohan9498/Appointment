@@ -6,7 +6,7 @@ class Appointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     name = models.CharField(max_length=100)
-    email = models.EmailField()
+    gmail = models.EmailField() 
 
     date = models.DateField()
     time = models.TimeField()

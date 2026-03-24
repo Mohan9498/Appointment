@@ -61,7 +61,7 @@ function AdminDashboard() {
         ? `${wsProtocol}://127.0.0.1:8000/ws/appointments/`
         : `${wsProtocol}://${window.location.hostname}:8000/ws/appointments/`;
 
-    const socket = new WebSocket(wsURL);
+    // const socket = new WebSocket(wsURL);
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -127,7 +127,7 @@ function AdminDashboard() {
   const filteredAppointments = appointments
     .filter((a) => filter === "all" ? true : a.status === filter)
     .filter((a) =>
-      (a.user || "").toLowerCase().includes(search.toLowerCase())
+      String(a.user || "").toLowerCase().includes(search.toLowerCase())
     );
 
   return (
