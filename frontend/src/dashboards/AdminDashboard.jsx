@@ -134,7 +134,7 @@ function AdminDashboard() {
   const filteredAppointments = appointments
     .filter((a) => filter === "all" ? true : a.status === filter)
     .filter((a) =>
-      (a.user || "").toLowerCase().includes(search.toLowerCase())
+      String(a.user || "").toLowerCase().includes(search.toLowerCase())
     );
 
   return (
