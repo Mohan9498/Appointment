@@ -1,21 +1,20 @@
 import axios from "axios";
 
-// ✅ Auto detect environment
+//  FIXED BASE URL
 const BASE_URL =
-  window.location.hostname === "localhost"
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
     ? "http://127.0.0.1:8000/api/"
-    : "https://your-backend-url/api/";
+    : "http://10.60.184.164:8000/api/";
 
-// ✅ Create instance
+//  Create instance
 const API = axios.create({
   baseURL: BASE_URL,
 });
 
-// ✅ Attach access token
+//  Attach access token
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-
-  console.log("TOKEN:", token); // 👈 CHECK THIS
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -24,7 +23,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// ✅ Handle refresh token
+//  Handle refresh token
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -52,8 +51,10 @@ API.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${newAccess}`;
           return API(originalRequest);
 
-        } catch (err) {
-          console.log("❌ Refresh token expired");
+        } catch {
+          console.log("❌ Refresh expired");
+          localStorage.clear();
+          window.location.href = "/login";
         }
       }
     }
