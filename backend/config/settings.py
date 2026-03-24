@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 
 
 
-ASGI_APPLICATION = "your_project.asgi.application"
+ASGI_APPLICATION = "config.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
@@ -119,6 +119,10 @@ REST_FRAMEWORK = {
     ),
 }
 
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 
 # Password validation

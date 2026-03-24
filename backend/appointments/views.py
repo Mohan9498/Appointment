@@ -95,42 +95,47 @@ class AppointmentView(APIView):
         date = request.GET.get("date")
 
         if request.user.is_staff:
-            appointments = Appointment.objects.filter(date=date) if date else Appointment.objects.all()
+            appointments = (
+                Appointment.objects.filter(date=date)
+                if date else Appointment.objects.all()
+            )
         else:
-            appointments = Appointment.objects.filter(user=request.user, date=date) if date else Appointment.objects.filter(user=request.user)
+            appointments = (
+                Appointment.objects.filter(user=request.user, date=date)
+                if date else Appointment.objects.filter(user=request.user)
+            )
 
         serializer = AppointmentSerializer(appointments, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        # data = request.data.copy()
-        # # ✅ Auto-fill fields
-        # data["name"] = request.user.username
-        # data["email"] = request.user.email or "test@email.com"
-        
-        serializer = AppointmentSerializer(data=request.data)
-        
+        print("DATA:", request.data)  
+
+        data = request.data.copy()
+
+        # ✅ Auto-fill fields
+        data["name"] = request.user.username
+        data["email"] = request.user.email or "test@email.com"
+
+        serializer = AppointmentSerializer(data=data)  # ✅ FIXED
+
         if serializer.is_valid():
             appointment = serializer.save(
                 user=request.user,
-                name=request.user.username,
-                email=request.user.email or "test@email.com",
                 status="pending"
             )
 
-            
             return Response(
                 AppointmentSerializer(appointment).data,
                 status=status.HTTP_201_CREATED
             )
-        
-        print("ERRORS:", serializer.errors)
-            
+
+        print("ERRORS:", serializer.errors)  # 🔥 VERY IMPORTANT
+
         return Response(
-            {"error": serializer.errors},
+            serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-
 
 # ✅ APPROVE / REJECT
 class ApproveAppointment(APIView):

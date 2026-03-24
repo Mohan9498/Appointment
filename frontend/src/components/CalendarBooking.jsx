@@ -19,6 +19,17 @@ function CalendarBooking() {
   const [bookedSlots, setBookedSlots] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // ✅ FORMAT TIME (NEW FUNCTION)
+  const formatTime = (time) => {
+    const [hourMin, period] = time.split(" ");
+    let [hour, minute] = hourMin.split(":");
+
+    if (period === "PM" && hour !== "12") hour = parseInt(hour) + 12;
+    if (period === "AM" && hour === "12") hour = "00";
+
+    return `${hour.toString().padStart(2, "0")}:${minute}:00`;
+  };
+
   // Simulated booked slots
   useEffect(() => {
     const random = Math.random();
@@ -53,22 +64,7 @@ function CalendarBooking() {
     return hours <= now.getHours();
   };
 
-  // ✅ Convert time to backend format
-  const convertTo24Hour = (slot) => {
-    if (!slot) return "";
-    
-    let [time, modifier] = slot.split(" ");  
-    let [hours, minutes] = time.split(":");
-      
-    hours = parseInt(hours);
-    
-    if (modifier === "PM" && hours !== 12) hours += 12
-    if (modifier === "AM" && hours === 12) hours = 0;
-    
-    return `${hours.toString().padStart(2, "0")}:${minutes}:00`;
-  };
-
-  // ✅ Booking function
+  // ✅ BOOKING FUNCTION UPDATED
   const handleBooking = async () => {
     if (!selectedTime) {
       alert("Please select a time slot");
@@ -80,7 +76,7 @@ function CalendarBooking() {
 
       await API.post("appointments/", {
         date: date.toISOString().split("T")[0],
-        time: convertTo24Hour(selectedTime), // ✅ FIXED
+        time: formatTime(selectedTime), // 🔥 FIXED HERE
       });
 
       alert("Booking successful ✅");
@@ -90,19 +86,19 @@ function CalendarBooking() {
 
     } catch (err) {
       console.log("FULL ERROR:", err);
-      console.log("SERVER ERROR:", err.response?.data); // ✅ THIS
-      alert(JSON.stringify(err.response?.data)); // 👈 show exact error
+      console.log("SERVER ERROR:", err.response?.data);
+      alert(JSON.stringify(err.response?.data));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center  justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617] p-4 sm:p-6 lg:p-10 rounded-3xl shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617] p-4 sm:p-6 lg:p-10 rounded-3xl shadow-2xl">
 
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 max-w-5xl w-full grid md:grid-cols-2 gap-10 shadow-2xl">
 
-        {/* LEFT → CALENDAR */}
+        {/* CALENDAR */}
         <div>
           <h2 className="text-white text-xl font-semibold mb-4">
             Select Date
@@ -116,7 +112,7 @@ function CalendarBooking() {
           />
         </div>
 
-        {/* RIGHT → SLOTS */}
+        {/* SLOTS */}
         <div>
           <h2 className="text-white text-xl font-semibold mb-2">
             Available Slots
@@ -127,7 +123,6 @@ function CalendarBooking() {
           </p>
 
           <div className="grid grid-cols-2 gap-4">
-
             {ALL_SLOTS.map((slot, i) => {
               const isBooked = bookedSlots.includes(slot);
               const isPast = isPastTime(slot);
@@ -138,7 +133,7 @@ function CalendarBooking() {
                   key={i}
                   disabled={isBooked || isPast}
                   onClick={() => setSelectedTime(slot)}
-                  className={` 
+                  className={`
                     p-2.5 rounded-lg text-xs font-medium transition-all duration-300
 
                     ${isSelected
@@ -154,10 +149,8 @@ function CalendarBooking() {
                 </button>
               );
             })}
-
           </div>
 
-          {/* Selected */}
           {selectedTime && (
             <div className="mt-6 text-sm text-gray-300">
               Selected:{" "}
@@ -167,7 +160,6 @@ function CalendarBooking() {
             </div>
           )}
 
-          {/* CTA */}
           <button
             onClick={handleBooking}
             disabled={!selectedTime || loading}
@@ -180,7 +172,6 @@ function CalendarBooking() {
           </button>
 
         </div>
-
       </div>
     </div>
   );

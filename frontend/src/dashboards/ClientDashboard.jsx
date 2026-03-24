@@ -38,18 +38,15 @@ function ClientDashboard() {
   // ✅ Booking
   const book = async (data) => {
     try {
-      setBooking(true);
-
-      await API.post("appointments/", data);
-
-      toast.success("Appointment booked!");
-
-      fetchAppointments(); // refresh
-
+      await API.post("appointments/", {
+        date: data.date,
+        time: data.time
+      });
+      
+      alert("Appointment booked. Waiting for admin approval.");
     } catch (err) {
-      toast.error("Booking failed");
-    } finally {
-      setBooking(false);
+      console.log(err.response?.data); // 🔥 safer logging
+      alert("Booking failed");
     }
   };
 

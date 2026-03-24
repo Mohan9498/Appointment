@@ -1,29 +1,34 @@
 import axios from "axios";
 
-//  FIXED BASE URL
+// ✅ BASE URL
 const BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://127.0.0.1:8000/api/"
     : "http://10.60.184.164:8000/api/";
 
-//  Create instance
+// ✅ Create instance
 const API = axios.create({
   baseURL: BASE_URL,
 });
 
-//  Attach access token
+// ✅ Attach access token (FIXED)
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
-  if (token) {
+  // ❌ DO NOT attach token for login/register
+  if (
+    token &&
+    !config.url.includes("login") &&
+    !config.url.includes("register")
+  ) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
 });
 
-//  Handle refresh token
+// ✅ Handle refresh token
 API.interceptors.response.use(
   (response) => response,
   async (error) => {

@@ -24,18 +24,26 @@ class IsAdminUserCustom(BasePermission):
 class LoginView(APIView):
 
     def post(self, request):
-        username = request.data.get("username")
-        password = request.data.get("password")
+        try:
+            print("DATA:", request.data)  # 🔍 debug
 
-        if not username or not password:
-            return Response(
-                {"error": "Username and password are required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            username = request.data.get("username")
+            password = request.data.get("password")
 
-        user = authenticate(username=username, password=password)
+            if not username or not password:
+                return Response(
+                    {"error": "Username and password required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        if user:
+            user = authenticate(username=username, password=password)
+
+            if user is None:
+                return Response(
+                    {"error": "Invalid credentials"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
             refresh = RefreshToken.for_user(user)
 
             return Response({
@@ -46,7 +54,12 @@ class LoginView(APIView):
                 "is_admin": user.is_staff
             })
 
-        return Response({"error": "Invalid credentials"}, status=401)
+        except Exception as e:
+            print("🔥 LOGIN ERROR:", str(e))
+            return Response(
+                {"error": "Server error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 # ✅ REGISTER
