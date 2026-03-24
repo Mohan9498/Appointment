@@ -103,23 +103,28 @@ class AppointmentView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        data = request.data.copy()
-        # ✅ Auto-fill fields
-        data["name"] = request.user.username
-        data["email"] = request.user.email or "test@email.com"
+        # data = request.data.copy()
+        # # ✅ Auto-fill fields
+        # data["name"] = request.user.username
+        # data["email"] = request.user.email or "test@email.com"
         
-        serializer = AppointmentSerializer(data=data)
+        serializer = AppointmentSerializer(data=request.data)
         
         if serializer.is_valid():
             appointment = serializer.save(
                 user=request.user,
+                name=request.user.username,
+                email=request.user.email or "test@email.com",
                 status="pending"
             )
+
             
             return Response(
                 AppointmentSerializer(appointment).data,
                 status=status.HTTP_201_CREATED
             )
+        
+        print("ERRORS:", serializer.errors)
             
         return Response(
             {"error": serializer.errors},

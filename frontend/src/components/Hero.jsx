@@ -13,13 +13,13 @@ function Hero() {
 
         {/* Left Content */}
         <div>
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight bg-gradient-to-r from-blue-200   via-purple-200 to-green-200 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight bg-gradient-to-r from-blue-500   via-purple-200 to-green-300 bg-clip-text text-transparent">
             Build Better <br />
             Communication <br />
             for Your Child
           </h1>
 
-          <p className="mt-6 text-blue-400 text-base md:text-lg max-w-lg leading-relaxed">
+          <p className="mt-6 text-violet-700 text-base md:text-lg max-w-lg leading-relaxed">
             Advanced therapy programs designed to help children grow,
             learn, and communicate effectively with confidence.
           </p>

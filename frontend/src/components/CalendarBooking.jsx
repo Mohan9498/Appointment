@@ -98,7 +98,7 @@ function CalendarBooking() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617] p-6">
+    <div className="min-h-screen flex items-center  justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617] p-4 sm:p-6 lg:p-10 rounded-3xl shadow-2xl">
 
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 max-w-5xl w-full grid md:grid-cols-2 gap-10 shadow-2xl">
 
@@ -142,7 +142,7 @@ function CalendarBooking() {
                     p-2.5 rounded-lg text-xs font-medium transition-all duration-300
 
                     ${isSelected
-                      ? "bg-gradient-to-r from-blue-400 to-indigo-500 text-black shadow-md scale-105"
+                      ? "bg-gradient-to-r from-blue-400 to-indigo-500 text-blue-500 shadow-md scale-105"
                       : "bg-white/5 border border-white/10 text-gray-200"}
 
                     ${isBooked || isPast
@@ -172,7 +172,7 @@ function CalendarBooking() {
             onClick={handleBooking}
             disabled={!selectedTime || loading}
             className="mt-6 w-full py-3 rounded-full font-semibold
-            bg-gradient-to-r from-blue-400 to-indigo-500 text-black
+            bg-gradient-to-r from-blue-400 to-indigo-500 text-orange-300
             hover:scale-105 transition duration-300
             disabled:opacity-30"
           >

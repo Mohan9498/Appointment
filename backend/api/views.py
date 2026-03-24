@@ -146,19 +146,27 @@ class AppointmentView(APIView):
         )
 
 
-# ✅ APPROVE / REJECT (FIXED)
+#  APPROVE / REJECT (FIXED)
 class ApproveAppointment(APIView):
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUserCustom]
 
     def post(self, request, id):
+
         action = request.data.get("action")
+
+        #  Validate action
+        if action not in ["approve", "reject"]:
+            return Response(
+                {"error": "Invalid action. Use 'approve' or 'reject'"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             appointment = Appointment.objects.get(id=id)
 
-            # 🔥 HANDLE BOTH ACTIONS
+            #  Set status
             if action == "reject":
                 appointment.status = "rejected"
                 message = "Appointment rejected"
@@ -168,7 +176,7 @@ class ApproveAppointment(APIView):
 
             appointment.save()
 
-            # 🔥 REAL-TIME UPDATE
+            #  REAL-TIME UPDATE (WebSocket)
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 "appointments",
@@ -183,7 +191,11 @@ class ApproveAppointment(APIView):
             )
 
             return Response(
-                {"message": message},
+                {
+                    "message": message,
+                    "id": appointment.id,
+                    "status": appointment.status
+                },
                 status=status.HTTP_200_OK
             )
 
@@ -191,4 +203,10 @@ class ApproveAppointment(APIView):
             return Response(
                 {"error": "Appointment not found"},
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

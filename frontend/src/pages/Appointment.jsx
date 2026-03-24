@@ -163,7 +163,7 @@ function Appointment() {
           <button
             onClick={bookAppointment}
             disabled={loading}
-            className="mt-6 w-full py-3 rounded-full bg-accent text-black font-medium
+            className="mt-6 w-full py-3 rounded-full bg-accent text-violet-700 font-medium
             hover:scale-105 transition duration-300 disabled:opacity-30"
           >
             {loading ? "Booking..." : "Confirm Booking →"}

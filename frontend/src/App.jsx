@@ -26,7 +26,7 @@ function App() {
     <BrowserRouter>
 
       {/*  Toast must be OUTSIDE Routes */}
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
 
       <Routes>
 
