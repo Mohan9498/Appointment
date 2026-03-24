@@ -29,7 +29,7 @@ function Hero() {
 
             <Link
               to="/appointment"
-              className="px-7 py-3 rounded-full bg-accent text-white font-medium text-sm tracking-wide
+              className="px-7 py-3 rounded-full bg-accent text-amber-700 font-medium text-sm tracking-wide
               hover:scale-105 hover:shadow-[0_0_30px_rgba(0,255,170,0.4)] transition duration-300"
             >
               Book Session →
@@ -37,7 +37,7 @@ function Hero() {
 
             <Link
               to="/programs"
-              className="px-7 py-3 rounded-full border border-gray-700 text-gray-300
+              className="px-7 py-3 rounded-full border border-gray-700 text-gray-500
               hover:bg-white hover:shadow-[0_0_30px_rgba(0,255,170,0.4)] hover:text-black transition duration-300"
             >
               Explore Programs
