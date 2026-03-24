@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import useAuthStore from "../store/useAuthStore";
 import { Eye, EyeOff, ShieldCheck, ArrowRight } from "lucide-react";
 
 function Login() {
   const navigate = useNavigate();
+  const loginStore = useAuthStore();
 
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+
+  
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,28 +29,36 @@ function Login() {
     e.preventDefault();
     
     try {
-      setLoading(true)
-
+      setLoading(true);
+      
       const res = await API.post("login/", formData);
-
-          //  Save tokens
-          localStorage.setItem("token", res.data.access);
-          localStorage.setItem("refresh", res.data.refresh);
-          localStorage.setItem("is_admin", res.data.is_admin);
-          
-          //  Redirect
-          if (res.data.is_admin) {
-            navigate("/admin");
-          } else {
-            navigate("/client");
-          }
-        
-    } catch (error) {
-       console.log(error); 
-       alert("Invalid username or password"); 
-      } finally { 
-        setLoading(false); 
+      // ✅ Save tokens
+      localStorage.setItem("token", res.data.access);
+      localStorage.setItem("refresh", res.data.refresh);
+      localStorage.setItem("is_admin", res.data.is_admin);
+      localStorage.setItem("username", res.data.username); // ✅ ADD THIS
+      // ✅ Save user in Zustand
+      loginStore.login(
+        {
+          username: res.data.username,
+          is_admin: res.data.is_admin,
+        },
+        res.data.access
+      );
+  
+      // ✅ Redirect
+      if (res.data.is_admin) {
+        navigate("/admin");
+      } else {
+        navigate("/client");
       }
+    
+    } catch (error) {
+      console.log(error);
+      alert("Invalid username or password");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
