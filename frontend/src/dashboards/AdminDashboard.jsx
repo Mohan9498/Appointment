@@ -53,15 +53,20 @@ function AdminDashboard() {
 
   // ✅ WebSocket (real-time)
   useEffect(() => {
-    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    let socket = null;  
+    //  Disabled (Redis not running)
+    const enableWebSocket = false;
 
-    const wsURL =
+    if (enableWebSocket) {
+      const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+      
+      const wsURL =
       window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1"
         ? `${wsProtocol}://127.0.0.1:8000/ws/appointments/`
         : `${wsProtocol}://${window.location.hostname}:8000/ws/appointments/`;
 
-    // const socket = new WebSocket(wsURL);
+    socket = new WebSocket(wsURL);
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -74,9 +79,11 @@ function AdminDashboard() {
 
       toast.success(`Appointment ${data.status}`);
     };
-
-    return () => socket.close();
-  }, []);
+  }
+  return () => {
+    if (socket) socket.close();
+  };
+}, []);
 
   // ✅ Approve / Reject
   const updateStatus = async (id, action) => {
@@ -127,7 +134,7 @@ function AdminDashboard() {
   const filteredAppointments = appointments
     .filter((a) => filter === "all" ? true : a.status === filter)
     .filter((a) =>
-      String(a.user || "").toLowerCase().includes(search.toLowerCase())
+      (a.user || "").toLowerCase().includes(search.toLowerCase())
     );
 
   return (

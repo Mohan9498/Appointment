@@ -27,56 +27,61 @@ function ClientDashboard() {
     }
   };
 
-  // ✅ Initial + polling
+  //  Initial + polling
   useEffect(() => {
     fetchAppointments();
 
-    const interval = setInterval(fetchAppointments, 10000);
-    return () => clearInterval(interval);
-  }, []);
+      const interval = setInterval(fetchAppointments, 10000);
+      return () => clearInterval(interval);
+    }, []);
 
-  // ✅ Booking
-  const book = async (data) => {
-    try {
-      await API.post("appointments/", {
-        date: data.date,
-        time: data.time
-      });
+    //  Booking
+    const book = async (data) => {
+      try {
+        await API.post("appointments/", {
+          date: data.date,
+          time: data.time
+        });
       
-      alert("Appointment booked. Waiting for admin approval.");
-    } catch (err) {
-      console.log(err.response?.data); // 🔥 safer logging
-      alert("Booking failed");
+        alert("Appointment booked. Waiting for admin approval.");
+      } catch (err) {
+        console.log(err.response?.data); // 🔥 safer logging
+        alert("Booking failed");
+      }
+    };
+
+    // WebSocket (auto-detect URL)
+    useEffect(() => {
+    let socket = null;
+
+    //  Disabled for now
+    const enableWebSocket = false;
+
+    if (enableWebSocket) {
+      const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+
+      const wsURL =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+          ? `${wsProtocol}://127.0.0.1:8000/ws/appointments/`
+          : `${wsProtocol}://${window.location.hostname}:8000/ws/appointments/`;
+
+      socket = new WebSocket(wsURL);
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        setAppointments((prev) =>
+          prev.map((a) =>
+            a.id === data.id ? { ...a, status: data.status } : a
+          )
+        );
+      };
     }
-  };
 
-  // ✅ WebSocket (auto-detect URL)
-  useEffect(() => {
-    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-
-    const wsURL =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1"
-        ? `${wsProtocol}://127.0.0.1:8000/ws/appointments/`
-        : `${wsProtocol}://${window.location.hostname}:8000/ws/appointments/`;
-
-    // const socket = new WebSocket(wsURL);
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      setAppointments((prev) =>
-        prev.map((a) =>
-          a.id === data.id ? { ...a, status: data.status } : a
-        )
-      );
+    return () => {
+      if (socket) socket.close();
     };
-
-    socket.onerror = () => {
-      console.log("WebSocket error");
-    };
-
-    return () => socket.close();
   }, []);
 
   return (
