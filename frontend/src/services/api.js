@@ -1,16 +1,18 @@
 import axios from "axios";
 
-const BASE_URL =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1"
-    ? "http://127.0.0.1:8000/api/"
-    : "http://10.60.184.164:8000/api/";
+// const BASE_URL =
+//   window.location.hostname === "localhost" ||
+//   window.location.hostname === "127.0.0.1"
+//     ? "https://your-backend.onrender.com/api/"
+//     : "http://10.60.184.164:8000/api/";
+
+const BASE_URL = "https://your-backend.onrender.com/api/";
 
 const API = axios.create({
   baseURL: BASE_URL,
 });
 
-// ✅ REQUEST INTERCEPTOR
+//  REQUEST INTERCEPTOR
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
@@ -54,13 +56,13 @@ API.interceptors.response.use(
 
         const newAccess = res.data.access;
 
-        // ✅ Save new token
+        //  Save new token
         localStorage.setItem("token", newAccess);
 
-        // ✅ Update ALL future requests
+        //  Update ALL future requests
         API.defaults.headers.Authorization = `Bearer ${newAccess}`;
 
-        // ✅ Retry original request
+        //  Retry original request
         originalRequest.headers.Authorization = `Bearer ${newAccess}`;
 
         return API(originalRequest);
