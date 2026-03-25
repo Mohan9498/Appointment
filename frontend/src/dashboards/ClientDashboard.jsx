@@ -102,10 +102,10 @@ function ClientDashboard() {
       </div>
 
       {/* Layout */}
-      <div className="grid grid-cols-1 p-6 md:grid-cols-2 gap-4 xs:gap-5 md:gap-8">
+      <div className="grid grid-cols-1 p-6 md:grid-cols-2 gap-4 xs:gap-5 xs:p-4 md:gap-8">
 
         {/* Calendar */}
-        <div className="bg-white rounded-3xl shadow-md p-6 xs:p-4">
+        <div className="bg-white rounded-full shadow-md p-6 xs:p-4">
           <CalendarBooking onBook={book} booking={booking} />
         </div>
 
