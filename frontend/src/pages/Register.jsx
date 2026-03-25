@@ -28,7 +28,7 @@ function Register() {
     try {
       setLoading(true);
 
-      const res = await API.post("register/", formData);
+      const res = await API.post("/register/", formData);
 
       alert("Registration successful");
       navigate("/login");
