@@ -6,7 +6,7 @@ import axios from "axios";
 //     ? "https://your-backend.onrender.com/api/"
 //     : "http://10.60.184.164:8000/api/";
 
-const BASE_URL = "https://your-backend.onrender.com/api/";
+const BASE_URL = "https://appointment-83q0.onrender.com/api/";
 
 const API = axios.create({
   baseURL: BASE_URL,
