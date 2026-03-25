@@ -25,7 +25,7 @@ function Programs() {
   ];
 
   return (
-    <section className="bg-blue-50 py-24 min-h-screen">
+    <section className="bg-gradient-to-r from-indigo-700 via-purple-900 to-pink-900 py-24 min-h-screen ">
 
       {/* Back Button */}
       {/* <div className="max-w-7xl mx-auto px-6 mb-6">
@@ -49,7 +49,7 @@ function Programs() {
       </div>
 
       {/* Cards */}
-      <div className="grid md:grid-cols-3 gap-8 px-6 max-w-7xl mx-auto">
+      <div className="grid md:grid-cols-3 gap-8 px-6 text- max-w-7xl mx-auto">
         {programs.map((program, index) => (
           <ProgramCard
             key={index}

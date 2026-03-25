@@ -6,7 +6,7 @@ function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className=" top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm">
+    <nav className=" top-0 w-full z-50 bg-gradient-to-br from-green-100 via-teal-100 to-blue-100 backdrop-blur-md shadow-sm">
 
       <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
 

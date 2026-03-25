@@ -21,7 +21,7 @@ function Services() {
   ];
 
   return (
-    <section className="relative bg-[#dab9b968] py-24 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-fuchsia-300 via-purple-100 to-indigo-400 py-24 overflow-hidden">
 
       {/* Background Glow */}
       <div className="absolute top-[-100px] left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] bg-accent/10 blur-[150px] rounded-full"></div>

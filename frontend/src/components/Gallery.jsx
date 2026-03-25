@@ -8,20 +8,20 @@ function Gallery() {
   ];
 
   return (
-    <section className="bg-[#a7e2d6] py-20">
+    <section className="bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 py-20">
 
       <h2 className="text-3xl md:text-4xl text-center font-semibold mb-12 text-white">
         Our Activities
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 max-w-7xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-fuchsia-300 px-6 max-w-7xl mx-auto">
 
         {images.map((img, i) => (
-          <div key={i} className="overflow-hidden rounded-xl group">
+          <div key={i} className="overflow-hidden bg-[#b382de] rounded-3xl group">
             <img
               src={img}
               alt="Gallery"
-              className="w-full h-48 object-cover transform group-hover:scale-110 transition duration-500"
+              className="w-full h-40 object-cover transform group-hover:scale-110 transition duration-500"
             />
           </div>
         ))}

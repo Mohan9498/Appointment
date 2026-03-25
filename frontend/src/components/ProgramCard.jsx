@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function ProgramCard({ title, description, image }) {
   return (
-    <div className="group relative bg-[#111] rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-600 transition duration-300">
+    <div className="group relative bg-[#8c7ade] rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-600 transition duration-300">
 
       {/* Image */}
       <div className="overflow-hidden">

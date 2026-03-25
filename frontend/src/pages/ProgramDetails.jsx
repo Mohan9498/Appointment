@@ -4,7 +4,7 @@ function ProgramDetails() {
   const { name } = useParams();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-10">
+    <div className="min-h-screen bg-[#9b74e4] text-white p-10">
 
       <h1 className="text-4xl font-bold capitalize mb-6">
         {name.replace("-", " ")}
