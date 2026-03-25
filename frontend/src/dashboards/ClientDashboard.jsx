@@ -86,9 +86,7 @@ function ClientDashboard() {
 
   return (
     <div className="max-w-full mx-auto px-3 py-4 xs:px-4 sm:px-6 md:px-10 bg-bg min-h-screen">
-      <Link to="/" className="inline-block text-sm font-medium text-slate-500 hover:text-slate-900" > 
-            ← Back to Home 
-      </Link>
+      
 
       {/* 🔥 Header */}
       <div className="flex justify-between items-center mb-6">
