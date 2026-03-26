@@ -177,10 +177,10 @@ function CalendarBooking() {
             {loading ? "Booking..." : "Confirm Booking →"}
           </button>
 
-          <button 
-            onClick={() => navigate("/")} className="fixed bottom-6 right-6 glass  border-glass-border hover:bg-accent/15   text-white px-5 py-3 rounded-full shadow-md transition" > Home
+          {/* Home Button */} 
+          <button onClick={() => window.location.href = "/"} className="fixed bottom-6 right-6 glass  border-glass-border hover:bg-accent/30   text-white px-5 py-3 rounded-full shadow-md transition" > Home
           </button>
-
+           
         </div>
       </div>
     </div>
