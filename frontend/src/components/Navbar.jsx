@@ -76,7 +76,7 @@ function Navbar() {
         {/* Mobile Toggle */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-2xl text-gray-900"
+          className="md:hidden text-2xl bg-white text-gray-900"
         >
           {menuOpen ? "✕" : "☰"}
         </button>
