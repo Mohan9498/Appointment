@@ -28,7 +28,7 @@ function Navbar() {
           <img 
             src={logo}
             alt="Tiny Todd's Appointment"
-            className="h-10 rounded-2xl object-contain bg-transparent"
+            className="h-12 rounded-lg object-contain bg-transparent"
           />
 
           <span className="text-lg md:text-xl font-semibold text-white tracking-wide">
