@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import logo from "../assets/navbar_logo_tiny_todds.png";
 
 function Navbar() {
 
@@ -20,10 +21,21 @@ function Navbar() {
 
       <div className="max-w-full mx-auto px-6 py-4 flex justify-between items-center">
 
-        {/* Logo */}
-        <h1 className="text-xl md:text-2xl font-semibold text-white tracking-wide">
-          Tiny Todds
-        </h1>
+        
+
+        {/* Logo + Name */}
+        <Link to="/" className="flex items-center gap-2">
+          <img 
+            src={logo}
+            alt="Tiny Todd's Appointment"
+            className="h-10 rounded-2xl object-contain bg-transparent"
+          />
+
+          <span className="text-lg md:text-xl font-semibold text-white tracking-wide">
+            Tiny Todds
+          </span>
+        </Link>
+        
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8 text-gray-600 font-medium">
@@ -54,7 +66,7 @@ function Navbar() {
           {/* CTA Button */}
           <Link
             to="/login"
-            className="ml-4 px-5 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+            className="ml-4 px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
           >
             Login
           </Link>
