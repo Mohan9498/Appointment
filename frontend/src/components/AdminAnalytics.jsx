@@ -49,27 +49,53 @@ function AdminAnalytics({ appointments }) {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2 mb-8">
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <h2 className="text-white text-xl font-semibold mb-4">Appointments by Date</h2>
-        <Bar data={barData} />
-      </div>
-
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <h2 className="text-white text-xl font-semibold mb-4">Status Overview</h2>
-        <div className="max-w-xs mx-auto">
-          <Doughnut data={doughnutData} />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 mt-6 text-sm">
-          <div className="rounded-2xl bg-white/5 p-4 text-white">Total: {total}</div>
-          <div className="rounded-2xl bg-white/5 p-4 text-yellow-300">Pending: {pending}</div>
-          <div className="rounded-2xl bg-white/5 p-4 text-green-300">Approved: {approved}</div>
-          <div className="rounded-2xl bg-white/5 p-4 text-red-300">Rejected: {rejected}</div>
-        </div>
-      </div>
+  <div className="grid gap-6 lg:grid-cols-2 mb-8">
+    
+    {/* Chart Card */}
+    <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
+      <h2 className="text-dark text-xl font-semibold mb-4">
+        Appointments by Date
+      </h2>
+      
+      <Bar data={barData} />
     </div>
-  );
+
+    {/* Status Card */}
+    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+      <h2 className="text-dark text-xl font-semibold mb-4">
+        Status Overview
+      </h2>
+
+      {/* Doughnut */}
+      <div className="max-w-xs mx-auto">
+        <Doughnut data={doughnutData} />
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-3 mt-6 text-sm">
+
+        <div className="bg-muted p-4 rounded-lg text-dark">
+          Total: {total}
+        </div>
+
+        <div className="bg-yellow-50 p-4 rounded-lg text-yellow-600">
+          Pending: {pending}
+        </div>
+
+        <div className="bg-green-50 p-4 rounded-lg text-green-600">
+          Approved: {approved}
+        </div>
+
+        <div className="bg-red-50 p-4 rounded-lg text-red-600">
+          Rejected: {rejected}
+        </div>
+  
+      </div>
+  
+    </div>
+  </div>
+  
+);
 }
 
 export default AdminAnalytics;

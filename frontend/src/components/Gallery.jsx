@@ -8,7 +8,7 @@ function Gallery() {
   ];
 
   return (
-    <section className="bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 py-20">
+    <section className=" py-20">
 
       <h2 className="text-3xl md:text-4xl text-center font-semibold mb-12 text-white">
         Our Activities

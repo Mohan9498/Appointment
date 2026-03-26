@@ -103,13 +103,13 @@ function CalendarBooking() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617] p-4 sm:p-6 lg:p-10 rounded-3xl shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-background p-6">
 
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 max-w-5xl w-full grid md:grid-cols-2 gap-10 shadow-2xl">
+      <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition w-full max-w-md">
 
         {/* CALENDAR */}
         <div>
-          <h2 className="text-white text-xl font-semibold mb-4">
+          <h2 className="text-dark text-xl font-semibold mb-4">
             Select Date
           </h2>
 
@@ -127,7 +127,7 @@ function CalendarBooking() {
             Available Slots
           </h2>
 
-          <p className="text-gray-400 text-sm mb-5">
+          <p className="text-text-light text-sm mb-6">
             {date.toDateString()}
           </p>
 
@@ -146,8 +146,8 @@ function CalendarBooking() {
                     p-2.5 rounded-lg text-xs font-medium transition-all duration-300
 
                     ${isSelected
-                      ? "bg-gradient-to-r from-blue-400 to-indigo-500 text-blue-500 shadow-md scale-105"
-                      : "bg-white/5 border border-white/10 text-gray-200"}
+                      ? "bg-primary text-white shadow-md scale-105"
+                      : "bg-muted text-gray-700 border border-white/10 "}
 
                     ${isBooked || isPast
                       ? "opacity-30 cursor-not-allowed"
@@ -172,10 +172,7 @@ function CalendarBooking() {
           <button
             onClick={handleBooking}
             disabled={!selectedTime || loading}
-            className="mt-6 w-full py-3 rounded-full font-semibold
-            bg-gradient-to-r from-blue-400 to-indigo-500 text-orange-300
-            hover:scale-105 transition duration-300
-            disabled:opacity-30"
+            className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary-hover transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
           >
             {loading ? "Booking..." : "Confirm Booking →"}
           </button>

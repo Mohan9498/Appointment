@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 overflow-hidden">
+    <section className="relative min-h-screen flex items-center  bg-backgroundoverflow-hidden">
 
       {/* Glow Background */}
       <div className="absolute inset-0 flex justify-center items-center">
@@ -13,9 +13,9 @@ function Hero() {
 
         {/* Left Content */}
         <div>
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight bg-gradient-to-r from-blue-500   via-purple-200 to-green-300 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-6xl font-serif leading-tight tracking-tight text-gray-300 bg-clip-text ">
             Build Better <br />
-            Communication <br />
+            Communication  <br />
             for Your Child
           </h1>
 
@@ -29,7 +29,7 @@ function Hero() {
 
             <Link
               to="/appointment"
-              className="px-7 py-3 rounded-full bg-accent text-amber-700 font-medium text-sm tracking-wide
+              className="px-7 py-3 rounded-full bg-primary text-white  font-medium text-sm tracking-wide
               hover:scale-105 hover:shadow-[0_0_30px_rgba(0,255,170,0.4)] transition duration-300"
             >
               Book Session →

@@ -3,7 +3,7 @@ function Team() {
   const team = ["Therapist 1", "Therapist 2", "Therapist 3"];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-[#87bac1] via-[#c59ecb] to-[#7fa082]">
+    <section className="py-20 ">
 
       <h2 className="text-3xl font-bold text-center mb-10">
         Our Therapists

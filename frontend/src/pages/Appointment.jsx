@@ -11,8 +11,18 @@ const ALL_SLOTS = [
   "3:00 PM",
 ];
 
-function Appointment() {
+// 🔥 Convert time to 24hr format
+const convertTo24Hour = (time) => {
+  let [hour, modifier] = time.split(" ");
+  let [hours, minutes] = hour.split(":");
 
+  if (hours === "12") hours = "00";
+  if (modifier === "PM") hours = parseInt(hours) + 12;
+
+  return `${hours}:${minutes}:00`;
+};
+
+function Appointment() {
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState("");
   const [fetchingSlots, setFetchingSlots] = useState(false);
@@ -26,7 +36,7 @@ function Appointment() {
         setFetchingSlots(true);
 
         const res = await API.get("appointments/", {
-          params: { date: date.toISOString().split("T")[0] }
+          params: { date: date.toISOString().split("T")[0] },
         });
 
         setBookedSlots(res.data.booked_slots || []);
@@ -70,63 +80,58 @@ function Appointment() {
 
     setLoading(true);
 
-    setTimeout(async () => {
-      try {
-        await API.post("appointments/", {
-          date: date.toISOString().split("T")[0],
-          time: convertTo24Hour(selectedTime)
-        });
+    try {
+      await API.post("appointments/", {
+        date: date.toISOString().split("T")[0],
+        time: convertTo24Hour(selectedTime),
+      });
 
-        setSuccess("✅ Appointment request sent!");
-        setSelectedTime("");
-      } catch (err) {
-        console.log(err);
-        alert("Booking failed");
-      } finally {
-        setLoading(false);
-      }
-    }, 0);
+      setSuccess("✅ Appointment request sent!");
+      setSelectedTime("");
+    } catch (err) {
+      console.log(err);
+      alert("Booking failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] py-10 px-4 sm:px-6 min-w-80">
+    <div className="min-h-screen bg-background py-10 px-4">
+      <div className="max-w-6xl mx-auto bg-card border border-border rounded-xl p-6 grid md:grid-cols-2 gap-8 shadow-sm">
 
-      <div className="max-w-6xl mx-auto bg-[#111] border border-gray-800 rounded-2xl p-5 sm:p-6 min-w-80 grid grid-cols-1
-       md:grid-cols-2 gap-7">
-
-        {/* CALENDAR */}
+        {/* Calendar */}
         <div>
-          <h2 className="text-white text-lg sm:text-xl  min-w-80 font-semibold mb-4">
+          <h2 className="text-lg font-semibold text-dark mb-4">
             Select Date
           </h2>
 
-          <div className="bg-[#0a0a0a] p-3 min-w-80 rounded-xl border border-gray-800">
+          <div className="bg-muted p-4 rounded-lg border border-border">
             <Calendar
               onChange={setDate}
               value={date}
               tileDisabled={({ date }) => isPastDate(date)}
-              className="modern-calendar"
+              className="modern-calendar w-full"
             />
           </div>
         </div>
 
-        {/* SLOTS */}
+        {/* Slots */}
         <div>
-          <h2 className="text-white text-lg sm:text-xl font-semibold mb-2">
+          <h2 className="text-lg font-semibold text-dark mb-2">
             Available Slots
           </h2>
 
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-text-light text-sm mb-4">
             {date.toDateString()}
           </p>
 
           {/* Loading */}
           {fetchingSlots && (
-            <p className="text-gray-400 text-sm">Loading slots...</p>
+            <p className="text-text-light text-sm">Loading slots...</p>
           )}
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-
             {ALL_SLOTS.map((slot, i) => {
               const isBooked = bookedSlots.includes(slot);
               const isPast = isPastTime(slot);
@@ -138,9 +143,13 @@ function Appointment() {
                   disabled={isBooked || isPast}
                   onClick={() => setSelectedTime(slot)}
                   className={`
-                    py-3 rounded-xl text-sm transition
-                    ${isSelected ? "bg-accent text-black" : "bg-[#1a1a1a] text-gray-300"}
-                    ${isBooked || isPast ? "opacity-30 cursor-not-allowed" : "hover:bg-accent hover:text-black"}
+                    py-2 rounded-lg text-sm transition
+                    ${isSelected 
+                      ? "bg-primary text-white" 
+                      : "bg-muted text-dark"}
+                    ${isBooked || isPast 
+                      ? "opacity-30 cursor-not-allowed" 
+                      : "hover:bg-primary hover:text-white"}
                   `}
                 >
                   {slot}
@@ -151,9 +160,9 @@ function Appointment() {
 
           {/* Selected */}
           {selectedTime && (
-            <div className="mt-4 text-gray-300 text-sm">
+            <div className="mt-4 text-sm text-dark">
               Selected:{" "}
-              <span className="text-accent font-medium">
+              <span className="text-primary font-medium">
                 {selectedTime}
               </span>
             </div>
@@ -163,23 +172,19 @@ function Appointment() {
           <button
             onClick={bookAppointment}
             disabled={loading}
-            className="mt-6 w-full py-3 rounded-full bg-accent text-violet-700 font-medium
-            hover:scale-105 transition duration-300 disabled:opacity-30"
+            className="mt-6 w-full py-3 rounded-lg bg-primary text-white hover:bg-primary-hover transition disabled:opacity-40"
           >
             {loading ? "Booking..." : "Confirm Booking →"}
           </button>
 
           {/* Success */}
           {success && (
-            <div className="mt-4 text-green-400 text-sm text-center">
+            <div className="mt-4 text-green-500 text-sm text-center">
               {success}
             </div>
           )}
-
         </div>
-
       </div>
-
     </div>
   );
 }

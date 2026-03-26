@@ -5,30 +5,31 @@ function About(){
 
 return(
 
-<div>
+<div className="min-h-screen bg-background">
 
-<Navbar/>
+  <Navbar/>
 
-<div className="max-w-6xl mx-auto p-10">
+  <div className="max-w-6xl mx-auto px-6 py-16">
 
-<h1 className="text-3xl font-bold text-blue-700 mb-6">
-About Tiny Todds Therapy
-</h1>
+    <h1 className="text-4xl font-bold text-dark mb-6">
+      About Tiny Todds Therapy
+    </h1>
 
-<p className="text-gray-700 leading-7">
-Tiny Todds Therapy Care is dedicated to supporting children with
-developmental challenges. Our therapy programs help improve
-communication, cognitive development and social interaction.
-</p>
+    <div className="bg-card border border-border rounded-xl p-6 shadow-sm space-y-4">
+      <p className="text-text-light leading-7">
+        Tiny Todds Therapy Care is dedicated to supporting children with
+        developmental challenges.
+      </p>
 
-<p className="text-gray-700 leading-7 mt-4">
-Our certified therapists provide personalized treatment plans
-for each child to ensure the best developmental outcomes.
-</p>
+      <p className="text-text-light leading-7">
+        Our certified therapists provide personalized treatment plans
+        for each child to ensure the best developmental outcomes.
+      </p>
+    </div>
 
-</div>
+  </div>
 
-<Footer/>
+  <Footer/>
 
 </div>
 

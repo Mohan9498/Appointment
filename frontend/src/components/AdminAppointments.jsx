@@ -100,85 +100,67 @@ function AdminAppointments() {
       : appointments.filter((a) => a.status === filter);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f172a] to-black p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
-          <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+        {/* Heading */}
+        <h1 className="text-3xl font-bold text-dark mb-6">
+          Admin Dashboard
+        </h1>
 
-          <div className="flex gap-2 flex-wrap">
-            {["all", "pending", "approved", "rejected"].map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-4 py-2 rounded-full text-sm capitalize transition ${
-                  filter === f
-                    ? "bg-white text-black"
-                    : "bg-white/10 text-gray-300 hover:bg-white/20"
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
+        {/* Filter Buttons */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+           <button className="bg-primary text-white px-4 py-2 rounded-full text-sm hover:bg-primary-hover transition">
+            Active
+           </button>
+
+           <button className="bg-muted text-dark px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+             Pending
+           </button>
+
+           <button className="bg-muted text-dark px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+             Approved
+           </button>
+
+           <button className="bg-muted text-dark px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+             Rejected
+           </button>
         </div>
 
-        <AdminAnalytics appointments={appointments} />
+        {/* Card */}
+        <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition">
 
-        <div className="space-y-4">
-          {filteredAppointments.length === 0 ? (
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-gray-400 backdrop-blur-xl">
-              No appointments found.
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+            {/* User Info */}
+            <div>
+              <p className="text-dark font-semibold text-lg">
+                User Name
+              </p>
+              <p className="text-text-light text-sm mt-1">
+                Date • Time
+              </p>
             </div>
-          ) : (
-            filteredAppointments.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition hover:bg-white/[0.07]"
-              >
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  
-                  <div>
-                    <p className="text-lg font-semibold text-white">
-                      {item.user || item.username || "User"}
-                    </p>
-                    <p className="mt-1 text-sm text-gray-400">
-                      {item.date} • {item.time}
-                    </p>
-                  </div>
 
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${statusStyle[item.status]}`}
-                    >
-                      {item.status}
-                    </span>
+            {/* Status + Actions */}
+            <div className="flex items-center gap-3 flex-wrap">
 
-                    {item.status === "pending" && (
-                      <>
-                        <button
-                          onClick={() => updateStatus(item.id, "approve")}
-                          disabled={loadingId === item.id}
-                          className="px-4 py-2 rounded-full bg-green-500 text-black font-medium hover:opacity-90 disabled:opacity-50"
-                        >
-                          {loadingId === item.id ? "Updating..." : "Approve"}
-                        </button>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-600">
+                Pending
+              </span>
 
-                        <button
-                          onClick={() => updateStatus(item.id, "reject")}
-                          disabled={loadingId === item.id}
-                          className="px-4 py-2 rounded-full bg-red-500 text-white font-medium hover:opacity-90 disabled:opacity-50"
-                        >
-                          {loadingId === item.id ? "Updating..." : "Reject"}
-                        </button>
-                      </>
-                    )}
-                  </div>
+              <button className="px-4 py-2 rounded-full bg-primary text-white text-sm hover:bg-primary-hover transition">
+                Approve
+              </button>
 
-                </div>
-              </div>
-            ))
-          )}
+              <button className="px-4 py-2 rounded-full bg-gray-200 text-dark text-sm hover:bg-gray-300 transition">
+                Reject
+              </button>
+
+             </div>
+
+          </div>
+
         </div>
       </div>
     </div>

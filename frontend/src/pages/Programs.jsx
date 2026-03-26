@@ -1,6 +1,5 @@
 import ProgramCard from "../components/ProgramCard";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 
 function Programs() {
 
@@ -25,45 +24,36 @@ function Programs() {
   ];
 
   return (
-    <section className="bg-gradient-to-r from-indigo-700 via-purple-900 to-pink-900 py-24 min-h-screen ">
-
-      {/* Back Button */}
-      {/* <div className="max-w-7xl mx-auto px-6 mb-6">
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition"
-        >
-          <ArrowLeft size={20} />
-          Back to Home
-        </button>
-      </div> */}
+    <section className="min-h-screen bg-neutral-200 py-20">
 
       {/* Heading */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-semibold bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">
+      <div className="text-center mb-16 px-4">
+        <h2 className="text-4xl font-semibold text-gray-900">
           Our Programs
         </h2>
         <p className="text-gray-500 mt-4 max-w-xl mx-auto">
-          Carefully designed therapy programs to support your child’s development journey.
+          Carefully designed therapy programs for child development.
         </p>
       </div>
 
       {/* Cards */}
-      <div className="grid md:grid-cols-3 gap-8 px-6 text- max-w-7xl mx-auto">
+      <div className="grid md:grid-cols-3 gap-8 px-6 max-w-7xl mx-auto">
         {programs.map((program, index) => (
-          <ProgramCard
+          
+          <div
             key={index}
-            title={program.title}
-            description={program.description}
-            image={program.image}
-          />
+            className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition duration-300"
+          >
+            <ProgramCard {...program} />
+          </div>
+
         ))}
       </div>
 
       {/* Floating Home Button */}
       <button
         onClick={() => navigate("/")}
-        className="fixed bottom-6 right-6 bg-blue-300 hover:bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg transition"
+        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full shadow-md transition"
       >
         Home
       </button>

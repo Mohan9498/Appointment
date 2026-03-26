@@ -138,186 +138,96 @@ function AdminDashboard() {
     );
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-[#0a0f1f] via-[#111827] to-[#020617] text-white">
+    <div className="min-h-screen bg-background px-4 sm:px-6 md:px-10 py-6">
 
-      {/* SIDEBAR */}
-      <div className="w-64 bg-gradient-to-b from-[#020617] via-[#0f172a] to-[#020617] border-r border-white/10 p-6 hidden md:block">
-        <h2 className="text-xl font-bold mb-8">Admin Panel</h2>
-
-        <div className="space-y-3">
-
-          <button onClick={() => setActive("dashboard")} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${active === "dashboard" ? "bg-white/10 text-blue-400" : "hover:bg-white/5"}`}>
-            <LayoutDashboard size={18}/> Dashboard
-          </button>
-
-          <button onClick={() => setActive("appointments")} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${active === "appointments" ? "bg-white/10 text-blue-400" : "hover:bg-white/5"}`}>
-            <Users size={18}/> Appointments
-          </button>
-
-          <button onClick={() => setActive("reports")} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${active === "reports" ? "bg-white/10 text-blue-400" : "hover:bg-white/5"}`}>
-            <FileText size={18}/> Reports
-          </button>
-
-        </div>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-dark">
+          Admin Dashboard
+        </h1>
+        <p className="text-text-light mt-1 text-sm">
+          Overview of appointments and system activity
+        </p>
       </div>
 
-      {/* MAIN */}
-      <div className="flex-1 p-6">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold capitalize">{active}</h1>
-
-          <div className="flex items-center gap-4">
-            {active === "appointments" && (
-              <input
-                placeholder="Search..."
-                className="bg-white/10 px-4 py-2 rounded-lg outline-none"
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            )}
-
-            <p className="text-sm text-gray-400">
-              {user?.username}
-            </p>
+        {/* Total */}
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-primary-light text-primary">
+            <Users size={22} />
+          </div>
+          <div>
+            <p className="text-sm text-text-light">Total</p>
+            <h2 className="text-2xl font-bold text-dark">120</h2>
           </div>
         </div>
 
-        {/* DASHBOARD */}
-        {active === "dashboard" && (
-          <>
-            <div className="grid md:grid-cols-4 gap-4 mb-8">
-
-              <div className="bg-white/5 p-4 rounded-xl flex gap-3">
-                <Users />
-                <div>
-                  <p className="text-sm text-gray-400">Total</p>
-                  <h2 className="text-xl font-bold">{total}</h2>
-                </div>
-              </div>
-
-              <div className="bg-yellow-500/10 p-4 rounded-xl flex gap-3">
-                <Clock />
-                <div>
-                  <p className="text-sm">Pending</p>
-                  <h2 className="text-xl font-bold">{pending}</h2>
-                </div>
-              </div>
-
-              <div className="bg-green-500/10 p-4 rounded-xl flex gap-3">
-                <CheckCircle />
-                <div>
-                  <p className="text-sm">Approved</p>
-                  <h2 className="text-xl font-bold">{approved}</h2>
-                </div>
-              </div>
-
-              <div className="bg-red-500/10 p-4 rounded-xl flex gap-3">
-                <XCircle />
-                <div>
-                  <p className="text-sm">Rejected</p>
-                  <h2 className="text-xl font-bold">{rejected}</h2>
-                </div>
-              </div>
-
-            </div>
-
-            <div className="bg-white/5 p-6 rounded-xl h-72">
-              <h2 className="mb-4">Appointments Overview</h2>
-
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="value" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </>
-        )}
-
-        {/* APPOINTMENTS */}
-        {active === "appointments" && (
-          <>
-            <div className="flex gap-2 mb-6">
-              {["all", "pending", "approved", "rejected"].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-4 py-1 rounded-full ${filter === f ? "bg-white text-black" : "bg-white/10"}`}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-
-            {filteredAppointments.length === 0 && (
-              <p className="text-gray-400">No appointments found</p>
-            )}
-
-            <div className="space-y-4">
-              {filteredAppointments.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white/5 p-5 rounded-xl flex justify-between items-center flex-wrap gap-4"
-                >
-                  <div>
-                    <h3 className="font-semibold">{item.user}</h3>
-                    <p className="text-sm text-gray-400">
-                      {item.date} • {item.time}
-                    </p>
-                  </div>
-
-                  <div className="flex gap-3 items-center">
-
-                    <span className={`px-3 py-1 rounded ${statusStyle[item.status]}`}>
-                      {item.status}
-                    </span>
-
-                    {item.status === "pending" && (
-                      <>
-                        <button
-                          onClick={() => updateStatus(item.id, "approve")}
-                          disabled={loadingId === item.id}
-                          className="bg-green-500 px-3 py-1 rounded"
-                        >
-                          {loadingId === item.id ? "..." : "Approve"}
-                        </button>
-
-                        <button
-                          onClick={() => updateStatus(item.id, "reject")}
-                          disabled={loadingId === item.id}
-                          className="bg-red-500 px-3 py-1 rounded"
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* REPORTS */}
-        {active === "reports" && (
-          <div className="bg-white/5 p-6 rounded-xl">
-            <h2 className="text-lg mb-4">Reports</h2>
-
-            <p className="text-gray-400">
-              Generate analytics or export reports here.
-            </p>
-
-            <button className="mt-4 bg-blue-500 px-4 py-2 rounded">
-              Generate Report
-            </button>
+        {/* Pending */}
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-warning/20 text-warning">
+            <Clock size={22} />
           </div>
-        )}
+          <div>
+            <p className="text-sm text-text-light">Pending</p>
+            <h2 className="text-2xl font-bold text-warning">32</h2>
+          </div>
+        </div>
+
+        {/* Approved */}
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-success/20 text-success">
+            <CheckCircle size={22} />
+          </div>
+          <div>
+            <p className="text-sm text-text-light">Approved</p>
+            <h2 className="text-2xl font-bold text-success">70</h2>
+          </div>
+        </div>
+
+        {/* Rejected */}
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-danger/20 text-danger">
+            <XCircle size={22} />
+          </div>
+          <div>
+            <p className="text-sm text-text-light">Rejected</p>
+            <h2 className="text-2xl font-bold text-danger">18</h2>
+          </div>
+        </div>
 
       </div>
+
+      {/* Content Section */}
+      <div className="mt-10 grid md:grid-cols-2 gap-6">
+
+        {/* Chart Placeholder */}
+        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-dark mb-4">
+            Appointments Overview
+          </h2>
+
+          <div className="h-48 flex items-center justify-center text-text-light text-sm">
+            Chart goes here
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-dark mb-4">
+            Recent Activity
+          </h2>
+
+          <ul className="space-y-3 text-sm text-text-light">
+            <li>New appointment booked</li>
+            <li>Appointment approved</li>
+            <li>New user registered</li>
+          </ul>
+        </div>
+
+      </div>
+
     </div>
   );
 }
