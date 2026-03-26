@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function ProgramCard({ title, description, image }) {
   return (
-    <div className="group relative bg-[#8c7ade] rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-600 transition duration-300">
+    <div className="group relative  rounded-2xl overflow-hidden border   transition duration-300">
 
       {/* Image */}
       <div className="overflow-hidden">
@@ -12,7 +12,7 @@ function ProgramCard({ title, description, image }) {
           className="h-52 w-full object-cover transform group-hover:scale-110 transition duration-500"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80"></div>
+        <div className="absolute inset-0  glass border-collapse border-glass-border opacity"></div>
       </div>
 
       {/* Content */}

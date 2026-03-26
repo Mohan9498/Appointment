@@ -24,7 +24,7 @@ function Programs() {
   ];
 
   return (
-    <section className="min-h-screen bg-neutral-200 py-20">
+    <section className="min-h-screen bg-accent/5   glass border-collapse py-20">
 
       {/* Heading */}
       <div className="text-center mb-16 px-4">
@@ -42,7 +42,7 @@ function Programs() {
           
           <div
             key={index}
-            className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition duration-300"
+            className="glass border-collapse border-glass-border rounded-xl shadow-sm hover:shadow-md transition duration-300"
           >
             <ProgramCard {...program} />
           </div>
@@ -53,7 +53,7 @@ function Programs() {
       {/* Floating Home Button */}
       <button
         onClick={() => navigate("/")}
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full shadow-md transition"
+        className="fixed bottom-6 right-6 glass  border-glass-border hover:bg-blue-700 text-white px-5 py-3 rounded-full shadow-md transition"
       >
         Home
       </button>

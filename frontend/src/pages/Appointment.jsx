@@ -177,6 +177,9 @@ function Appointment() {
             {loading ? "Booking..." : "Confirm Booking →"}
           </button>
 
+          <button onClick={() => navigate("/")} className="fixed bottom-6 right-6 glass  border-glass-border hover:bg-accent/15   text-white px-5 py-3 rounded-full shadow-md transition" > Home
+          </button>
+
           {/* Success */}
           {success && (
             <div className="mt-4 text-green-500 text-sm text-center">

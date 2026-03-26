@@ -24,7 +24,7 @@ function CTA() {
         {/* Button */}
         <Link
           to="/appointment"
-          className="bg text-white px-5 py-2 rounded-lg hover:bg-primary-hover transition"
+          className="bg text-white px-5 py-2 rounded-2xl glass border-collapse border-glass-border hover:bg-accent/20 transition"
         >
           Book Appointment →
         </Link>

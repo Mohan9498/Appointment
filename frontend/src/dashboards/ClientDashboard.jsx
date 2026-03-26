@@ -85,7 +85,7 @@ function ClientDashboard() {
   }, []);
 
   return (
-    <div className="max-w-full mx-auto px-3 py-4 xs:px-4 sm:px-6 md:px-10 bg-bg min-h-screen">
+    <div className="max-w-full mx-auto px-3 py-4 xs:px-4 sm:px-6 md:px-10 glass border-collapse border-glass-border min-h-screen">
       
 
       {/* 🔥 Header */}
@@ -103,7 +103,7 @@ function ClientDashboard() {
       <div className="grid grid-cols-1 p-6 md:grid-cols-2 gap-4 xs:gap-5 xs:p-4 md:gap-8">
 
         {/* Calendar */}
-        <div className="bg-white rounded-full shadow-md p-6 xs:p-4">
+        <div className="bg-white rounded-xl shadow-md p-6 xs:p-4">
           <CalendarBooking onBook={book} booking={booking} />
         </div>
 
@@ -154,6 +154,8 @@ function ClientDashboard() {
               </div>
             ))}
         </div>
+        
+
       </div>
 
       {/* 📱 Mobile Sticky Button */}
@@ -165,6 +167,7 @@ function ClientDashboard() {
         >
           {booking ? "Booking..." : "Book Appointment"}
         </button>
+
       </div>
 
     </div>
