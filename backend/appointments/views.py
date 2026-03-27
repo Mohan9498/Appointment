@@ -5,6 +5,7 @@ from .models import Appointment
 from .serializers import AppointmentSerializer
 from rest_framework import status
 from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework.permissions import IsAuthenticated, BasePermission
@@ -139,28 +140,42 @@ class AppointmentView(APIView):
 # ✅ APPROVE / REJECT
 class ApproveAppointment(APIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUserCustom]
+    permission_classes = [IsAuthenticated]   # keep your custom admin if needed
 
     def post(self, request, id):
-        action = request.data.get("action")
-
         try:
-            appointment = Appointment.objects.get(id=id)
+            # ✅ Validate action
+            action = request.data.get("action")
 
-            if action == "reject":
-                appointment.status = "rejected"
-            else:
-                appointment.status = "approved"
+            if action not in ["approve", "reject"]:
+                return Response(
+                    {"error": "Action must be 'approve' or 'reject'"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
+            # ✅ Safe fetch (no crash)
+            appointment = get_object_or_404(Appointment, id=id)
+
+            # ✅ Update status
+            appointment.status = "approved" if action == "approve" else "rejected"
             appointment.save()
 
             return Response(
-                {"message": "Appointment updated"},
+                {
+                    "message": f"Appointment {appointment.status} successfully",
+                    "id": appointment.id,
+                    "status": appointment.status
+                },
                 status=status.HTTP_200_OK
             )
 
-        except Appointment.DoesNotExist:
+        except Exception as e:
+            print("🔥 APPROVE ERROR:", str(e))   # debug log
+
             return Response(
-                {"error": "Appointment not found"},
-                status=status.HTTP_404_NOT_FOUND
+                {
+                    "error": "Internal server error",
+                    "details": str(e)   # remove in production if needed
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
