@@ -146,12 +146,14 @@ function CalendarBooking() {
                     p-2.5 rounded-lg text-xs font-medium transition-all duration-300
 
                     ${isSelected
-                      ? "bg-primary text-white shadow-md scale-105"
-                      : "bg-muted text-gray-700 border border-white/10 "}
+                      ? "bg-primary text-white"
+                      : "bg-surface text-text-main border border-border"}
+                      
+                    hover:bg-surfaceLight
 
                     ${isBooked || isPast
                       ? "opacity-30 cursor-not-allowed"
-                      : "hover:scale-105 hover:bg-gradient-to-r hover:from-blue-400 hover:to-indigo-500 hover:text-black"}
+                      : "hover:scale-105 hover:bg-gradient-to-r hover:bg-surfaceLight hover:text-black"}
                   `}
                 >
                   {slot}
@@ -163,7 +165,7 @@ function CalendarBooking() {
           {selectedTime && (
             <div className="mt-6 text-sm text-gray-300">
               Selected:{" "}
-              <span className="text-blue-400 font-medium">
+              <span className="text-primary font-medium">
                 {selectedTime}
               </span>
             </div>
@@ -178,7 +180,7 @@ function CalendarBooking() {
           </button>
 
           {/* Home Button */} 
-          <button onClick={() => window.location.href = "/"} className="fixed bottom-6 right-6 glass  border-glass-border hover:bg-accent/30   text-white px-5 py-3 rounded-full shadow-md transition" > Home
+          <button onClick={() => window.location.href = "/"} className="fixed bottom-6 right-6 bg-primary hover:bg-primaryHover text-white px-5 py-3 rounded-full shadow-md transition" > Home
           </button>
            
         </div>

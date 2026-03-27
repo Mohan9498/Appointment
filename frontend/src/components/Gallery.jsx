@@ -17,7 +17,7 @@ function Gallery() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-fuchsia-300 px-6 max-w-7xl mx-auto">
 
         {images.map((img, i) => (
-          <div key={i} className="overflow-hidden bg-[#b382de] rounded-3xl group">
+          <div key={i} className="overflow-hidden bg-surface rounded-3xl group">
             <img
               src={img}
               alt="Gallery"

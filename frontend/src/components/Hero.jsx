@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 
 function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden glass border-collapse border-glass-border">
+    <section className="relative min-h-screen flex items-center overflow-hidden  bg-surface border border-border">
 
       {/* Glow Background */}
       <div className="absolute inset-0 flex justify-center items-center">
-        <div className="w-[600px] h-[600px] bg-accent/20 blur-[160px] rounded-full"></div>
+        <div className="w-[600px] h-[600px]   rounded-full"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto grid md:grid-cols-2 gap-12 px-6 py-20 items-center">
@@ -15,7 +15,7 @@ function Hero() {
         <div className="space-y-6">
 
           {/* Title */}
-          <h1 className="text-4xl md:text-6xl font-serif leading-none text-gray-300 glass border-collapse border-glass-border">
+          <h1 className="text-4xl md:text-6xl font-serif leading-none text-text-main bg-surface border rounded-3xl border-border">
             Build Better <br />
             Communication <br />
             for Your Child
@@ -24,7 +24,7 @@ function Hero() {
           {/* FLOATING PARAGRAPH CARDS */}
           <div className="space-y-4">
 
-            <div className="p-4 rounded-xl backdrop-blur-md  shadow-lg hover:translate-x-2 transition duration-300">
+            <div className="p-4 rounded-xl bg-surface border border-border shadow-lg hover:translate-x-2 transition duration-300">
               <h3 className="text-white font-semibold mb-1">Speech Therapy</h3>
               <p className="text-gray-300 text-sm">
                 Improve communication skills with expert-guided sessions.
@@ -52,7 +52,7 @@ function Hero() {
 
             <Link
               to="/appointment"
-              className="px-7 py-3 rounded-full glass border-collapse border-glass-border hover:bg-accent/15 text-white font-medium text-xl
+              className="px-7 py-3 rounded-full border border-border text-text-secondary hover:bg-surfaceLight text-white font-medium text-xl
               hover:scale-105 transition duration-300"
             >
               Book Session →
@@ -76,7 +76,7 @@ function Hero() {
           <img
             src="https://img.freepik.com/free-vector/child-therapy-concept_23-2148655382.jpg"
             alt="Child Therapy"
-            className="rounded-2xl shadow-2xl animate-zoom"
+            className="rounded-2xl shadow-2xl bg-surface border border-border animate-zoom"
           />
 
           {/* Glow */}

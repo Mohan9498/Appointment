@@ -6,7 +6,7 @@ function CTA() {
 
       {/* Glow Background */}
       <div className="absolute inset-0 flex justify-center">
-        <div className="w-[500px] h-[500px] bg-accent/20 blur-[140px] rounded-full"></div>
+        <div className="w-[500px] h-[500px]   rounded-full"></div>
       </div>
 
       <div className="relative z-10 max-w-3xl mx-auto px-6">
@@ -24,7 +24,7 @@ function CTA() {
         {/* Button */}
         <Link
           to="/appointment"
-          className="bg text-white px-5 py-2 rounded-2xl glass border-collapse border-glass-border hover:bg-accent/20 transition"
+          className="bg-primary text-white hover:bg-primaryhover px-5 py-2 rounded-2xl  hover:transition"
         >
           Book Appointment →
         </Link>

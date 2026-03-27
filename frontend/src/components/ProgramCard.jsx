@@ -12,7 +12,7 @@ function ProgramCard({ title, description, image }) {
           className="h-52 w-full object-cover transform group-hover:scale-110 transition duration-500"
         />
 
-        <div className="absolute inset-0  glass border-collapse border-glass-border opacity"></div>
+        <div className="absolute inset-0 bg-surface border border-border opacity"></div>
       </div>
 
       {/* Content */}

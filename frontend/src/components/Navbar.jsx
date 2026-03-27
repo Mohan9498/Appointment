@@ -17,7 +17,7 @@ function Navbar() {
 
   
   return (
-    <nav className="fixed top-0 left-0 right-0 z-30 glass border-collapse border-glass-border">
+    <nav className="fixed top-0 left-0 right-0 z-30 ">
 
       <div className="max-w-full mx-auto px-6 py-4 flex justify-between items-center">
 
@@ -38,7 +38,7 @@ function Navbar() {
         
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8 text-gray-600 font-medium">
+        <div className="hidden md:flex items-center gap-8 text-text-secondary font-medium">
 
           {navItems.map((item, i) => {
             const active = location.pathname === item.path;
@@ -48,7 +48,7 @@ function Navbar() {
                 key={i}
                 to={item.path}
                 className={`relative transition duration-300 ${
-                  active ? "text-blue-600 font-semibold" : "hover:text-gray-900"
+                  active ? "text-primary font-semibold" : "hover:text-gray-900"
                 }`}
               >
                 {item.label}
@@ -66,7 +66,7 @@ function Navbar() {
           {/* CTA Button */}
           <Link
             to="/login"
-            className="ml-4 px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+            className="ml-4 px-5 py-2 rounded-full bg-primary hover:bg-primaryHover text-white text-sm font-medium hover:bg-blue-700 transition"
           >
             Login
           </Link>
@@ -89,7 +89,7 @@ function Navbar() {
           menuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0 overflow-hidden"
         }`}
       >
-        <div className="flex flex-col gap-5 px-6 pb-6 bg-white border-t border-gray-200 text-gray-700">
+        <div className="flex flex-col gap-5 px-6 pb-6 bg-background border-t border-gray-200 text-text-main">
 
           {navItems.map((item, i) => (
             <Link
@@ -109,7 +109,7 @@ function Navbar() {
           <Link
             to="/login"
             onClick={() => setMenuOpen(false)}
-            className="text-center py-2 rounded-lg bg-blue-600 text-white"
+            className="text-center py-2 rounded-lg bg-primary hover:bg-primaryHover text-white"
           >
             Login
           </Link>

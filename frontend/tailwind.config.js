@@ -4,32 +4,24 @@ export default {
 
   theme: {
     extend: {
-      colors: {
-        // MAIN DESIGN SYSTEM
-        background: "#f9fafb",
-        foreground: "#ffffff",
-        card: "#ffffff",
-        muted: "#f3f4f6",
-        border: "#e5e7eb",
-
-        // TEXT
-        dark: "#111827",
-        "text-light": "#6b7280",
-
-        // PRIMARY (CTA / Buttons)
-        primary: "#2563eb",
-        "primary-hover": "#1d4ed8",
-        "primary-active": "#1e40af",
-        "primary-light": "#dbeafe",
-
-        // ACCENT COLORS (Brand personality)
-        accent: "#4ecdc4",
-        highlight: "#9b5de5",
-
-        // STATUS
-        success: "#16a34a",
-        warning: "#ffe66d",
-        danger: "#dc2626",
+      colors: { 
+        background: "#0F172A", 
+        surface: "#111827", 
+        border: "#1F2937", 
+        primary: "#3B82F6", 
+        "primary-hover": "#2563EB", 
+        accent: "#6366F1", 
+        success: "#22C55E", 
+        warning: "#F59E0B", 
+        danger: "#EF4444", 
+        text: { 
+          main: "#E5E7EB", 
+          secondary: "#9CA3AF", 
+        }, 
+      }, 
+      
+      backdropBlur: {
+        xs: "2px", 
       },
     },
 

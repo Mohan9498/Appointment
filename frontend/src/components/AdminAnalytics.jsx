@@ -53,7 +53,7 @@ function AdminAnalytics({ appointments }) {
     
     {/* Chart Card */}
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-      <h2 className="text-dark text-xl font-semibold mb-4">
+      <h2 className="text-text-main  text-xl font-semibold mb-4">
         Appointments by Date
       </h2>
       
@@ -62,7 +62,7 @@ function AdminAnalytics({ appointments }) {
 
     {/* Status Card */}
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-      <h2 className="text-dark text-xl font-semibold mb-4">
+      <h2 className="text-text-main  text-xl font-semibold mb-4">
         Status Overview
       </h2>
 
@@ -74,19 +74,17 @@ function AdminAnalytics({ appointments }) {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 mt-6 text-sm">
 
-        <div className="bg-muted p-4 rounded-lg text-dark">
+        <div className="bg-muted p-4 rounded-lg text-text-main ">
           Total: {total}
         </div>
 
-        <div className="bg-yellow-50 p-4 rounded-lg text-yellow-600">
-          Pending: {pending}
-        </div>
+        <div className="bg-warning/10 text-warning p-4 rounded-lg "> Pending: {pending} </div>
 
-        <div className="bg-green-50 p-4 rounded-lg text-green-600">
+        <div className="bg-success/10 text-success p-4 rounded-lg ">
           Approved: {approved}
         </div>
 
-        <div className="bg-red-50 p-4 rounded-lg text-red-600">
+        <div className="bg-danger/10 text-danger p-4 rounded-lg ">
           Rejected: {rejected}
         </div>
   

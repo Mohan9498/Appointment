@@ -21,10 +21,10 @@ function Services() {
   ];
 
   return (
-    <section className="relative py-24 bg-accent/20overflow-hidden">
+    <section className="relative py-24 overflow-hidden">
 
       {/* Background Glow */}
-      <div className="absolute top-[-100px] left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] bg-accent/10 blur-[150px] rounded-full"></div>
+      <div className="absolute top-[-100px] left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] bg-primary/10  rounded-full"></div>
 
       <div className="relative w-full px-6">
 

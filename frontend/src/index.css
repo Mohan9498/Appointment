@@ -15,6 +15,19 @@
   animation: zoomInOut 13s ease-out infinite;
 }
 
+.glass {
+  background: rgba(17, 24, 39, 0.6); /* surface with opacity */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 16px;
+
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.37);
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;

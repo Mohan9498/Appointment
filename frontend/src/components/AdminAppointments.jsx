@@ -104,7 +104,7 @@ function AdminAppointments() {
       <div className="max-w-7xl mx-auto">
 
         {/* Heading */}
-        <h1 className="text-3xl font-bold text-dark mb-6">
+        <h1 className="text-3xl font-bold bg-surface border border-border text-text-main hover:bg-surfacelight mb-6">
           Admin Dashboard
         </h1>
 
@@ -114,15 +114,15 @@ function AdminAppointments() {
             Active
            </button>
 
-           <button className="bg-muted text-dark px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+           <button className=" text-text-main hover:bg-surfaceLight bg-surface border border-border text-text-main hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
              Pending
            </button>
 
-           <button className="bg-muted text-dark px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+           <button className=" text-text-main hover:bg-surfaceLight bg-surface border border-border text-text-main hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
              Approved
            </button>
 
-           <button className="bg-muted text-dark px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+           <button className=" text-text-main hover:bg-surfaceLight bg-surface border border-border text-text-main hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
              Rejected
            </button>
         </div>
@@ -134,7 +134,7 @@ function AdminAppointments() {
 
             {/* User Info */}
             <div>
-              <p className="text-dark font-semibold text-lg">
+              <p className="bg-surface border border-border text-text-main hover:bg-surfacelight font-semibold text-lg">
                 User Name
               </p>
               <p className="text-text-light text-sm mt-1">
@@ -145,7 +145,7 @@ function AdminAppointments() {
             {/* Status + Actions */}
             <div className="flex items-center gap-3 flex-wrap">
 
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-600">
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-warning/10 text-warning">
                 Pending
               </span>
 
@@ -153,7 +153,7 @@ function AdminAppointments() {
                 Approve
               </button>
 
-              <button className="px-4 py-2 rounded-full bg-gray-200 text-dark text-sm hover:bg-gray-300 transition">
+              <button className="px-4 py-2 rounded-full bg-surface border border-border text-text-main hover:bg-surfacelight text-sm hover:bg-gray-300 transition">
                 Reject
               </button>
 

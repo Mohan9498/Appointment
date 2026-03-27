@@ -12,7 +12,7 @@ function Team() {
       <div className="grid md:grid-cols-3 gap-6 w-full px-6">
 
         {team.map((t, i) => (
-          <div key={i} className="bg-white p-6 rounded-2xl shadow text-center">
+          <div key={i} className="bg-surface text-text-main p-6 rounded-2xl shadow text-center">
             <img
               src="https://img.freepik.com/free-vector/doctor"
               className="rounded-full w-24 mx-auto"
