@@ -72,7 +72,7 @@ function Hero({ onOpenModal }) {
         <div className="relative flex justify-center">
 
           <img 
-            src="/src/assets/g1.jpeg"
+            src={g1}
             alt="Child Therapy"
             className="rounded-2xl shadow-2xl bg-surface border border-border animate-zoom"
             />
