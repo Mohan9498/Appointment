@@ -112,9 +112,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.parse(
-        "postgresql://backend_gwgl_user:sYxKCQPiiaAlSOh6dcLX3ATMlaCCAhPC@dpg-d6sgburuibrs73eb0rng-a.oregon-postgres.render.com/backend_gwgl"
+        "postgresql://postgres_cerv_user:0eAxTz6lbu8afm0vz2EXFGaaUi2drsPf@dpg-d754rdh4tr6s73d3m0t0-a.oregon-postgres.render.com/postgres_cerv"
     )
 }
+
+
+
 
 
 REST_FRAMEWORK = {

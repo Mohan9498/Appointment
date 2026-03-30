@@ -90,69 +90,61 @@ class RegisterView(APIView):
 # ✅ APPOINTMENTS (FIXED 🔥)
 class AppointmentView(APIView):
     authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
-    def get_authenticators(self):
-        if self.request.method == "POST":
-            return []   #  NO AUTH for public booking
-        return [JWTAuthentication()]
-
-    # ✅ Allow public POST, protect GET
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [AllowAny()]
-        return [IsAuthenticated()]
-
-    # 🔒 GET → Admin / Logged-in users only
+    # 🔒 GET → User / Admin appointments
     def get(self, request):
-        date = request.GET.get("date")
 
         if request.user.is_staff:
-            appointments = (
-                Appointment.objects.filter(date=date)
-                if date else Appointment.objects.all()
-            )
+            appointments = Appointment.objects.all().order_by("-id")
         else:
-            appointments = (
-                Appointment.objects.filter(user=request.user, date=date)
-                if date else Appointment.objects.filter(user=request.user)
-            )
+            appointments = Appointment.objects.filter(
+                user=request.user
+            ).order_by("-id")
 
         serializer = AppointmentSerializer(appointments, many=True)
         return Response(serializer.data)
 
-    # ✅ POST → PUBLIC BOOKING WORKS HERE
+    # ✅ POST → Simple appointment request (NO DATA REQUIRED)
     def post(self, request):
-        print("DATA:", request.data)
 
-        data = request.data.copy()
+        # ✅ Ensure user is logged in
+        if not request.user or not request.user.is_authenticated:
+            return Response(
+                {"error": "Login required"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
-        # ✅ Handle logged-in & public users
-        if request.user and request.user.is_authenticated:
-            data["name"] = request.user.username
-            data["gmail"] = request.user.email or "test@gmail.com"
-            user = request.user
-        else:
-            data["name"] = data.get("parent_name", "Guest")
-            data["gmail"] = "guest@gmail.com"
-            user = None
+        user = request.user
 
-        serializer = AppointmentSerializer(data=data)
-
-        if serializer.is_valid():
-            appointment = serializer.save(
+        try:
+            # 🔥 Create appointment directly
+            appointment = Appointment.objects.create(
                 user=user,
+                name=user.username,
                 status="pending"
             )
 
+            print("✅ APPOINTMENT CREATED:", appointment.id)
+
             return Response(
-                AppointmentSerializer(appointment).data,
-                status=201
+                {
+                    "message": "Appointment request sent successfully",
+                    "data": AppointmentSerializer(appointment).data
+                },
+                status=status.HTTP_201_CREATED
             )
 
-        print("ERRORS:", serializer.errors)
+        except Exception as e:
+            print("🔥 ERROR:", str(e))
 
-        return Response(serializer.errors, status=400)
-
+            return Response(
+                {
+                    "error": "Something went wrong",
+                    "details": str(e)
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 # ✅ APPROVE / REJECT
 class ApproveAppointment(APIView):

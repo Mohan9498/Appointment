@@ -3,15 +3,19 @@ from django.contrib.auth.models import User
 
 class Appointment(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
-    name = models.CharField(max_length=100)
-    gmail = models.EmailField() 
+    parent_name = models.CharField(max_length=100)
+    child_name = models.CharField(max_length=100)
 
-    date = models.DateField()
-    time = models.TimeField()
+    age = models.IntegerField(null=True, blank=True)
+    phone = models.CharField(max_length=15)
+
+    branch = models.CharField(max_length=100)
+    program = models.CharField(max_length=100)
 
     status = models.CharField(max_length=20, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.parent_name} - {self.child_name}"
