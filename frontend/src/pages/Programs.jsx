@@ -1,5 +1,8 @@
 import ProgramCard from "../components/ProgramCard";
 import { useNavigate } from "react-router-dom";
+import g2 from "../assets/g2.jpeg";
+import g3 from "../assets/g3.jpeg";
+import g4 from "../assets/g4.jpeg";
 
 function Programs() {
 
@@ -9,17 +12,17 @@ function Programs() {
     {
       title: "Speech Therapy",
       description: "Improve communication and language development skills in children.",
-      image: "https://img.freepik.com/free-photo/speech-therapy-child"
+      image: g2
     },
     {
       title: "Cognitive Therapy",
       description: "Enhance memory, attention, and problem-solving abilities.",
-      image: "https://img.freepik.com/free-vector/brain-training-concept"
+      image: g3
     },
     {
       title: "Day Care",
       description: "A safe, engaging environment for learning and social growth.",
-      image: "https://img.freepik.com/free-vector/kids-playing-daycare"
+      image: g4
     }
   ];
 

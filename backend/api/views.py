@@ -102,129 +102,18 @@ class RegisterView(APIView):
         )
 
 
-#  APPOINTMENT (FIXED FOR ADMIN + USER)
+
 class AppointmentView(APIView):
 
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-
     def get(self, request):
-        date = request.GET.get("date")
-
-        #  ADMIN → ALL DATA
-        if request.user.is_staff:
-            if date:
-                appointments = Appointment.objects.filter(date=date)
-            else:
-                appointments = Appointment.objects.all()
-
-        #  USER → OWN DATA
-        else:
-            if date:
-                appointments = Appointment.objects.filter(user=request.user, date=date)
-            else:
-                appointments = Appointment.objects.filter(user=request.user)
-
-        serializer = AppointmentSerializer(appointments, many=True)
+        data = Appointment.objects.all().order_by("-created_at")
+        serializer = AppointmentSerializer(data, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        print("DATA:", request.data)  #  debug
-
-        #  Inject required fields BEFORE validation
-        data = request.data.copy()
-        data["user"] = request.user.id
-        data["name"] = request.user.username
-        data["email"] = request.user.email or "test@gmail.com"
-        data["status"] = "pending"
-
-        serializer = AppointmentSerializer(data=data)
-
+        serializer = AppointmentSerializer(data=request.data)
         if serializer.is_valid():
-            appointment = serializer.save()
-
-            #  REAL-TIME CREATE (WebSocket)
-            # channel_layer = get_channel_layer()
-            # async_to_sync(channel_layer.group_send)(
-            #     "appointments",
-            #     {
-            #         "type": "send_update",
-            #         "data": {
-            #             "id": appointment.id,
-            #             "status": appointment.status,
-            #             "message": "New appointment created"
-            #         }
-            #     }
-            # )
-
-            return Response(serializer.data, status=201)
-
-        print("ERRORS:", serializer.errors)  #  debug errors
-
+            serializer.save()
+            return Response({"message": "Saved successfully"})
         return Response(serializer.errors, status=400)
 
-
-#  APPROVE / REJECT (FIXED)
-class ApproveAppointment(APIView):
-
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUserCustom]
-
-    def post(self, request, id):
-
-        action = request.data.get("action")
-
-        #  Validate action
-        if action not in ["approve", "reject"]:
-            return Response(
-                {"error": "Invalid action. Use 'approve' or 'reject'"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            appointment = Appointment.objects.get(id=id)
-
-            #  Set status
-            if action == "reject":
-                appointment.status = "rejected"
-                message = "Appointment rejected"
-            else:
-                appointment.status = "approved"
-                message = "Appointment approved"
-
-            appointment.save()
-
-            #  REAL-TIME UPDATE (WebSocket)
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                "appointments",
-                {
-                    "type": "send_update",
-                    "data": {
-                        "id": appointment.id,
-                        "status": appointment.status,
-                        "message": message
-                    }
-                }
-            )
-
-            return Response(
-                {
-                    "message": message,
-                    "id": appointment.id,
-                    "status": appointment.status
-                },
-                status=status.HTTP_200_OK
-            )
-
-        except Appointment.DoesNotExist:
-            return Response(
-                {"error": "Appointment not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )

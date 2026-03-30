@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 
+import Navbar from "./components/Navbar";  
+
 import Home from "./pages/Home"; 
 import Login from "./pages/Login";
 import About from "./pages/About";
@@ -27,7 +29,10 @@ function App() {
 
   return (
     <>
-      {/*  Toast */}
+      {/* ✅ NAVBAR (IMPORTANT) */}
+      <Navbar onOpenModal={() => setShowModal(true)} />
+
+      {/* Toast */}
       <Toaster position="top-center" />
 
       {/* Modal */}
@@ -36,40 +41,24 @@ function App() {
       )}
 
       <Routes>
-        {/*  PUBLIC HOME */}
         <Route path="/" element={<Home />} />
-
-        {/*  LOGIN */}
         <Route path="/login" element={<Login />} />
-
-
         <Route path="/about" element={<About />} />
-        
         <Route path="/programs" element={<Programs />} />
-
-        {/*  CONTACT */}
         <Route path="/contact" element={<Contact />} />
 
-        {/*  ADMIN */}
+        {/* ADMIN */}
         <Route
           path="/admin"
           element={
-            isAdmin ? (
-              <AdminDashboard />
-            ) : (
-              <Navigate to="/login"/>
-            )
+            isAdmin ? <AdminDashboard /> : <Navigate to="/login"/>
           }
         />
-    
+
         <Route
           path="/admin/appointments"
           element={
-            isAdmin ? (
-              <AdminAppointments />
-            ) : (
-              <Navigate to="/login" replace />
-            )
+            isAdmin ? <AdminAppointments /> : <Navigate to="/login" replace />
           }
         />
 

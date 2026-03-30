@@ -69,10 +69,13 @@ function ContactModal({ onClose }) {
     try {
       setLoading(true);
 
-      await API.post("appointments/", {
-        name: form.parentName,
-        phone: form.phone,
-        date: new Date().toISOString().split("T")[0],
+      await API.post("appointments/", { 
+        parent_name: form.parentName, 
+        child_name: form.childName, 
+        age: form.age, phone: form.phone, 
+        branch: form.branch, 
+        program: form.program, 
+        date: new Date().toISOString().split("T")[0], 
         time: "Flexible"
       });
 
@@ -179,6 +182,7 @@ function ContactModal({ onClose }) {
           >
             <option value="">Select Branch *</option>
             <option value="Chennai">Chennai</option>
+            <option value="WestMambalam">WestMambalam</option>
             <option value="Coimbatore">Coimbatore</option>
             <option value="Madurai">Madurai</option>
           </select>

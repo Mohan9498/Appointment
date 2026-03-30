@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import toast from "react-hot-toast";
-import { Users, Phone } from "lucide-react";
+import { Users, Phone, Calendar, Search } from "lucide-react";
 
 function AdminDashboard() {
-
   const [appointments, setAppointments] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch appointments
+  // ✅ Fetch once (FIXED duplicate call)
   const fetchAppointments = async () => {
     try {
       const res = await API.get("appointments/");
@@ -25,14 +24,17 @@ function AdminDashboard() {
     fetchAppointments();
   }, []);
 
-  // 🔍 Search filter
+  // 🔍 Smart search
   const filtered = appointments.filter((a) =>
-    `${a.name} ${a.phone}`
+    `${a.parent_name} ${a.child_name} ${a.phone} ${a.branch}`
       .toLowerCase()
       .includes(search.toLowerCase())
   );
 
+  // 📊 Stats
   const total = appointments.length;
+  const today = new Date().toISOString().split("T")[0];
+  const todayCount = appointments.filter((a) => a.date === today).length;
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-white p-4 md:p-6">
@@ -43,31 +45,42 @@ function AdminDashboard() {
           Admin Dashboard
         </h1>
 
-        <input
-          type="text"
-          placeholder="Search name or phone..."
-          onChange={(e) => setSearch(e.target.value)}
-          className="bg-white/10 px-4 py-2 rounded-lg outline-none text-sm w-full md:w-72"
-        />
+        <div className="relative w-full md:w-72">
+          <Search className="absolute left-3 top-3 text-gray-400" size={16} />
+          <input
+            type="text"
+            placeholder="Search client..."
+            onChange={(e) => setSearch(e.target.value)}
+            className="bg-white/10 pl-9 pr-4 py-2 rounded-lg outline-none text-sm w-full"
+          />
+        </div>
       </div>
 
       {/* 📊 STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
 
-        <div className="bg-white p-4 rounded-xl flex items-center gap-3 backdrop-blur-lg">
+        <div className="bg-white/10 p-4 rounded-xl flex items-center gap-3">
           <Users className="text-blue-400" />
           <div>
-            <p className="text-xs text-gray-400">Total Bookings</p>
+            <p className="text-xs text-gray-400">Total Clients</p>
             <h2 className="text-xl font-bold">{total}</h2>
+          </div>
+        </div>
+
+        <div className="bg-white/10 p-4 rounded-xl flex items-center gap-3">
+          <Calendar className="text-green-400" />
+          <div>
+            <p className="text-xs text-gray-400">Today Leads</p>
+            <h2 className="text-xl font-bold">{todayCount}</h2>
           </div>
         </div>
 
       </div>
 
-      {/* 📋 APPOINTMENTS LIST */}
-      <div className="bg-white/5 p-4 rounded-xl backdrop-blur-lg">
+      {/* 📋 CLIENT LIST */}
+      <div className="bg-white/5 p-4 rounded-xl">
 
-        <h2 className="text-lg mb-4">Appointments</h2>
+        <h2 className="text-lg mb-4">Client Details</h2>
 
         {/* ⏳ Loading */}
         {loading && (
@@ -79,11 +92,11 @@ function AdminDashboard() {
         {/* ❌ Empty */}
         {!loading && filtered.length === 0 && (
           <p className="text-gray-400 text-center py-10">
-            No bookings found 📅
+            No clients found 📭
           </p>
         )}
 
-        {/* ✅ LIST */}
+        {/* ✅ CLIENT CARDS */}
         <div className="space-y-3 max-h-[65vh] overflow-y-auto">
 
           {filtered.map((item) => (
@@ -91,27 +104,51 @@ function AdminDashboard() {
               key={item.id}
               className="bg-white/10 p-4 rounded-xl flex justify-between items-center flex-wrap gap-3 hover:bg-white/20 transition"
             >
+              {/* LEFT */}
               <div>
-                <h3 className="font-semibold text-sm">
-                  {item.name || "Client"}
+                <h3 className="font-semibold text-sm text-blue-400">
+                  {item.parent_name}
                 </h3>
 
                 <p className="text-xs text-gray-400">
-                  📞 {item.phone || "No phone"}
+                  👶 {item.child_name} ({item.age} yrs)
                 </p>
 
                 <p className="text-xs text-gray-400">
+                  📞 {item.phone}
+                </p>
+
+                <p className="text-xs text-gray-400">
+                  📍 {item.branch} • 📘 {item.program}
+                </p>
+
+                <p className="text-xs text-gray-500 mt-1">
                   📅 {item.date} • ⏰ {item.time}
                 </p>
               </div>
 
-              {/* 📞 CALL BUTTON */}
-              <a
-                href={`tel:${item.phone}`}
-                className="flex items-center gap-1 bg-green-500 hover:bg-green-600 px-3 py-1 text-xs rounded-lg transition"
-              >
-                <Phone size={14} /> Call
-              </a>
+              {/* RIGHT */}
+              <div className="flex gap-2">
+
+                {/* 📞 CALL */}
+                <a
+                  href={`tel:${item.phone}`}
+                  className="flex items-center gap-1 bg-green-500 hover:bg-green-600 px-3 py-1 text-xs rounded-lg"
+                >
+                  <Phone size={14} /> Call
+                </a>
+
+                {/* 💬 WHATSAPP */}
+                <a
+                  href={`https://wa.me/91${item.phone}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-green-600 hover:bg-green-700 px-3 py-1 text-xs rounded-lg"
+                >
+                  WhatsApp
+                </a>
+
+              </div>
             </div>
           ))}
 

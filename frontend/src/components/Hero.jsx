@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import g1 from "../assets/g1.jpeg";
 
 function Hero({ onOpenModal }) {
   return (
@@ -70,11 +71,11 @@ function Hero({ onOpenModal }) {
         {/* RIGHT IMAGE */}
         <div className="relative flex justify-center">
 
-          <img
-            src="https://img.freepik.com/free-vector/child-therapy-concept_23-2148655382.jpg"
+          <img 
+            src="/src/assets/g1.jpeg"
             alt="Child Therapy"
             className="rounded-2xl shadow-2xl bg-surface border border-border animate-zoom"
-          />
+            />
 
           {/* Glow */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-accent/20 to-transparent blur-xl opacity-40"></div>

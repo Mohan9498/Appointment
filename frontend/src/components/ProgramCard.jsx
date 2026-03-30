@@ -2,17 +2,21 @@ import { Link } from "react-router-dom";
 
 function ProgramCard({ title, description, image }) {
   return (
-    <div className="group relative  rounded-2xl overflow-hidden border   transition duration-300">
+    <div className="group relative rounded-2xl overflow-hidden border border-border bg-surface shadow-md hover:shadow-xl transition duration-300">
 
       {/* Image */}
-      <div className="overflow-hidden">
+      <div className="overflow-hidden relative">
         <img
           src={image}
           alt={title}
           className="h-52 w-full object-cover transform group-hover:scale-110 transition duration-500"
+          onError={(e) => {
+            e.target.src = "https://via.placeholder.com/400x250?text=Therapy";
+          }}
         />
 
-        <div className="absolute inset-0 bg-surface border border-border opacity"></div>
+        {/* ✅ Hover Overlay */}
+        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition duration-300"></div>
       </div>
 
       {/* Content */}
@@ -26,18 +30,17 @@ function ProgramCard({ title, description, image }) {
           {description}
         </p>
 
-  
         <Link
           to={`/programs/${title.toLowerCase().replace(/\s+/g, "-")}`}
-          className="mt-5 inline-block text-sm text-accent font-medium 
-          group-hover:translate-x-1 transition"
+          className="mt-5 inline-block text-sm text-accent font-medium group-hover:translate-x-1 transition"
         >
           Learn More →
         </Link>
 
       </div>
 
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-transparent via-accent/10 to-transparent blur-xl"></div>
+      {/* Glow Effect */}
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-transparent via-accent/20 to-transparent blur-xl"></div>
 
     </div>
   );

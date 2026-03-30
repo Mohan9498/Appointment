@@ -1,14 +1,16 @@
+import React from "react";
+import g1 from "../assets/g1.jpeg";
+import g2 from "../assets/g2.jpeg";
+import g3 from "../assets/g3.jpeg";
+import g4 from "../assets/g4.jpeg";
+
+
 function Gallery() {
 
-  const images = [
-    "https://img.freepik.com/free-photo/child-therapy-session",
-    "https://img.freepik.com/free-photo/kids-playing",
-    "https://img.freepik.com/free-photo/learning-activity",
-    "https://img.freepik.com/free-photo/speech-therapy"
-  ];
+  const images = [g1,g2,g3,g4] 
 
   return (
-    <section className="bg-accent/5py-20">
+    <section className="bg-accent/5 py-20">
 
       <h2 className="text-3xl md:text-4xl text-center font-semibold mb-12 text-white">
         Our Activities

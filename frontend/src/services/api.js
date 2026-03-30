@@ -1,43 +1,31 @@
 import axios from "axios";
 
-// const BASE_URL =
-//   window.location.hostname === "localhost" ||
-//   window.location.hostname === "127.0.0.1"
-//     ? "https://your-backend.onrender.com/api/"
-//     : "http://10.60.184.164:8000/api/";
-
 const BASE_URL = "https://appointment-83q0.onrender.com/api/";
 
 const API = axios.create({
   baseURL: BASE_URL,
 });
 
-//  REQUEST INTERCEPTOR
+// ✅ REQUEST INTERCEPTOR (Attach access token)
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const access = localStorage.getItem("access");
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    config.headers["Content-Type"] = "application/json";
+  if (access) {
+    config.headers.Authorization = `Bearer ${access}`;
   }
+
+  config.headers["Content-Type"] = "application/json";
 
   return config;
 });
 
-// ✅ Set token once when app loads
-const token = localStorage.getItem("token");
-
-if (token) {
-  API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-}
-
-// ✅ RESPONSE INTERCEPTOR (FIXED)
+// ✅ RESPONSE INTERCEPTOR (Handle 401 + refresh token)
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // 🔥 Handle token expiry
+    // 🔥 If unauthorized & not retried
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -50,24 +38,30 @@ API.interceptors.response.use(
       }
 
       try {
-        const res = await axios.post(`${BASE_URL}token/refresh/`, {
-          refresh,
-        });
+        // 🔄 Get new access token
+        const res = await axios.post(
+          `${BASE_URL}token/refresh/`,
+          { refresh }
+        );
 
         const newAccess = res.data.access;
 
-        //  Save new token
-        localStorage.setItem("token", newAccess);
+        // ✅ Save new access token
+        localStorage.setItem("access", newAccess);
 
-        //  Update ALL future requests
-        API.defaults.headers.Authorization = `Bearer ${newAccess}`;
+        // ✅ Update headers globally
+        API.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${newAccess}`;
 
-        //  Retry original request
-        originalRequest.headers.Authorization = `Bearer ${newAccess}`;
+        // ✅ Retry original request
+        originalRequest.headers[
+          "Authorization"
+        ] = `Bearer ${newAccess}`;
 
         return API(originalRequest);
       } catch (err) {
-        console.log("Refresh failed");
+        console.log("Token refresh failed");
 
         localStorage.clear();
         window.location.href = "/login";

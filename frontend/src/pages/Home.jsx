@@ -34,6 +34,8 @@ function Home() {
 
       <Gallery />
 
+      
+
       {/* ✅ MODAL */}
       {openModal && (
         <ContactModal onClose={() => setOpenModal(false)} />

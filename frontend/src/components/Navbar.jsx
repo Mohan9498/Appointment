@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/navbar_logo_tiny_todds.png";
 
-function Navbar({ onOpenModal }) {
+function Navbar({ onOpenModal = () => {} }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -28,7 +27,7 @@ function Navbar({ onOpenModal }) {
           </span>
         </Link>
 
-        {/* Desktop */}
+        {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8 text-gray-300 font-medium">
 
           {navItems.map((item, i) => (
@@ -45,12 +44,12 @@ function Navbar({ onOpenModal }) {
             </Link>
           ))}
 
-          {/* ✅ SAFE BOOK BUTTON */}
+          {/* ✅ Book Button (Modal Trigger) */}
           <button
-            onClick={() => onOpenModal?.()}
-            className="hover:bg-blue-700 text-white px-6 py-2 rounded-3xl"
-          >
-            Book
+           onClick={onOpenModal}
+           className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-full
+           shadow-lg hover:scale-105 transition duration-300" >
+            Book 
           </button>
 
         </div>
@@ -64,12 +63,9 @@ function Navbar({ onOpenModal }) {
         </button>
       </div>
 
-      {/* Mobile */}
-      <div
-        className={`md:hidden ${
-          menuOpen ? "block" : "hidden"
-        } bg-black/90 px-6 py-6`}
-      >
+      {/* Mobile Menu */}
+      <div className={`md:hidden ${menuOpen ? "block" : "hidden"} bg-black/90 px-6 py-6`}>
+
         {navItems.map((item, i) => (
           <Link
             key={i}
@@ -81,15 +77,17 @@ function Navbar({ onOpenModal }) {
           </Link>
         ))}
 
+        {/* ✅ Mobile Book Button */}
         <button
           onClick={() => {
             setMenuOpen(false);
-            onOpenModal?.();
+            onOpenModal();
           }}
-          className="mt-4 w-full bg-blue-600 text-white py-2 rounded"
+          className="mt-4 w-6/12 bg-primary  text-white py-2 rounded-3xl"
         >
           Book Appointment
         </button>
+
       </div>
     </nav>
   );
