@@ -1,14 +1,14 @@
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, BasePermission
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from appointments.models import Appointment
 from .serializers import AppointmentSerializer
-from rest_framework import status
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
-
-from rest_framework.permissions import IsAuthenticated, BasePermission
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -17,16 +17,17 @@ from channels.layers import get_channel_layer
 # ✅ ADMIN PERMISSION
 class IsAdminUserCustom(BasePermission):
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.is_staff
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            request.user.is_staff
+        )
 
 
-# ✅ LOGIN
+# ✅ USER LOGIN
 class LoginView(APIView):
-
     def post(self, request):
         try:
-            print("DATA:", request.data)  #  debug
-
             username = request.data.get("username")
             password = request.data.get("password")
 
@@ -46,16 +47,67 @@ class LoginView(APIView):
 
             refresh = RefreshToken.for_user(user)
 
-            return Response({
-                "message": "Login successful",
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-                "username": user.username,
-                "is_admin": user.is_staff
-            })
+            return Response(
+                {
+                    "message": "Login successful",
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh),
+                    "username": user.username,
+                    "is_admin": user.is_staff
+                },
+                status=status.HTTP_200_OK
+            )
 
         except Exception as e:
-            print(" LOGIN ERROR:", str(e))
+            print("USER LOGIN ERROR:", str(e))
+            return Response(
+                {"error": "Server error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+# ✅ ADMIN LOGIN
+class AdminLoginView(APIView):
+    def post(self, request):
+        try:
+            username = request.data.get("username")
+            password = request.data.get("password")
+
+            if not username or not password:
+                return Response(
+                    {"error": "Username and password required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user = authenticate(username=username, password=password)
+
+            if user is None:
+                return Response(
+                    {"error": "Invalid username or password"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            if not user.is_staff:
+                return Response(
+                    {"error": "Access denied. Admin only."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            refresh = RefreshToken.for_user(user)
+
+            return Response(
+                {
+                    "message": "Admin login successful",
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh),
+                    "username": user.username,
+                    "is_admin": user.is_staff
+                },
+                status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            print("ADMIN LOGIN ERROR:", str(e))
             return Response(
                 {"error": "Server error"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -64,56 +116,111 @@ class LoginView(APIView):
 
 # ✅ REGISTER
 class RegisterView(APIView):
-
     def post(self, request):
-        username = request.data.get("username")
-        password = request.data.get("password")
+        try:
+            username = request.data.get("username")
+            password = request.data.get("password")
 
-        if not username or not password:
-            return Response(
-                {"error": "All fields are required"},
-                status=status.HTTP_400_BAD_REQUEST
+            if not username or not password:
+                return Response(
+                    {"error": "All fields are required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if len(password) < 4:
+                return Response(
+                    {"error": "Password must be at least 4 characters"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if User.objects.filter(username=username).exists():
+                return Response(
+                    {"error": "Username already exists"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                is_staff=False
             )
 
-        if len(password) < 4:
             return Response(
-                {"error": "Password must be at least 4 characters"},
-                status=status.HTTP_400_BAD_REQUEST
+                {
+                    "message": "User registered successfully",
+                    "username": user.username
+                },
+                status=status.HTTP_201_CREATED
             )
 
-        if User.objects.filter(username=username).exists():
+        except Exception as e:
+            print("REGISTER ERROR:", str(e))
             return Response(
-                {"error": "Username already exists"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "Server error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        user = User.objects.create_user(
-            username=username,
-            password=password,
-            is_staff=False
-        )
 
-        return Response(
-            {
-                "message": "User registered successfully",
-                "username": user.username
-            },
-            status=status.HTTP_201_CREATED
-        )
-
-
-
+# ✅ APPOINTMENT VIEW
 class AppointmentView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        data = Appointment.objects.all().order_by("-created_at")
-        serializer = AppointmentSerializer(data, many=True)
-        return Response(serializer.data)
+        try:
+            if request.user.is_staff:
+                appointments = Appointment.objects.all().order_by("-created_at")
+            else:
+                appointments = Appointment.objects.filter(user=request.user).order_by("-created_at")
+
+            serializer = AppointmentSerializer(appointments, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print("GET APPOINTMENTS ERROR:", str(e))
+            return Response(
+                {"error": "Unable to fetch appointments"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def post(self, request):
-        serializer = AppointmentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Saved successfully"})
-        return Response(serializer.errors, status=400)
+        try:
+            data = request.data.copy()
 
+            # ✅ attach logged-in user automatically
+            data["user"] = request.user.id
+
+            serializer = AppointmentSerializer(data=data)
+
+            if serializer.is_valid():
+                appointment = serializer.save()
+
+                # ✅ optional websocket notification
+                try:
+                    channel_layer = get_channel_layer()
+                    async_to_sync(channel_layer.group_send)(
+                        "appointments",
+                        {
+                            "type": "send_appointment_notification",
+                            "message": f"New appointment from {request.user.username}"
+                        }
+                    )
+                except Exception as ws_error:
+                    print("WEBSOCKET ERROR:", str(ws_error))
+
+                return Response(
+                    {
+                        "message": "Saved successfully",
+                        "data": AppointmentSerializer(appointment).data
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print("CREATE APPOINTMENT ERROR:", str(e))
+            return Response(
+                {"error": "Unable to save appointment"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -52,7 +52,7 @@ function Contact() {
 
   return (
     <div className="min-h-screen bg-surface text-slate-900">
-      <Navbar />
+      
 
       <section className="relative overflow-hidden pt-28 pb-16">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-sky-50" />

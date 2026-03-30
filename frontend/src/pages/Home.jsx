@@ -26,7 +26,7 @@ function Home() {
   return (
     <div>
 
-      <Navbar onOpenModal={() => setOpenModal(true)} />
+      {/* <Navbar onOpenModal={() => setOpenModal(true)} /> */}
 
       <Hero onOpenModal={() => setOpenModal(true)} />
 

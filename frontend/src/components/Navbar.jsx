@@ -15,8 +15,8 @@ function Navbar({ onOpenModal = () => {} }) {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-black/40 border-b border-white/10">
-
+    <nav className="w-full bg-black/90 border-b border-gray-800">
+      
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
 
         {/* Logo */}
@@ -44,14 +44,15 @@ function Navbar({ onOpenModal = () => {} }) {
             </Link>
           ))}
 
-          {/* ✅ Book Button (Modal Trigger) */}
+          {/* Book Button */}
           <button
-           onClick={onOpenModal}
-           className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-full
-           shadow-lg hover:scale-105 transition duration-300" >
-            Book 
+            onClick={onOpenModal}
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-full
+            shadow-lg hover:scale-105 transition duration-300"
+          >
+            Book
           </button>
-
+        
         </div>
 
         {/* Mobile Toggle */}
@@ -65,7 +66,7 @@ function Navbar({ onOpenModal = () => {} }) {
 
       {/* Mobile Menu */}
       <div className={`md:hidden ${menuOpen ? "block" : "hidden"} bg-black/90 px-6 py-6`}>
-
+            
         {navItems.map((item, i) => (
           <Link
             key={i}
@@ -76,18 +77,17 @@ function Navbar({ onOpenModal = () => {} }) {
             {item.label}
           </Link>
         ))}
-
-        {/* ✅ Mobile Book Button */}
+    
         <button
           onClick={() => {
             setMenuOpen(false);
             onOpenModal();
           }}
-          className="mt-4 w-6/12 bg-primary  text-white py-2 rounded-3xl"
+          className="mt-4 w-6/12 bg-primary text-white py-2 rounded-3xl"
         >
           Book Appointment
         </button>
-
+        
       </div>
     </nav>
   );

@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Contact from "./pages/Contact";
 import AdminDashboard from "./dashboards/AdminDashboard";
 import AdminAppointments from "./components/AdminAppointments";
@@ -54,6 +55,16 @@ function App() {
             isAdmin ? <AdminDashboard /> : <Navigate to="/login"/>
           }
         />
+
+        <Route
+         path="/admin"
+          element={
+            <ProtectedRoute adminOnly={true}>
+               <AdminDashboard /> 
+            </ProtectedRoute>
+          }
+        />
+         
 
         <Route
           path="/admin/appointments"

@@ -1,16 +1,22 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
+
 from .views import (
     AppointmentView,
     RegisterView,
-    LoginView
+    LoginView,
+    AdminLoginView   
 )
 
 urlpatterns = [
-    path("appointments/", AppointmentView.as_view()),
-    
-    path("register/", RegisterView.as_view()),   
-    path("login/", LoginView.as_view()),       
+    # ✅ AUTH
+    path("register/", RegisterView.as_view(), name="register"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("admin-login/", AdminLoginView.as_view(), name="admin-login"),
 
-    path("token/refresh/", TokenRefreshView.as_view()),
+    # ✅ APPOINTMENTS
+    path("appointments/", AppointmentView.as_view(), name="appointments"),
+
+    # ✅ JWT REFRESH
+    path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
 ]

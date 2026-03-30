@@ -122,9 +122,6 @@ function AdminDashboard() {
                   📍 {item.branch} • 📘 {item.program}
                 </p>
 
-                <p className="text-xs text-gray-500 mt-1">
-                  📅 {item.date} • ⏰ {item.time}
-                </p>
               </div>
 
               {/* RIGHT */}
