@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function Hero() {
+function Hero({ onOpenModal }) {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden  bg-surface border border-border">
 
@@ -50,13 +50,10 @@ function Hero() {
           {/* Buttons */}
           <div className="mt-6 flex flex-wrap gap-4">
 
-            <Link
-              to="/appointment"
-              className="px-7 py-3 rounded-full border border-border text-text-secondary hover:bg-surfaceLight text-white font-medium text-xl
-              hover:scale-105 transition duration-300"
-            >
-              Book Session →
-            </Link>
+            <button 
+            onClick={onOpenModal} className="px-7 py-3 rounded-full border border-border text-white font-medium text-xl hover:scale-105 transition duration-300"> 
+            Book Session →
+            </button>
 
             <Link
               to="/programs"

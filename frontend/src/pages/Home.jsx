@@ -1,38 +1,48 @@
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
-import Services from "../components/Services";
-import CTA from "../components/CTA";
 import Footer from "../components/Footer";
 import Features from "../components/Features";
 import Gallery from "../components/Gallery";
-import Team from "../components/Team";
+import ContactModal from "../components/ContactModal";
 
-function Home(){
+function Home() {
+  const [openModal, setOpenModal] = useState(false);
 
-return(
+  // ✅ AUTO POPUP (ONLY ONCE)
+  useEffect(() => {
+    const alreadyShown = localStorage.getItem("popupShown");
 
-<div>
+    if (!alreadyShown) {
+      const timer = setTimeout(() => {
+        setOpenModal(true);
+        localStorage.setItem("popupShown", "true");
+      }, 1000); // ⏱️ 1 second delay
 
-<Navbar/>
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
-<Hero/>
+  return (
+    <div>
 
-<Features/>
+      <Navbar onOpenModal={() => setOpenModal(true)} />
 
-<Services/>
+      <Hero onOpenModal={() => setOpenModal(true)} />
 
-<Gallery/>
+      <Features />
 
-<Team/>
+      <Gallery />
 
-<CTA/>
+      {/* ✅ MODAL */}
+      {openModal && (
+        <ContactModal onClose={() => setOpenModal(false)} />
+      )}
 
-<Footer/>
+      <Footer />
 
-</div>
-
-)
-
+    </div>
+  );
 }
 
-export default Home
+export default Home;

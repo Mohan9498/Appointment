@@ -29,13 +29,21 @@ function Login() {
     try {
       setLoading(true);
       
-      const res = await API.post("login/", formData);
-      //  Save tokens
+      const res = await API.post("login/", formData); 
+      // ❌ Block non-admin users
+      if (!res.data.is_admin) {
+        alert("Access denied. Admin only.");
+        return;
+      }
+      
+      // ✅ Save tokens
+    
       localStorage.setItem("token", res.data.access);
       localStorage.setItem("refresh", res.data.refresh);
       localStorage.setItem("is_admin", res.data.is_admin);
-      localStorage.setItem("username", res.data.username); 
-      //  Save user in Zustand
+      localStorage.setItem("username", res.data.username);
+
+      // ✅ Zustand store
       loginStore.login(
         {
           username: res.data.username,
@@ -43,14 +51,10 @@ function Login() {
         },
         res.data.access
       );
-  
-      //  Redirect
-      if (res.data.is_admin) {
-        navigate("/admin");
-      } else {
-        navigate("/client");
-      }
-    
+
+      // ✅ ONLY ADMIN REDIRECT
+      navigate("/admin");
+
     } catch (error) {
       console.log(error);
       alert("Invalid username or password");

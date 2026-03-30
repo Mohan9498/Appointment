@@ -114,15 +114,15 @@ function AdminAppointments() {
             Active
            </button>
 
-           <button className=" text-text-main hover:bg-surfaceLight bg-surface border border-border text-text-main hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+           <button className=" text-text-main hover:bg-surfaceLight  hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
              Pending
            </button>
 
-           <button className=" text-text-main hover:bg-surfaceLight bg-surface border border-border text-text-main hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+           <button className=" text-text-main hover:bg-surfaceLight  hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
              Approved
            </button>
 
-           <button className=" text-text-main hover:bg-surfaceLight bg-surface border border-border text-text-main hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
+           <button className=" text-text-main hover:bg-surfaceLight over:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
              Rejected
            </button>
         </div>
