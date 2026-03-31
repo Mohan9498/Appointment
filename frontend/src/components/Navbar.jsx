@@ -17,7 +17,7 @@ function Navbar({ onOpenModal = () => {} }) {
   ];
 
   return (
-    <nav className="w-full bg-white dark:bg-black/90 border-b border-gray-200 dark:border-gray-800 transition">
+    <nav className="w-full bg-white dark:bg-white/5 border-b border-gray-200 dark:border-white/10 dark:border-gray-800 transition">
       
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
 
@@ -36,10 +36,10 @@ function Navbar({ onOpenModal = () => {} }) {
             <Link
               key={i}
               to={item.path}
-              className={`transition ${
+              className={`relative px-2 py-1 transition ${
                 location.pathname === item.path
-                  ? "text-black dark:text-white"
-                  : "hover:text-black dark:hover:text-white"
+                ? "text-white after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-indigo-400" 
+                : "text-gray-500 dark:text-gray-400 hover:text-white"
               }`}
             >
               {item.label}
@@ -51,7 +51,7 @@ function Navbar({ onOpenModal = () => {} }) {
             onClick={() => setDark(!dark)}
             className="px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-700 text-sm"
           >
-            {dark ? "🌙" : "☀️"}
+            {dark ?  "☀️" : "🌙"}
           </button>
 
           {/* Book Button */}

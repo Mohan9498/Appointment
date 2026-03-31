@@ -111,7 +111,7 @@ function ContactModal({ onClose }) {
           exit={{ y: 80, opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6"
+          className="relative w-full max-w-md bg-white dark:bg-white/5 rounded-3xl shadow-2xl p-6"
         >
 
           {/* Close */}
@@ -123,7 +123,7 @@ function ContactModal({ onClose }) {
           </button>
 
           {/* Title */}
-          <h2 className="text-xl bg-white dark:bg-black text-black dark:text-white font-bold mb-1">
+          <h2 className="text-xl bg-white dark:bg-white/5 dark:bg-black text-black dark:text-white font-bold mb-1">
             Tiny Todds Appointment
           </h2>
 

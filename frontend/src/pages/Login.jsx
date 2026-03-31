@@ -66,7 +66,7 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-white/5">
       <div className="grid min-h-screen lg:grid-cols-2">
         <div className="relative hidden overflow-hidden bg-slate-950 text-white lg:flex">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800" />

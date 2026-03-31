@@ -51,7 +51,7 @@ function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-surface text-slate-900">
+    <div className="min-h-screen text-black dark:text-white">
       
 
       <section className="relative overflow-hidden pt-28 pb-16">
@@ -62,7 +62,7 @@ function Contact() {
         <div className="relative w-full px-6">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="pt-4">
-              <p className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-medium text-slate-600 shadow-sm backdrop-blur">
+              <p className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white dark:bg-white/5 px-4 py-2 text-sm font-medium text-slate-600 shadow-sm backdrop-blur">
                 <MessageSquareText size={16} />
                 Get in touch
               </p>
@@ -78,7 +78,7 @@ function Contact() {
               </p>
 
               <div className="mt-10 grid sm:grid-cols-2 gap-4">
-                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="rounded-3xl border border-slate-200 bg-white dark:bg-white/5 p-5 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-white dark:bg-slate-900 p-3 text-white">
                       <Phone size={18} />
@@ -92,7 +92,7 @@ function Contact() {
                   </div>
                 </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="rounded-3xl border border-slate-200 bg-white dark:bg-white/5 p-5 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-white dark:bg-slate-900 p-3 text-white">
                       <Mail size={18} />
@@ -106,7 +106,7 @@ function Contact() {
                   </div>
                 </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="rounded-3xl border border-slate-200 bg-white dark:bg-white/5 p-5 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-white dark:bg-slate-900 p-3 text-white">
                       <MapPin size={18} />
@@ -136,7 +136,7 @@ function Contact() {
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 md:p-8 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+            <div className="rounded-[2rem] border border-slate-200 bg-white dark:bg-white/5p-6 md:p-8 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur">
               <div className="mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
                   Send a message 0
@@ -157,7 +157,7 @@ function Contact() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Enter your name"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white dark:bg-white/5"
                     required
                   />
                 </div>
@@ -172,7 +172,7 @@ function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Enter your email"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white dark:bg-white/5"
                     required
                   />
                 </div>
@@ -187,7 +187,7 @@ function Contact() {
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Tell us how we can help"
-                    className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white"
+                    className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white dark:bg-white/5"
                     required
                   />
                 </div>
@@ -195,7 +195,7 @@ function Contact() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:scale-[1.01] hover:bg-slate-800 disabled:opacity-70"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white dark:bg-white/5 dark:bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:scale-[1.01] hover:bg-slate-800 disabled:opacity-70"
                 >
                   <Send size={18} />
                   {loading ? "Sending..." : "Send Message"}

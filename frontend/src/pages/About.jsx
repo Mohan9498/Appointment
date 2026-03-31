@@ -3,16 +3,16 @@ import Footer from "../components/Footer";
 
 function About() {
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white ">
+    <div className="min-h-screen  text-black bg-white dark:bg-white/5 ">
 
       {/* 🌟 HERO SECTION */}
-      <div className="bg-white dark:bg-black text-black dark:text-white py-16 px-6">
+      <div className="bg-white dark:bg-white/5  py-16 px-6">
 
-        <div className="max-w-5xl mx-auto text-center mb-12">
-          <h1 className="text-3xl md:text-5xl font-semibold bg-white dark:bg-black text-black dark:text-white mb-4">
+        <div className="max-w-full mx-auto text-center mb-12">
+          <h1 className="text-3xl md:text-5xl font-semibold  text-black dark:text-white ">
             About Tiny Todds
           </h1>
-          <p className="text-gray-400 text-sm md:text-base">
+          <p className="text-gray-500 dark:text-gray-400 text-sm md:text-base">
             Helping children grow through specialized therapy programs.
           </p>
         </div>
@@ -20,7 +20,7 @@ function About() {
         {/* 🎯 Mission & Vision */}
         <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
 
-          <div className="bg-white/5 p-6 rounded-2xl backdrop-blur-lg border border-white/10 hover:bg-white/10 transition">
+          <div className="bg-white dark:bg-white/5 p-6 rounded-2xl backdrop-blur-lg border border-white/10 hover:bg-white/10 transition">
             <h2 className="text-xl font-semibold mb-3 text-blue-400">
               Our Mission
             </h2>
@@ -44,9 +44,9 @@ function About() {
       </div>
 
       {/* 📖 CONTENT SECTION */}
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="max-w-full bg-white dark:bg-white/5 mx-auto px-10 py-16 ">
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-lg space-y-6">
+        <div className="bg-white/5  border border-black/15 rounded-2xl p-6 md:p-8 backdrop-blur-lg space-y-6">
 
           <p className="text-gray-300 leading-8 text-justify indent-10 text-sm md:text-base">
             Tiny Todds Therapy Care is a specialized child development center dedicated to fostering each child’s unique potential

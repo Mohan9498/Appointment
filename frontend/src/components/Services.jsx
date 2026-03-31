@@ -34,7 +34,7 @@ function Services() {
             Our Programs
           </h2>
 
-          <p className="text-gray-400 mt-4 max-w-xl mx-auto text-sm">
+          <p className="text-gray-500 dark:text-gray-400 mt-4 max-w-xl mx-auto text-sm">
             Specialized therapy programs designed to support every child’s growth,
             learning, and development journey.
           </p>

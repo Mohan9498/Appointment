@@ -54,7 +54,7 @@ function AdminDashboard() {
 
           {/* Search */}
           <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-3 text-gray-400" size={16} />
+            <Search className="absolute left-3 top-3 text-gray-500  dark:text-gray-400" size={16} />
             <input
               type="text"
               placeholder="Search client..."
@@ -80,21 +80,21 @@ function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
 
         <div className="bg-white dark:bg-white/5 
-        border border-gray-200 dark:border-white/10
+        border border-gray-200 dark:border-white/10 
         p-4 rounded-xl flex items-center gap-3 shadow-sm">
           <Users className="text-blue-500" />
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Total Clients</p>
+            <p className="text-xs text-gray-500  dark:text-gray-400">Total Clients</p>
             <h2 className="text-xl font-bold text-black dark:text-white">{total}</h2>
           </div>
         </div>
 
         <div className="bg-white dark:bg-white/5 
-        border border-gray-200 dark:border-white/10
+        border border-gray-200 dark:border-white/10 
         p-4 rounded-xl flex items-center gap-3 shadow-sm">
           <Calendar className="text-green-500" />
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Today Leads</p>
+            <p className="text-xs text-gray-500  dark:text-gray-400">Today Leads</p>
             <h2 className="text-xl font-bold text-black dark:text-white">{todayCount}</h2>
           </div>
         </div>
@@ -102,8 +102,8 @@ function AdminDashboard() {
       </div>
 
       {/* CLIENT LIST */}
-      <div className="bg-gray-100 dark:bg-white/5 
-      border border-gray-200 dark:border-white/10
+      <div className="bg-white dark:bg-white/5 
+      border border-gray-200 dark:border-white/10 
       backdrop-blur-md 
       p-4 rounded-xl shadow-sm">
 
@@ -120,7 +120,7 @@ function AdminDashboard() {
 
         {/* Empty */}
         {!loading && filtered.length === 0 && (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-10">
+          <p className="text-gray-500  dark:text-gray-400 text-center py-10">
             No clients found 📭
           </p>
         )}
@@ -141,15 +141,15 @@ function AdminDashboard() {
                   {item.parent_name}
                 </h3>
 
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500  dark:text-gray-400">
                   👶 {item.child_name} ({item.age} yrs)
                 </p>
 
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500  dark:text-gray-400">
                   📞 {item.phone}
                 </p>
 
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500  dark:text-gray-400">
                   📍 {item.branch} • 📘 {item.program}
                 </p>
               </div>

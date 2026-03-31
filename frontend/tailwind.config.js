@@ -6,20 +6,17 @@ export default {
 
   theme: {
     extend: {
-      colors: { 
-        background: "#0F172A", 
-        surface: "#111827", 
-        border: "#1F2937", 
-        primary: "#3B82F6", 
-        "primary-hover": "#2563EB", 
-        accent: "#6366F1", 
-        success: "#22C55E", 
-        warning: "#F59E0B", 
-        danger: "#EF4444", 
-        text: { 
-          main: "#E5E7EB", 
-          secondary: "#9CA3AF", 
-        }, 
+      colors: {
+        background: "#0B1120",
+        surface: "#111827",
+        primary: "#6366F1",
+        secondary: "#22D3EE",
+        accent: "#A78BFA",
+        border: "#1F2937",
+        text: {
+          main: "#F9FAFB",
+          secondary: "#9CA3AF"
+        },
       }, 
       
       backdropBlur: {

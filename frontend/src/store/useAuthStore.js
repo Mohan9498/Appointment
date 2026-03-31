@@ -7,7 +7,6 @@ const useAuthStore = create((set) => ({
   login: (user, token) => {
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("token", token);
-    localStorage.setItem("is_admin", user.is_admin);
 
     set({ user, token });
   },
@@ -15,11 +14,7 @@ const useAuthStore = create((set) => ({
   logout: () => {
     localStorage.clear();
     set({ user: null, token: null });
-  },
-
-  logout: () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login"; 
+    window.location.href = "/login";
   },
 }));
 

@@ -27,7 +27,8 @@ function App() {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="bg-white dark:bg-slate-900 text-black dark:text-white min-h-screen transition duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-black
+     text-black dark:text-white transition duration-300">
 
       {/* NAVBAR */}
       <Navbar onOpenModal={() => setShowModal(true)} />
