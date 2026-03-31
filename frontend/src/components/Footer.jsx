@@ -3,7 +3,7 @@ import { MessageCircle, Instagram, Mail, Chrome } from "lucide-react";
 
 function Footer() {
   return (
-    <footer className="text-gray-500 dark:text-gray-400 pt-16 pb-6">
+    <footer className="text-gray-500 bg-white dark:bg-white/5 dark:text-gray-400 pt-16 pb-6">
 
       <div className="w-full px-6 grid md:grid-cols-4 text-black dark:text-white gap-12">
 
