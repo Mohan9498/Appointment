@@ -80,7 +80,7 @@ function Login() {
                 Tiny Todds Therapy Care
               </div>
 
-              <h1 className="mt-8 max-w-xl text-5xl font-bold leading-tight tracking-tight">
+              <h1 className="mt-8 max-w-xl text-6xl font-bold leading-tight tracking-tight">
                 Secure admin access for appointment management.
               </h1>
 

@@ -5,7 +5,7 @@ function Footer() {
   return (
     <footer className="text-gray-500 dark:text-gray-400 pt-16 pb-6">
 
-      <div className="w-full px-6 grid md:grid-cols-4 gap-12">
+      <div className="w-full px-6 grid md:grid-cols-4 text-black dark:text-white gap-12">
 
         {/* Brand */}
         <div>
@@ -26,16 +26,16 @@ function Footer() {
           </h3>
 
           <div className="flex flex-col gap-2 text-sm">
-            <Link to="/about" className="hover:text-white transition">
+            <Link to="/about" className="hover:text-indigo-500 transition">
               About
             </Link>
-            <Link to="/programs" className="hover:text-white transition">
+            <Link to="/programs" className="hover:text-indigo-500 transition">
               Programs
             </Link>
-            <Link to="/appointment" className="hover:text-white transition">
+            <Link to="/appointment" className="hover:text-indigo-500 transition">
               Book Appointment
             </Link>
-            <Link to="/contact" className="hover:text-white transition">
+            <Link to="/contact" className="hover:text-indigo-500 transition">
               Contact
             </Link>
           </div>
