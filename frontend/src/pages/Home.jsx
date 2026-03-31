@@ -9,22 +9,8 @@ import ContactModal from "../components/ContactModal";
 function Home() {
   const [openModal, setOpenModal] = useState(false);
 
-  // ✅ AUTO POPUP (ONLY ONCE)
-  useEffect(() => {
-    const alreadyShown = localStorage.getItem("popupShown");
-
-    if (!alreadyShown) {
-      const timer = setTimeout(() => {
-        setOpenModal(true);
-        localStorage.setItem("popupShown", "true");
-      }, 1000); // ⏱️ 1 second delay
-
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
   return (
-    <div>
+    <div className="bg-white dark:bg-slate-900 text-black dark:text-white transition duration-300"> {/* ✅ UPDATED */}
 
       {/* <Navbar onOpenModal={() => setOpenModal(true)} /> */}
 
@@ -34,9 +20,7 @@ function Home() {
 
       <Gallery />
 
-      
-
-      {/* ✅ MODAL */}
+      {/* MODAL */}
       {openModal && (
         <ContactModal onClose={() => setOpenModal(false)} />
       )}

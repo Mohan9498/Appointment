@@ -80,7 +80,7 @@ function Contact() {
               <div className="mt-10 grid sm:grid-cols-2 gap-4">
                 <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-2xl bg-slate-900 p-3 text-white">
+                    <div className="rounded-2xl bg-white dark:bg-slate-900 p-3 text-white">
                       <Phone size={18} />
                     </div>
                     <div>
@@ -94,7 +94,7 @@ function Contact() {
 
                 <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-2xl bg-slate-900 p-3 text-white">
+                    <div className="rounded-2xl bg-white dark:bg-slate-900 p-3 text-white">
                       <Mail size={18} />
                     </div>
                     <div>
@@ -108,7 +108,7 @@ function Contact() {
 
                 <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-2xl bg-slate-900 p-3 text-white">
+                    <div className="rounded-2xl bg-white dark:bg-slate-900 p-3 text-white">
                       <MapPin size={18} />
                     </div>
                     <div>
@@ -122,7 +122,7 @@ function Contact() {
 
                 <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-2xl bg-slate-900 p-3 text-white">
+                    <div className="rounded-2xl bg-white dark:bg-slate-900 p-3 text-white">
                       <Clock3 size={18} />
                     </div>
                     <div>
@@ -195,7 +195,7 @@ function Contact() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:scale-[1.01] hover:bg-slate-800 disabled:opacity-70"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:scale-[1.01] hover:bg-slate-800 disabled:opacity-70"
                 >
                   <Send size={18} />
                   {loading ? "Sending..." : "Send Message"}

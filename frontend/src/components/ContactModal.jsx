@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import API from "../services/api";
 import toast from "react-hot-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, number } from "framer-motion";
 
 function ContactModal({ onClose }) {
 
@@ -47,6 +47,10 @@ function ContactModal({ onClose }) {
       value = value.replace(/\D/g, "").slice(0, 10);
     }
 
+    if (name === "age"){
+      value = math.max(0,number(value));
+    }
+
     setForm({ ...form, [name]: value });
   };
 
@@ -54,7 +58,8 @@ function ContactModal({ onClose }) {
   const isValid =
     form.parentName &&
     form.childName &&
-    form.age &&
+    form.age > 0 &&
+    form.age <18 &&
     form.phone.length === 10 &&
     form.branch &&
     form.program;

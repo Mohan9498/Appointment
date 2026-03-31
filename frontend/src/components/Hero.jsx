@@ -3,7 +3,7 @@ import g1 from "../assets/g1.jpeg";
 
 function Hero({ onOpenModal }) {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden  bg-surface border border-border">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-black text-black dark:text-white  ">
 
       {/* Glow Background */}
       <div className="absolute inset-0 flex justify-center items-center">
@@ -16,7 +16,7 @@ function Hero({ onOpenModal }) {
         <div className="space-y-6">
 
           {/* Title */}
-          <h1 className="text-4xl md:text-6xl font-serif leading-none text-text-main bg-surface border rounded-3xl border-border">
+          <h1 className="text-4xl md:text-6xl font-serif leading-none text-main bg-white dark:bg-black text-black dark:text-white border rounded-3xl border-border">
             Build Better <br />
             Communication <br />
             for Your Child
@@ -25,22 +25,22 @@ function Hero({ onOpenModal }) {
           {/* FLOATING PARAGRAPH CARDS */}
           <div className="space-y-4">
 
-            <div className="p-4 rounded-xl bg-surface border border-border shadow-lg hover:translate-x-2 transition duration-300">
-              <h3 className="text-white font-semibold mb-1">Speech Therapy</h3>
+            <div className="p-4 rounded-xl bg-white dark:bg-black text-black dark:text-white border border-border shadow-lg hover:translate-x-2 transition duration-300">
+              <h3 className=" font-sans  mb-1 bg-white dark:bg-black text-black dark:text-white">Speech Therapy</h3>
               <p className="text-gray-300 text-sm">
                 Improve communication skills with expert-guided sessions.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl shadow-lg hover:translate-x-2 transition duration-300">
-              <h3 className="text-white font-semibold mb-1">Cognitive Growth</h3>
+            <div className="p-4 rounded-xl bg-white dark:bg-black text-black dark:text-white border border-border shadow-lg hover:translate-x-2 transition duration-300">
+              <h3 className="bg-white dark:bg-black text-black dark:text-white font-sans mb-1">Cognitive Growth</h3>
               <p className="text-gray-300 text-sm">
                 Enhance thinking, memory, and learning abilities.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl shadow-lg hover:translate-x-2 transition duration-300">
-              <h3 className="text-white font-semibold mb-1">Confidence Building</h3>
+            <div className="p-4 rounded-xl bg-white dark:bg-black text-black dark:text-white border border-border shadow-lg hover:translate-x-2 transition duration-300">
+              <h3 className="tbg-white dark:bg-black text-black dark:text-white font-sans mb-1">Confidence Building</h3>
               <p className="text-gray-300 text-sm">
                 Help children express themselves with confidence.
               </p>
@@ -52,7 +52,7 @@ function Hero({ onOpenModal }) {
           <div className="mt-6 flex flex-wrap gap-4">
 
             <button 
-            onClick={onOpenModal} className="px-7 py-3 rounded-full border border-border text-white font-medium text-xl hover:scale-105 transition duration-300"> 
+            onClick={onOpenModal} className="px-7 py-3 rounded-full border border-border bg-white dark:bg-black text-black dark:text-white font-medium text-xl hover:scale-105 transition duration-300"> 
             Book Session →
             </button>
 

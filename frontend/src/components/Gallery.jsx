@@ -10,9 +10,9 @@ function Gallery() {
   const images = [g1,g2,g3,g4] 
 
   return (
-    <section className="bg-accent/5 py-20">
+    <section className="bg-white dark:bg-black text-black dark:text-white py-20">
 
-      <h2 className="text-3xl md:text-4xl text-center font-semibold mb-12 text-white">
+      <h2 className="text-3xl md:text-4xl text-center font-semibold mb-12  dark:bg-black text-black dark:text-white">
         Our Activities
       </h2>
 

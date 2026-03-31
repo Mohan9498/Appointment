@@ -26,21 +26,21 @@ function NotFound() {
 function App() {
   const [showModal, setShowModal] = useState(false);
 
-  const isAdmin = localStorage.getItem("is_admin") === "true";
-
   return (
-    <>
-      {/* ✅ NAVBAR (IMPORTANT) */}
+    <div className="bg-white dark:bg-slate-900 text-black dark:text-white min-h-screen transition duration-300">
+
+      {/* NAVBAR */}
       <Navbar onOpenModal={() => setShowModal(true)} />
 
-      {/* Toast */}
+      {/* TOASTER */}
       <Toaster position="top-center" />
 
-      {/* Modal */}
+      {/* MODAL */}
       {showModal && (
         <ContactModal onClose={() => setShowModal(false)} />
       )}
 
+      {/* ROUTES */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -48,35 +48,28 @@ function App() {
         <Route path="/programs" element={<Programs />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/* ADMIN */}
         <Route
           path="/admin"
           element={
-            isAdmin ? <AdminDashboard /> : <Navigate to="/login"/>
-          }
-        />
-
-        <Route
-         path="/admin"
-          element={
             <ProtectedRoute adminOnly={true}>
-               <AdminDashboard /> 
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />
-         
 
         <Route
           path="/admin/appointments"
           element={
-            isAdmin ? <AdminAppointments /> : <Navigate to="/login" replace />
+            <ProtectedRoute adminOnly={true}>
+              <AdminAppointments />
+            </ProtectedRoute>
           }
         />
 
-        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+
+    </div>
   );
 }
 
