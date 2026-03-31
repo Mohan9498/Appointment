@@ -9,7 +9,7 @@ function Footer() {
 
         {/* Brand */}
         <div>
-          <h2 className="text-white text-2xl font-semibold tracking-wide">
+          <h2 className="bg-white dark:bg-white/0 text-black text-2xl font-semibold tracking-wide">
             Tiny Todds Therapy
           </h2>
 
@@ -21,7 +21,7 @@ function Footer() {
 
         {/* Links */}
         <div>
-          <h3 className="text-white mb-4 text-sm uppercase tracking-wider">
+          <h3 className="text-black bg-white dark:bg-white/0  mb-4 text-sm uppercase tracking-wider">
             Explore
           </h3>
 
@@ -43,7 +43,7 @@ function Footer() {
 
         {/* Programs */}
         <div>
-          <h3 className="text-white mb-4 text-sm uppercase tracking-wider">
+          <h3 className="text-black bg-white dark:bg-white/0 mb-4 text-sm uppercase tracking-wider">
             Programs
           </h3>
 
@@ -62,7 +62,7 @@ function Footer() {
 
         {/* Contact */}
         <div>
-          <h3 className="text-white mb-4 text-sm uppercase tracking-wider">
+          <h3 className="text-black bg-white dark:bg-white/0 mb-4 text-sm uppercase tracking-wider">
             Contact
           </h3>
 
