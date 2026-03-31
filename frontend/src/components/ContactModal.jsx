@@ -123,7 +123,7 @@ function ContactModal({ onClose }) {
           </button>
 
           {/* Title */}
-          <h2 className="text-xl font-bold mb-1">
+          <h2 className="text-xl bg-white dark:bg-black text-black dark:text-white font-bold mb-1">
             Tiny Todds Appointment
           </h2>
 

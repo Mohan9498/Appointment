@@ -178,7 +178,7 @@ function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:scale-[1.01] hover:bg-slate-800 disabled:opacity-70"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white dark:bg-black text-black dark:text-white px-6 py-3.5 text-sm font-semibold  transition hover:scale-[1.01] hover:bg-slate-800 disabled:opacity-70"
                 >
                   {loading ? "Signing in..." : "Sign In to Admin Dashboard"}
                   {!loading && <ArrowRight size={18} />}
