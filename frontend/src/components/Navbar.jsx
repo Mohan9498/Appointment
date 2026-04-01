@@ -38,8 +38,8 @@ function Navbar({ onOpenModal = () => {} }) {
               to={item.path}
               className={`relative px-2 py-1 transition ${
                 location.pathname === item.path
-                ? "text-white after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-indigo-400" 
-                : "text-gray-500 dark:text-gray-400 hover:text-white"
+                ? "text-black dark:text-white after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-indigo-400" 
+                : "text-black dark:text-white hover:text-black"
               }`}
             >
               {item.label}

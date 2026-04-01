@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import API from "../services/api";
 import toast from "react-hot-toast";
-import { motion, AnimatePresence, number } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 function ContactModal({ onClose }) {
 
@@ -22,14 +22,12 @@ function ContactModal({ onClose }) {
     inputRef.current?.focus();
   }, []);
 
-  // ✅ ESC key close
+  // ✅ ESC close
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
     };
-
     window.addEventListener("keydown", handleEsc);
-
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
@@ -39,7 +37,7 @@ function ContactModal({ onClose }) {
     return () => (document.body.style.overflow = "auto");
   }, []);
 
-  // ✅ Input handler
+  // ✅ Input handler (FIXED)
   const handleChange = (e) => {
     let { name, value } = e.target;
 
@@ -47,8 +45,10 @@ function ContactModal({ onClose }) {
       value = value.replace(/\D/g, "").slice(0, 10);
     }
 
-    if (name === "age"){
-      value = math.max(0,number(value));
+    if (name === "age") {
+      value = value.replace(/\D/g, "");       // only numbers
+      value = Math.max(0, Number(value));     // no negative
+      if (value > 18) value = 18;             // max limit
     }
 
     setForm({ ...form, [name]: value });
@@ -59,7 +59,7 @@ function ContactModal({ onClose }) {
     form.parentName &&
     form.childName &&
     form.age > 0 &&
-    form.age <18 &&
+    form.age <= 18 &&
     form.phone.length === 10 &&
     form.branch &&
     form.program;
@@ -74,13 +74,14 @@ function ContactModal({ onClose }) {
     try {
       setLoading(true);
 
-      await API.post("appointments/", { 
-        parent_name: form.parentName, 
-        child_name: form.childName, 
-        age: form.age, phone: form.phone, 
-        branch: form.branch, 
-        program: form.program, 
-        date: new Date().toISOString().split("T")[0], 
+      await API.post("appointments/", {
+        parent_name: form.parentName,
+        child_name: form.childName,
+        age: form.age,
+        phone: form.phone,
+        branch: form.branch,
+        program: form.program,
+        date: new Date().toISOString().split("T")[0],
         time: "Flexible"
       });
 
@@ -123,7 +124,7 @@ function ContactModal({ onClose }) {
           </button>
 
           {/* Title */}
-          <h2 className="text-xl bg-white dark:bg-white/5 dark:bg-black text-black dark:text-white font-bold mb-1">
+          <h2 className="text-xl text-black dark:text-white font-bold mb-1">
             Tiny Todds Appointment
           </h2>
 
@@ -138,7 +139,7 @@ function ContactModal({ onClose }) {
             placeholder="Parent Name *"
             value={form.parentName}
             onChange={handleChange}
-            className="w-full mb-3 px-4 py-3 rounded-xl bg-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full mb-3 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
           />
 
           {/* Child */}
@@ -147,21 +148,29 @@ function ContactModal({ onClose }) {
             placeholder="Child Name *"
             value={form.childName}
             onChange={handleChange}
-            className="w-full mb-3 px-4 py-3 rounded-xl bg-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full mb-3 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
           />
 
           {/* Age */}
           <input
             type="number"
             name="age"
+            min="1"
+            max="18"
             placeholder="Child Age *"
             value={form.age}
             onChange={handleChange}
-            className="w-full mb-3 px-4 py-3 rounded-xl bg-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full mb-1 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
           />
 
+          {form.age && (form.age <= 0 || form.age > 18) && (
+            <p className="text-red-500 text-xs mb-3">
+              Age must be between 1 and 18
+            </p>
+          )}
+
           {/* Phone */}
-          <div className="flex items-center bg-gray-100 rounded-xl px-3 mb-2 focus-within:ring-2 focus-within:ring-blue-500">
+          <div className="flex items-center bg-white/5 rounded-xl px-3 mb-2 focus-within:ring-2 focus-within:ring-blue-500">
             <span className="text-gray-500 mr-2">+91</span>
             <input
               name="phone"
@@ -183,7 +192,7 @@ function ContactModal({ onClose }) {
             name="branch"
             value={form.branch}
             onChange={handleChange}
-            className="w-full mb-3 px-4 py-3 rounded-xl bg-gray-100 focus:ring-2 focus:ring-blue-500"
+            className="w-full mb-3 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Branch *</option>
             <option value="Chennai">Chennai</option>
@@ -228,7 +237,7 @@ function ContactModal({ onClose }) {
             className={`w-full py-3 rounded-xl font-semibold transition ${
               isValid
                 ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-300 text-gray-500"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }`}
           >
             {loading ? "Submitting..." : "Submit"}
