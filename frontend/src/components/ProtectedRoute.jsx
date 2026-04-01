@@ -1,21 +1,20 @@
 import { Navigate } from "react-router-dom";
-import useAuthStore from "../store/useAuthStore";
 
-function ProtectedRoute({ children, adminOnly }) {
+function ProtectedRoute({ children, adminOnly = false }) {
 
-  const { user, token } = useAuthStore();
+  const token = localStorage.getItem("access");
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  // ❌ Not logged in
-  if (!token || !user) {
+  // ❌ No token
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 
   // ❌ Not admin
-  if (adminOnly && !user.is_admin) {
-    return <Navigate to="/admin" replace />;
+  if (adminOnly && (!user || user.is_admin !== true)) {
+    return <Navigate to="/login" replace />;
   }
 
-  // ✅ Allowed
   return children;
 }
 

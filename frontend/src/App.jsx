@@ -1,15 +1,16 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 
-import Navbar from "./components/Navbar";  
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-import Home from "./pages/Home"; 
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
-import ProtectedRoute from "./components/ProtectedRoute";
 import Contact from "./pages/Contact";
+
 import AdminDashboard from "./dashboards/AdminDashboard";
 import AdminAppointments from "./components/AdminAppointments";
 import ContactModal from "./components/ContactModal";
@@ -27,8 +28,7 @@ function App() {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-black
-     text-black dark:text-white transition duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-black text-black dark:text-white transition duration-300">
 
       {/* NAVBAR */}
       <Navbar onOpenModal={() => setShowModal(true)} />
@@ -43,12 +43,15 @@ function App() {
 
       {/* ROUTES */}
       <Routes>
+
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/programs" element={<Programs />} />
         <Route path="/contact" element={<Contact />} />
 
+        {/* 🔐 Admin Protected Routes */}
         <Route
           path="/admin"
           element={
@@ -67,9 +70,10 @@ function App() {
           }
         />
 
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
-      </Routes>
 
+      </Routes>
     </div>
   );
 }

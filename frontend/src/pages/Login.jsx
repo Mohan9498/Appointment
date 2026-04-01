@@ -48,8 +48,11 @@ function Login() {
       );
 
       // ✅ redirect AFTER store update
-      navigate("/admin", { replace: true });
-
+      if (res.data.is_admin) {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       console.log(error);
     
@@ -63,6 +66,14 @@ function Login() {
     } finally {
       setLoading(false);
     }
+    useEffect(() => {
+      const token = localStorage.getItem("access");
+      const isAdmin = localStorage.getItem("is_admin") === "true";
+      
+      if (token && isAdmin) {
+        navigate("/admin");
+      }
+    }, []);
   };
 
   return (

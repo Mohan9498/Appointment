@@ -2,19 +2,27 @@ import { create } from "zustand";
 
 const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem("user")) || null,
-  token: localStorage.getItem("token") || null,
+  token: localStorage.getItem("access") || null,
 
   login: (user, token) => {
     localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
+    localStorage.setItem("access", token);
 
     set({ user, token });
   },
 
   logout: () => {
-    localStorage.clear();
+    
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
+    localStorage.removeItem("is_admin");
+
+    //  Reset state
     set({ user: null, token: null });
-    window.location.href = "/login";
+
+    //  Remove axios auth header
+    delete API.defaults.headers.common["Authorization"];
   },
 }));
 

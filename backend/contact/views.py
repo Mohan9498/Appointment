@@ -1,35 +1,36 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAdminUser, AllowAny
+
+from .models import Contact
 from .serializers import ContactSerializer
 
 
 class ContactView(APIView):
 
+    # 🔥 Dynamic permissions
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]  # Anyone can send message
+        return [IsAdminUser()]   # Only admin can view messages
+
+    # ✅ GET → fetch all messages (Admin only)
     def get(self, request):
+        contacts = Contact.objects.all().order_by("-id")
+        serializer = ContactSerializer(contacts, many=True)
+
         return Response(
-            {"message": "Contact API working"},
+            {
+                "count": contacts.count(),
+                "data": serializer.data
+            },
             status=status.HTTP_200_OK
         )
 
+    # ✅ POST → save message (Public)
     def post(self, request):
-        data = request.data
-
-        # Validate required fields
-        required_fields = ["name", "email", "message"]
-        missing_fields = [field for field in required_fields if not data.get(field)]
-
-        if missing_fields:
-            return Response(
-                {
-                    "error": "Missing required fields",
-                    "fields": missing_fields
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        # Validate & save using serializer
-        serializer = ContactSerializer(data=data)
+        serializer = ContactSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
