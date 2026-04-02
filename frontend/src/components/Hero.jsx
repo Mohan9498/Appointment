@@ -26,21 +26,21 @@ function Hero({ onOpenModal }) {
 
             <div className="p-4 rounded-xl bg-white dark:bg-white/5 dark:bg-black text-black dark:text-white border border-border shadow-lg hover:translate-x-2 transition duration-300">
               <h3 className=" font-sans  mb-1  text-black dark:text-white">Speech Therapy</h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-gray-00 text-sm">
                 Improve communication skills with expert-guided sessions.
               </p>
             </div>
 
             <div className="p-4 rounded-xl bg-white dark:bg-white/5 dark:bg-black text-black dark:text-white border border-border shadow-lg hover:translate-x-2 transition duration-300">
               <h3 className=" text-black dark:text-white font-sans mb-1">Cognitive Growth</h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-gray-00 text-sm">
                 Enhance thinking, memory, and learning abilities.
               </p>
             </div>
 
             <div className="p-4 rounded-xl bg-white dark:bg-white/5 dark:bg-black text-black dark:text-white border border-border shadow-lg hover:translate-x-2 transition duration-300">
               <h3 className="t text-black dark:text-white font-sans mb-1">Confidence Building</h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-gray-00 text-sm">
                 Help children express themselves with confidence.
               </p>
             </div>
@@ -57,8 +57,8 @@ function Hero({ onOpenModal }) {
 
             <Link
               to="/programs"
-              className="px-7 py-3 rounded-full border border-gray-700 text-gray-500 dark:text-gray-400
-              hover:bg-white dark:bg-white/5 hover:text-black transition duration-300"
+              className="px-7 py-3 rounded-full border border-gray-700 text-gray-00 
+              hover:bg-white  hover:text-black transition duration-300"
             >
               Explore Programs
             </Link>

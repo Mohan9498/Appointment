@@ -92,16 +92,16 @@ function AdminDashboard() {
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-[#0F172A]">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-[#0F172A] text-black dark:text-white">
 
       {/* SIDEBAR */}
-      <div className="w-64 bg-white dark:bg-white/5 border-r border-gray-200 dark:border-white/10 p-5">
+      <div className="w-56 bg-white dark:bg-white/5 border-r border-gray-200 dark:border-white/10 p-5">
 
         <h1 className="text-xl font-bold mb-6 text-black dark:text-white">
           Admin Panel
         </h1>
 
-        <nav className="space-y-2">
+        <nav className="space-y-2 justify-center items-center">
 
           <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" active={active} setActive={setActive} value="dashboard" />
           <SidebarItem icon={<Calendar size={18} />} label="Appointments" active={active} setActive={setActive} value="appointments" />
@@ -137,7 +137,7 @@ function AdminDashboard() {
         {active === "dashboard" && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-            <StatCard icon={<Users />} label="Total Appointments" value={appointments.length} />
+            <StatCard icon={<Users />} label="Total Appointments" value= {appointments.length} />
             <StatCard icon={<MessageSquare />} label="Total Messages" value={messages.length} />
 
           </div>
@@ -145,31 +145,83 @@ function AdminDashboard() {
 
         {/* APPOINTMENTS */}
         {active === "appointments" && (
-          <Section title="Appointment Leads">
+          <Section title="Appointment Leads ">
             {filteredAppointments.map((item) => (
               <Card key={item.id}>
-                <div>
-                  <h3 className="text-blue-500 font-semibold">{item.parent_name}</h3>
-                  <p className="text-sm">👶 {item.child_name} ({item.age})</p>
-                  <p className="text-sm">📞 {item.phone}</p>
-                  <p className="text-sm">📍 {item.branch} • {item.program}</p>
-                </div>
+                
+                {/* MAIN ROW */}
+                <div className="flex flex-col space-x-11 md:flex-row md:items-center md:justify-between justify-center items-center gap-4">
+                  
+                  {/* LEFT SIDE (Details) */}
+                  <div className="space-y-2 justify-center items-center">
 
-                <div className="flex gap-2">
-                  <a href={`tel:${item.phone}`} className="btn-green">Call</a>
-                  <a href={`https://wa.me/91${item.phone}`} target="_blank" className="btn-green">WhatsApp</a>
+                    <h3 className="text-blue-500 font-semibold">
+                       {item.parent_name}
+                    </h3>
+
+                    <p className="text-sm text-gray-800 dark:text-gray-300">
+                       {item.child_name}
+                    </p>
+
+                    <p className="text-sm text-gray-800 dark:text-gray-300">
+                       ({item.age} years )
+                    </p>
+
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                       {item.phone}
+                    </p>
+
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                       {item.branch}
+                    </p>
+
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                       {item.program}
+                    </p>
+
+                    {/* ✅ DATE ADDED */}
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {item.created_at
+                      ? new Date(item.created_at).toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric"
+                        })
+                      : "No date"}
+                    </p>
+
+                  </div>
+                  
+                  {/* RIGHT SIDE (Actions) */}
+                  <div className="flex space-x-12 gap-2 md:justify-start justify-center items-center">
+
+                    <a href={`tel:${item.phone}`} className="btn-green hover:bg-green-700">
+                      Call
+                    </a>
+                    
+                    <a  
+                      href={`https://wa.me/91${item.phone}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn-green space-x-10 hover:bg-green-400" > WhatsApp
+                    </a>
+                    
+                  </div>
+                  
                 </div>
+                
               </Card>
             ))}
+            
           </Section>
-        )}
+          )}
 
         {/* MESSAGES */}
         {active === "messages" && (
           <Section title="Contact Messages">
             {filteredMessages.map((msg) => (
               <Card key={msg.id}>
-                <div>
+                <div className="space-x-1 justify-center items-center">
                   <h3 className="font-semibold">{msg.name}</h3>
                   <p className="text-sm text-gray-500">{msg.email}</p>
                   <p className="text-sm mt-1">{msg.message}</p>
@@ -204,12 +256,12 @@ function SidebarItem({ icon, label, active, setActive, value }) {
 
 function StatCard({ icon, label, value }) {
   return (
-    <div className="bg-white dark:bg-white/5 p-4 rounded-xl shadow">
-      <div className="flex items-center gap-3">
+    <div className="bg-white dark:bg-white/25 p-4 rounded-2xl shadow">
+      <div className="flex  items-center gap-3">
         {icon}
         <div>
-          <p className="text-sm text-gray-500">{label}</p>
-          <h2 className="text-xl font-bold">{value}</h2>
+          <p className="text-sm text-black dark:text-white">{label}</p>
+          <h2 className="text-lg font-semibold text-black dark:text-white">{value}</h2>
         </div>
       </div>
     </div>
@@ -218,8 +270,8 @@ function StatCard({ icon, label, value }) {
 
 function Section({ title, children }) {
   return (
-    <div className="bg-white dark:bg-white/5 p-4 rounded-xl shadow space-y-3">
-      <h2 className="text-lg font-semibold">{title}</h2>
+    <div className="bg-white dark:bg-white/5 p-4 rounded-2xl shadow space-y-3">
+      <h2 className="text-lg font-semibold text-black dark:text-white">{title}</h2>
       {children.length ? children : <p>No data found</p>}
     </div>
   );
@@ -227,7 +279,7 @@ function Section({ title, children }) {
 
 function Card({ children }) {
   return (
-    <div className="flex justify-between items-center bg-gray-100 dark:bg-white/5 p-4 rounded-lg">
+    <div className="flex justify-between items-center bg-gray-100 dark:bg-white/5 p-4 rounded-2xl">
       {children}
     </div>
   );
