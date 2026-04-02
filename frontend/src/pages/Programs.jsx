@@ -27,14 +27,14 @@ function Programs() {
   ];
 
   return (
-    <section className="min-h-screen bg-white dark:bg-black text-black dark:text-white   py-20">
+    <section className="min-h-screen bg-white dark:bg-black/15 text-black dark:text-white   py-20">
 
       {/* Heading */}
-      <div className="text-center mb-16 px-4">
-        <h2 className="text-4xl font-semiboldbg-white dark:bg-black text-black dark:text-white">
+      <div className="text-center mb-16 px-4 bg-white dark:bg-black/15 text-black dark:text-white">
+        <h2 className="text-4xl font-semibold bg-white dark:bg-black/15 text-black dark:text-white">
           Our Programs
         </h2>
-        <p className="text-gray-500 mt-4 max-w-xl mx-auto">
+        <p className="bg-white dark:bg-black/15 text-black dark:text-white mt-4 max-w-xl mx-auto">
           Carefully designed therapy programs for child development.
         </p>
       </div>
