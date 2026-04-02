@@ -25,7 +25,9 @@ function AdminDashboard() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login"); // ✅ smooth redirect (no reload)
+    navigate("/login"); //  smooth redirect (no reload)
+
+    window.location.reload();
   };
 
   // 🔹 Fetch appointments
@@ -70,6 +72,18 @@ function AdminDashboard() {
       .toLowerCase()
       .includes(search.toLowerCase())
   );
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isAdmin =
+      localStorage.getItem("access") &&
+      localStorage.getItem("is_admin") === "true";
+  
+    if (!isAdmin) {
+      navigate("/login");
+    }
+  }, []);
 
   const filteredMessages = messages.filter((m) =>
     `${m.name} ${m.email} ${m.message}`

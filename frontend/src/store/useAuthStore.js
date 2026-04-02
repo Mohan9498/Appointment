@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import API from "../services/api"; 
 
 const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem("user")) || null,
@@ -12,17 +13,19 @@ const useAuthStore = create((set) => ({
   },
 
   logout: () => {
-    
+    //  Clear storage
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     localStorage.removeItem("user");
     localStorage.removeItem("is_admin");
 
-    //  Reset state
+    // ✅ Reset Zustand state
     set({ user: null, token: null });
 
-    //  Remove axios auth header
-    delete API.defaults.headers.common["Authorization"];
+    //  Remove axios auth header safely
+    if (API?.defaults?.headers?.common?.Authorization) {
+      delete API.defaults.headers.common["Authorization"];
+    }
   },
 }));
 
