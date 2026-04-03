@@ -22,10 +22,11 @@ function Login() {
     const token = localStorage.getItem("access");
     const isAdmin = localStorage.getItem("is_admin") === "true";
 
-    if (token && isAdmin) {
+    // ✅ only redirect if already on login page
+    if (window.location.pathname === "/login" && token && isAdmin) {
       navigate("/admin", { replace: true });
     }
-  }, [navigate]);
+  }, []);
 
   const handleChange = (e) => {
     setFormData({

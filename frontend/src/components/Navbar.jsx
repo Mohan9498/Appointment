@@ -91,9 +91,9 @@ function Navbar({ onOpenModal = () => {} }) {
         {/* 🌙 TOGGLE IN MOBILE */}
         <button
           onClick={() => setDark(!dark)}
-          className="mt-3 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
+          className="mt-3 px-6 py-2 bg-white dark:bg-gray-700 rounded-2xl"
         >
-          Toggle Theme
+          {dark ?  "☀️" : "🌙"}
         </button>
     
         <button
@@ -101,9 +101,9 @@ function Navbar({ onOpenModal = () => {} }) {
             setMenuOpen(false);
             onOpenModal();
           }}
-          className="mt-4 w-6/12 bg-primary text-black dark:text-white py-2 rounded-3xl"
+          className="mt-4 w-48 bg-primary text-black dark:text-white py-2 rounded-3xl"
         >
-          Book Appointment
+          Book 
         </button>
         
       </div>
