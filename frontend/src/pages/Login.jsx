@@ -26,7 +26,7 @@ function Login() {
     if (window.location.pathname === "/login" && token && isAdmin) {
       navigate("/admin", { replace: true });
     }
-  }, []);
+    }, []);
 
   const handleChange = (e) => {
     setFormData({
