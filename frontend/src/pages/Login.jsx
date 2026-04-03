@@ -133,7 +133,7 @@ function Login() {
               </p>
             </div>
 
-            <div className="rounded-3xl border bg-white/5 p-6 shadow-lg">
+            <div className="rounded-3xl border  p-6 shadow-lg">
 
               <form onSubmit={handleLogin} className="space-y-5">
 
@@ -144,7 +144,7 @@ function Login() {
                   value={formData.username}
                   onChange={handleChange}
                   placeholder="Username"
-                  className="w-full p-3 border rounded-xl"
+                  className="w-full p-3 text-black border rounded-xl"
                   required
                 />
 
