@@ -20,14 +20,49 @@ function AdminDashboard() {
   const [active, setActive] = useState("dashboard");
   const [loading, setLoading] = useState(true);
 
+  const [collapsed, setCollapsed] = useState(false);
+
+  const [sort, setSort] = useState("latest");
+  const [branchFilter, setBranchFilter] = useState("all");
+
   const logout = useAuthStore((state) => state.logout);
 
+  const getStatus = (id) => {
+  return localStorage.getItem(`status_${id}`) || "new";
+  };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login"); //  smooth redirect (no reload)
-
+  const toggleStatus = (id) => {
+    const current = getStatus(id);
+    const updated = current === "new" ? "contacted" : "new";
+    localStorage.setItem(`status_${id}`, updated);
     window.location.reload();
+  };
+
+  const handleLogout = async () => {
+    try {
+      const refresh = localStorage.getItem("refresh");
+
+      //  Call backend logout API
+      if (refresh) {
+        await API.post("logout/", {
+          refresh: refresh,
+        }).catch(()=>{});
+      }
+
+     toast.success("Logged out successfully");
+
+    } catch (err) {
+     console.log("Logout error:", err.response?.data || err.message);
+     toast.error("Logout failed (fallback clearing session)");
+    } finally {
+      // 🧹 Clear everything
+     localStorage.clear();
+
+     logout(); // Zustand reset
+
+     // 🔁 Redirect
+      navigate("/login", { replace: true });
+    }
   };
 
   // 🔹 Fetch appointments
@@ -62,60 +97,116 @@ function AdminDashboard() {
     }
   };
 
- useEffect(() => {
-      fetchAppointments();
-      fetchMessages();
-    }, []);
+    useEffect(() => {
+        fetchAppointments();
+        fetchMessages();
+      }, []);
 
-  const filteredAppointments = appointments.filter((a) =>
-    `${a.parent_name} ${a.child_name} ${a.phone}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const isAdmin =
-      localStorage.getItem("access") &&
-      localStorage.getItem("is_admin") === "true";
   
-    if (!isAdmin) {
-      navigate("/login");
-    }
-  }, []);
+  const filteredAppointments = appointments
+  .filter((a) =>
+    `${a.parent_name} ${a.child_name} ${a.phone}`
+  .toLowerCase()
+  .includes(search.toLowerCase())
+)
+.filter((a) =>
+  branchFilter === "all" ? true : a.branch === branchFilter
+)
+.sort((a, b) => {
+  if (sort === "latest") {
+    return new Date(b.created_at) - new Date(a.created_at);
+  } else {
+    return new Date(a.created_at) - new Date(b.created_at);
+  }
+});
+const filteredMessages = messages.filter((m) =>
+  `${m.name} ${m.email} ${m.message}`
+.toLowerCase()
+.includes(search.toLowerCase())
+);
 
-  const filteredMessages = messages.filter((m) =>
-    `${m.name} ${m.email} ${m.message}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+
+const isAdmin =
+  localStorage.getItem("access") &&
+  localStorage.getItem("is_admin") === "true";
+
+if (!isAdmin) {
+  navigate("/login");
+}
+
+
+console.log("Appointments:", appointments);
+console.log("Filtered:", filteredAppointments);
+console.log("Messages:", messages);
+console.log("Filtered Messages:", filteredMessages);
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-[#0F172A] text-black dark:text-white">
 
       {/* SIDEBAR */}
-      <div className="w-56 bg-white dark:bg-white/5 border-r border-gray-200 dark:border-white/10 p-5">
+      <div
+        className={`${
+          collapsed ? "w-20" : "w-56"
+        } transition-all duration-300 bg-white dark:bg-white/5 border-r border-gray-200 dark:border-white/10 p-4 flex flex-col`}
+      >
 
-        <h1 className="text-xl font-bold mb-6 text-black dark:text-white">
-          Admin Panel
-        </h1>
+        {/* TOP */}
+        <div className="flex justify-between items-center mb-6">
+          {!collapsed && (
+            <h1 className="text-xl font-bold text-black dark:text-white">
+              Admin Pannel
+            </h1>
+          )}
 
-        <nav className="space-y-2 justify-center items-center">
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition"
+          >
+          ☰
+          </button>
+        </div>
 
-          <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" active={active} setActive={setActive} value="dashboard" />
-          <SidebarItem icon={<Calendar size={18} />} label="Appointments" active={active} setActive={setActive} value="appointments" />
-          <SidebarItem icon={<MessageSquare size={18} />} label="Messages" active={active} setActive={setActive} value="messages" />
+        {/* NAV */}
+        <nav className="space-y-2 flex-1">
+          <SidebarItem
+            icon={<LayoutDashboard size={18} />}
+            label="Dashboard"
+            active={active}
+            setActive={setActive}
+            value="dashboard"
+            collapsed={collapsed}
+          />
 
+          <SidebarItem
+            icon={<Calendar size={18} />}
+            label="Appointments"
+            active={active}
+            setActive={setActive}
+            value="appointments"
+            collapsed={collapsed}
+          />
+
+          <SidebarItem
+            icon={<MessageSquare size={18} />}
+            label="Messages"
+            active={active}
+            setActive={setActive}
+            value="messages"
+            collapsed={collapsed}
+          />
         </nav>
 
+        {/* LOGOUT */}
         <button
           onClick={handleLogout}
-          className="mt-10 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg"
+          className="mt-6 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition"
         >
-          Logout
+          {collapsed ? "⎋" : "Logout"}
         </button>
-
       </div>
 
       {/* MAIN CONTENT */}
@@ -125,7 +216,7 @@ function AdminDashboard() {
         <div className="mb-6 flex justify-between items-center">
 
           <input
-            type="text"
+           type="text"
             placeholder="Search..."
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white dark:bg-white/10 px-4 py-2 rounded-lg w-72 outline-none"
@@ -133,112 +224,141 @@ function AdminDashboard() {
 
         </div>
 
-        {/* DASHBOARD */}
-        {active === "dashboard" && (
+       {/* DASHBOARD */}
+      {active === "dashboard" && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             <StatCard icon={<Users />} label="Total Appointments" value= {appointments.length} />
             <StatCard icon={<MessageSquare />} label="Total Messages" value={messages.length} />
 
+           </div>
+      )}
+
+      {/* APPOINTMENTS */}
+      {active === "appointments" && (
+        <Section title="Appointment Leads" data={filteredAppointments}>
+
+          {/* 🔍 FILTER + SORT */}
+          <div className="flex flex-wrap gap-3  text-black mb-4">
+
+            <select
+              value={branchFilter}
+              onChange={(e) => setBranchFilter(e.target.value)}
+              className="px-3 py-2 rounded-lg bg-white dark:bg-white/10 border"
+            >
+              <option value="all">All Branches</option>
+              <option value="Chennai">Chennai</option>
+              <option value="WestMambalam">WestMambalam</option>
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Madurai">Madurai</option>
+            </select>
+                
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="px-3 py-2 rounded-lg bg-white dark:bg-white/10 border"
+            >
+              <option value="latest">Latest</option>
+              <option value="oldest">Oldest</option>
+            </select>
+
           </div>
-        )}
 
-        {/* APPOINTMENTS */}
-        {active === "appointments" && (
-          <Section title="Appointment Leads ">
+          {/* 🔥 CARDS */}
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+
             {filteredAppointments.map((item) => (
-              <Card key={item.id}>
-                
-                {/* MAIN ROW */}
-                <div className="flex flex-col space-x-11 md:flex-row md:items-center md:justify-between justify-center items-center gap-4">
-                  
-                  {/* LEFT SIDE (Details) */}
-                  <div className="space-y-2 justify-center items-center">
+              <div
+                key={item.id}
+                className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl transition duration-300"
+              >
 
-                    <h3 className="text-blue-500 font-semibold">
-                       {item.parent_name}
-                    </h3>
+                {/* HEADER */}
+                <div className="flex justify-between items-start mb-3">
 
-                    <p className="text-sm text-gray-800 dark:text-gray-300">
-                       {item.child_name}
-                    </p>
+                  <h3 className="text-lg font-semibold text-blue-600">
+                    {item.parent_name}
+                  </h3>
 
-                    <p className="text-sm text-gray-800 dark:text-gray-300">
-                       ({item.age} years )
-                    </p>
+                  {/* 🟢 STATUS BADGE */}
+                  <span
+                    onClick={() => toggleStatus(item.id)}
+                    className={`text-xs px-3 py-1 rounded-full cursor-pointer ${
+                    getStatus(item.id) === "new"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                  {getStatus(item.id) === "new" ? " New" : " Contacted"}
+                  </span>
 
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                       {item.phone}
-                    </p>
-
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                       {item.branch}
-                    </p>
-
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                       {item.program}
-                    </p>
-
-                    {/* ✅ DATE ADDED */}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {item.created_at
-                      ? new Date(item.created_at).toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric"
-                        })
-                      : "No date"}
-                    </p>
-
-                  </div>
-                  
-                  {/* RIGHT SIDE (Actions) */}
-                  <div className="flex space-x-12 gap-2 md:justify-start justify-center items-center">
-
-                    <a href={`tel:${item.phone}`} className="btn-green hover:bg-green-700">
-                      Call
-                    </a>
-                    
-                    <a  
-                      href={`https://wa.me/91${item.phone}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn-green space-x-10 hover:bg-green-400" > WhatsApp
-                    </a>
-                    
-                  </div>
-                  
                 </div>
-                
-              </Card>
-            ))}
-            
-          </Section>
-          )}
 
-        {/* MESSAGES */}
-        {active === "messages" && (
-          <Section title="Contact Messages">
-            {filteredMessages.map((msg) => (
-              <Card key={msg.id}>
-                <div className="space-x-1 justify-center items-center">
-                  <h3 className="font-semibold">{msg.name}</h3>
-                  <p className="text-sm text-gray-500">{msg.email}</p>
-                  <p className="text-sm mt-1">{msg.message}</p>
+                <p className="text-sm font-medium"> {item.child_name}</p>
+                <p className="text-sm text-gray-500 mb-2">Age: {item.age}</p>
+
+                <p className="text-sm mb-2"> {item.phone}</p>
+
+                <div className="text-sm text-gray-500 mb-4">
+                  <p> {item.branch}</p>
+                  <p> {item.program}</p>
                 </div>
-              </Card>
-            ))}
-          </Section>
-        )}
 
-      </div>
+                <p className="text-xs text-gray-400 mb-4">
+                  {item.created_at
+                    ? new Date(item.created_at).toLocaleDateString("en-IN")
+                    : "No date"}
+                </p>
+
+                <div className="flex gap-3">
+                  <a
+                    href={`tel:${item.phone}`}
+                    className="flex-1 text-center bg-green-500 hover:bg-green-600 text-white py-2 rounded-2xl text-sm"
+                  >
+                    Call
+                  </a>
+
+                  <a
+                    href={`https://wa.me/91${item.phone}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 text-center bg-emerald-400 hover:bg-emerald-500 text-white py-2 rounded-2xl text-sm"
+                  >
+                    WhatsApp
+                  </a>
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+
+        </Section>
+      )}
+
+      {/* MESSAGES */}
+      {active === "messages" && (
+        <Section title="Contact Messages" data={filteredMessages}>
+          {filteredMessages.map((msg) => (
+            <Card key={msg.id}>
+              <div className="flex flex-col gap-1">
+                <h3 className="font-semibold text-blue-600">{msg.name}</h3>
+                <p className="text-sm text-gray-500">{msg.email}</p>
+                <p className="text-sm mt-1">{msg.message}</p>
+              </div>
+            </Card>
+          ))}
+        </Section>
+      )}
+
     </div>
+  </div>
   );
 }
 
 /* 🔹 Components */
 
-function SidebarItem({ icon, label, active, setActive, value }) {
+function SidebarItem({ icon, label, active, setActive, value, collapsed }) {
   return (
     <div
       onClick={() => setActive(value)}
@@ -249,7 +369,7 @@ function SidebarItem({ icon, label, active, setActive, value }) {
       }`}
     >
       {icon}
-      {label}
+      {!collapsed && <span>{label}</span>}
     </div>
   );
 }
@@ -268,11 +388,22 @@ function StatCard({ icon, label, value }) {
   );
 }
 
-function Section({ title, children }) {
+function Section({ title, children, data = [] }) {
   return (
-    <div className="bg-white dark:bg-white/5 p-4 rounded-2xl shadow space-y-3">
-      <h2 className="text-lg font-semibold text-black dark:text-white">{title}</h2>
-      {children.length ? children : <p>No data found</p>}
+    <div className="bg-white dark:bg-white/5 p-5 rounded-2xl shadow space-y-4">
+      
+      <h2 className="text-lg font-semibold text-black dark:text-white">
+        {title}
+      </h2>
+
+      {data.length > 0 ? (
+        children
+      ) : (
+        <div className="text-center py-10 text-gray-500">
+           No data found
+        </div>
+      )}
+
     </div>
   );
 }

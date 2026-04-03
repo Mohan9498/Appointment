@@ -62,7 +62,7 @@ function Footer() {
 
         {/* Contact */}
         <div>
-          <h3 className="text-black bg-white dark:bg-white/0 mb-4 text-sm uppercase tracking-wider">
+          <h3 className="text-black  bg-white dark:bg-white/0 mb-4 text-sm uppercase tracking-wider">
             Contact
           </h3>
 
@@ -81,12 +81,14 @@ function Footer() {
             </a>
 
             {/* Instagram */}
-            <a href="https://instagram.com" target="_blank" rel="noreferrer">
-              <Instagram className="cursor-pointer hover:text-pink-500" />
+            <a
+              href="https://www.instagram.com/tinytoddstherapycentre?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="  target="_blank"
+              rel="noreferrer" >
+                <Instagram className="cursor-pointer transition duration-300 hover:text-pink-500 hover:scale-110" />
             </a>
 
             {/* Gmail */}
-            <a href="mailto:support@tinytodds.com">
+            <a href="mailto:tinytoddstherapycare@gmail.com">
               <Mail className="cursor-pointer hover:text-red-500" />
             </a>
 

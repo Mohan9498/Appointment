@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,6 +27,12 @@ function NotFound() {
 
 function App() {
   const [showModal, setShowModal] = useState(false);
+
+  const location = useLocation();
+
+  const hideNavbar = location.pathname.startsWith("/admin");
+
+  {!hideNavbar && <Navbar onOpenModal={() => setShowModal(true)} />}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-black text-black dark:text-white transition duration-300">

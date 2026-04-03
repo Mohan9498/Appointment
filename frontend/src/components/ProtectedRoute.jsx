@@ -1,17 +1,25 @@
 import { Navigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+
+function isTokenExpired(token) {
+  try {
+    const decoded = jwt_decode(token);
+    return decoded.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+}
 
 function ProtectedRoute({ children, adminOnly = false }) {
-
   const token = localStorage.getItem("access");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = localStorage.getItem("is_admin") === "true";
 
-  // ❌ No token
-  if (!token) {
+  if (!token || token === "undefined" || token === "null" || isTokenExpired(token)) {
+    localStorage.clear();
     return <Navigate to="/login" replace />;
   }
 
-  // ❌ Not admin
-  if (adminOnly && (!user || user.is_admin !== true)) {
+  if (adminOnly && !isAdmin) {
     return <Navigate to="/login" replace />;
   }
 

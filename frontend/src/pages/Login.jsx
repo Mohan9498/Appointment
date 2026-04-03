@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import useAuthStore from "../store/useAuthStore";
@@ -17,6 +17,16 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // ✅ FIXED: useEffect OUTSIDE handleLogin
+  useEffect(() => {
+    const token = localStorage.getItem("access");
+    const isAdmin = localStorage.getItem("is_admin") === "true";
+
+    if (token && isAdmin) {
+      navigate("/admin", { replace: true });
+    }
+  }, [navigate]);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -34,11 +44,19 @@ function Login() {
 
       const res = await API.post("login/", formData);
 
+      // ❌ BLOCK NON-ADMIN LOGIN
+      if (!res.data.is_admin) {
+        setErrorMsg("Access denied. Admin only.");
+        return;
+      }
+
+      // ✅ SAVE TOKENS
       localStorage.setItem("access", res.data.access);
       localStorage.setItem("refresh", res.data.refresh);
       localStorage.setItem("is_admin", String(res.data.is_admin));
       localStorage.setItem("username", res.data.username);
 
+      // ✅ STORE LOGIN STATE
       loginStore.login(
         {
           username: res.data.username,
@@ -47,15 +65,12 @@ function Login() {
         res.data.access
       );
 
-      // ✅ redirect AFTER store update
-      if (res.data.is_admin) {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
+      // ✅ REDIRECT
+      navigate("/admin", { replace: true });
+
     } catch (error) {
       console.log(error);
-    
+
       if (error.response?.status === 403) {
         setErrorMsg("Access denied. Admin only.");
       } else if (error.response?.status === 401) {
@@ -66,19 +81,13 @@ function Login() {
     } finally {
       setLoading(false);
     }
-    useEffect(() => {
-      const token = localStorage.getItem("access");
-      const isAdmin = localStorage.getItem("is_admin") === "true";
-      
-      if (token && isAdmin) {
-        navigate("/admin");
-      }
-    }, []);
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-white/5">
       <div className="grid min-h-screen lg:grid-cols-2">
+
+        {/* LEFT SIDE */}
         <div className="relative hidden overflow-hidden bg-slate-950 text-white lg:flex">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800" />
           <div className="absolute left-16 top-16 h-72 w-72 rounded-full bg-sky-500/20 blur-3xl" />
@@ -96,106 +105,86 @@ function Login() {
               </h1>
 
               <p className="mt-6 max-w-lg text-lg leading-8 text-white/70">
-                This portal is restricted to administrators only. Manage bookings,
-                approvals, and child therapy appointments securely from one dashboard.
+                Manage bookings, approvals, and therapy appointments securely.
               </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-                <p className="text-3xl font-bold">Admin</p>
-                <p className="mt-2 text-sm text-white/70">
-                  Restricted access only
-                </p>
-              </div>
-
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-                <p className="text-3xl font-bold">Secure</p>
-                <p className="mt-2 text-sm text-white/70">
-                  Protected dashboard control
-                </p>
-              </div>
             </div>
           </div>
         </div>
 
+        {/* RIGHT SIDE */}
         <div className="flex items-center justify-center bg-gradient-to-br from-white via-slate-50 to-sky-50 px-6 py-10">
           <div className="w-full max-w-md">
+
             <div className="mb-8 text-center lg:text-left">
               <Link
                 to="/"
-                className="inline-block text-sm font-medium text-slate-500 hover:text-slate-900"
+                className="text-sm text-slate-500 hover:text-slate-900"
               >
                 ← Back to Home
               </Link>
 
-              <h2 className="mt-4 text-4xl font-bold tracking-tight text-slate-900">
+              <h2 className="mt-4 text-4xl font-bold text-slate-900">
                 Admin Login
               </h2>
+
               <p className="mt-2 text-slate-500">
-                Only administrators can sign in to access the dashboard.
+                Only administrators can access the dashboard.
               </p>
             </div>
 
-            <div className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur md:p-8">
+            <div className="rounded-3xl border bg-white p-6 shadow-lg">
+
               <form onSubmit={handleLogin} className="space-y-5">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Username
-                  </label>
+
+                {/* USERNAME */}
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="Username"
+                  className="w-full p-3 border rounded-xl"
+                  required
+                />
+
+                {/* PASSWORD */}
+                <div className="relative">
                   <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
                     onChange={handleChange}
-                    placeholder="Enter admin username"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white"
+                    placeholder="Password"
+                    className="w-full p-3 border rounded-xl pr-10"
                     required
                   />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Password
-                  </label>
-
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="Enter admin password"
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-12 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white"
-                      required
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
+                {/* ERROR */}
                 {errorMsg && (
-                  <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-                    {errorMsg}
-                  </div>
+                  <p className="text-red-500 text-sm">{errorMsg}</p>
                 )}
 
+                {/* BUTTON */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full dark:bg-black text-white  px-6 py-3.5 text-sm font-semibold  transition hover:scale-[1.01] bg-slate-500 disabled:opacity-70"
+                  className="w-full bg-slate-900 text-white py-3 rounded-xl"
                 >
-                  {loading ? "Signing in..." : "Sign In to Admin Dashboard"}
-                  {!loading && <ArrowRight size={18} />}
+                  {loading ? "Signing in..." : "Login"}
                 </button>
+
               </form>
             </div>
+
           </div>
         </div>
       </div>

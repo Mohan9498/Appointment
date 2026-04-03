@@ -5,13 +5,16 @@ from .views import (
     AppointmentView,
     RegisterView,
     LoginView,
-    AdminLoginView   
+    AdminLoginView ,
+    
 )
+
 
 urlpatterns = [
     # ✅ AUTH
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", LoginView.as_view(), name="login"),
+   
     path("admin-login/", AdminLoginView.as_view(), name="admin-login"),
 
     # ✅ APPOINTMENTS
