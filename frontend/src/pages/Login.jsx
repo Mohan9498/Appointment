@@ -133,7 +133,7 @@ function Login() {
               </p>
             </div>
 
-            <div className="rounded-3xl border bg-white p-6 shadow-lg">
+            <div className="rounded-3xl border bg-white/5 p-6 shadow-lg">
 
               <form onSubmit={handleLogin} className="space-y-5">
 
