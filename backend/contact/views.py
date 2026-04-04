@@ -11,9 +11,9 @@ class ContactView(APIView):
 
     # 🔥 Dynamic permissions
     def get_permissions(self):
-        if self.request.method == "GET":
-            return [AllowAny()]  # Anyone can send message
-        return [IsAdminUser()]   # Only admin can view messages
+        if self.request.method == "POST":
+            return [AllowAny()]      # ✅ Public can send message
+        return [IsAdminUser()]       # ✅ Only admin can view
 
     # ✅ GET → fetch all messages (Admin only)
     def get(self, request):
@@ -27,6 +27,21 @@ class ContactView(APIView):
             },
             status=status.HTTP_200_OK
         )
+    
+    def delete(self, request, pk):
+        try:
+            contact = Contact.objects.get(pk=pk)
+            contact.delete()
+            
+            return Response(
+              {"message": "Deleted successfully"},
+             status=status.HTTP_200_OK
+            )
+        except Contact.DoesNotExist:
+            return Response(
+                {"error": "Not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
     # ✅ POST → save message (Public)
     def post(self, request):

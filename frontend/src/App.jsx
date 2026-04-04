@@ -33,32 +33,33 @@ function App() {
   const hideNavbar = location.pathname.startsWith("/admin");
 
   {!hideNavbar && <Navbar onOpenModal={() => setShowModal(true)} />}
+  
+  {location.pathname !== "/admin" && <Navbar />}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-black text-black dark:text-white transition duration-300">
 
-      {/* NAVBAR */}
-      <Navbar onOpenModal={() => setShowModal(true)} />
+      {/* ✅ SHOW NAVBAR ONLY FOR NON-ADMIN */}
+      {!location.pathname.startsWith("/admin") && (
+       <Navbar onOpenModal={() => setShowModal(true)} />
+      )}
 
-      {/* TOASTER */}
       <Toaster position="top-center" />
 
-      {/* MODAL */}
       {showModal && (
         <ContactModal onClose={() => setShowModal(false)} />
       )}
 
-      {/* ROUTES */}
       <Routes>
 
-        {/* Public Routes */}
+        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/programs" element={<Programs />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/* 🔐 Admin Protected Routes */}
+        {/* 🔐 ADMIN */}
         <Route
           path="/admin"
           element={
@@ -77,9 +78,7 @@ function App() {
           }
         />
 
-        {/* 404 */}
         <Route path="*" element={<NotFound />} />
-
       </Routes>
     </div>
   );

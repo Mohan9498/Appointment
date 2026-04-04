@@ -75,6 +75,22 @@ function AdminDashboard() {
     }
   };
 
+  const deleteMessage = async (id) => {
+    if (!window.confirm("Delete this message?")) return;
+
+    try {
+      await API.delete(`contact/${id}/`);
+
+      // ✅ Remove from UI instantly
+      setMessages((prev) => prev.filter((msg) => msg.id !== id));
+
+      toast.success("Message deleted");
+    } catch (err) {
+      toast.error("Delete failed");
+      console.log(err);
+    }
+  };
+
   // 🔹 Fetch contact messages
   const fetchMessages = async () => {
     try {
@@ -129,14 +145,30 @@ const filteredMessages = messages.filter((m) =>
 .includes(search.toLowerCase())
 );
 
+const [dark, setDark] = useState(
+  localStorage.getItem("theme") === "dark"
+);
 
-const isAdmin =
-  localStorage.getItem("access") &&
-  localStorage.getItem("is_admin") === "true";
+useEffect(() => {
+  if (dark) {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+}, [dark]);
 
-if (!isAdmin) {
-  navigate("/login");
-}
+
+useEffect(() => {
+  const isAdmin =
+    localStorage.getItem("access") &&
+    localStorage.getItem("is_admin") === "true";
+
+  if (!isAdmin) {
+    navigate("/login", { replace: true });
+  }
+}, []);
 
 
 console.log("Appointments:", appointments);
@@ -145,7 +177,8 @@ console.log("Messages:", messages);
 console.log("Filtered Messages:", filteredMessages);
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-[#0F172A] text-black dark:text-white">
+    <div className="min-h-screen w-full flex bg-gray-100 dark:bg-[#0F172A]">
+      
 
       {/* SIDEBAR */}
       <div
@@ -158,16 +191,28 @@ console.log("Filtered Messages:", filteredMessages);
         <div className="flex justify-between items-center mb-6">
           {!collapsed && (
             <h1 className="text-xl font-bold text-black dark:text-white">
-              Admin Pannel
+              Admin Panel
             </h1>
           )}
-
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition"
-          >
-          ☰
-          </button>
+          
+          <div className="flex items-center gap-2">
+            
+            {/* ☰ COLLAPSE */}
+            
+            <button
+              onClick={() => setCollapsed(!collapsed)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition" >   ☰
+            </button>
+            
+            
+            {/* 🌙 THEME */}
+            
+            <button
+              onClick={() => setDark(!dark)}
+              className="px-2 py-1 rounded-lg text-sm bg-gray-200 dark:bg-white/10 text-black dark:text-white" >
+              {dark ? "☀️" : "🌙"}
+            </button>
+          </div>
+          
         </div>
 
         {/* NAV */}
@@ -270,8 +315,7 @@ console.log("Filtered Messages:", filteredMessages);
             {filteredAppointments.map((item) => (
               <div
                 key={item.id}
-                className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl item-start transition duration-300"
-              >
+                className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl flex flex-col items-start transition duration-300">
 
                 {/* HEADER */}
                 <div className="flex justify-between items-start mb-3">
@@ -299,7 +343,7 @@ console.log("Filtered Messages:", filteredMessages);
 
                 <p className="text-sm mb-2"> {item.phone}</p>
 
-                <div className="text-sm text-gray-500 mb-4">
+                <div className="text-sm text-gray-500 mb-3">
                   <p> {item.branch}</p>
                   <p> {item.program}</p>
                 </div>
@@ -310,10 +354,10 @@ console.log("Filtered Messages:", filteredMessages);
                     : "No date"}
                 </p>
 
-                <div className="flex gap-3">
+                <div className="flex flex-row justify-center items-center gap-3">
                   <a
                     href={`tel:${item.phone}`}
-                    className="flex-1 text-center bg-green-500 hover:bg-green-600 text-white py-2 rounded-2xl text-sm"
+                    className="flex-auto text-center w-24 bg-green-500 hover:bg-green-600 text-white py-1 rounded-2xl text-lg"
                   >
                     Call
                   </a>
@@ -322,7 +366,7 @@ console.log("Filtered Messages:", filteredMessages);
                     href={`https://wa.me/91${item.phone}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex-1 text-center bg-emerald-400 hover:bg-emerald-500 text-white py-2 rounded-2xl text-sm"
+                    className="flex-auto text-center w-24 bg-emerald-400 hover:bg-emerald-500 text-white py-2 rounded-2xl text-sm"
                   >
                     WhatsApp
                   </a>
@@ -339,15 +383,75 @@ console.log("Filtered Messages:", filteredMessages);
       {/* MESSAGES */}
       {active === "messages" && (
         <Section title="Contact Messages" data={filteredMessages}>
-          {filteredMessages.map((msg) => (
-            <Card key={msg.id}>
-              <div className="flex flex-col gap-1">
-                <h3 className="font-semibold text-blue-600">{msg.name}</h3>
-                <p className="text-sm text-gray-500">{msg.email}</p>
-                <p className="text-sm mt-1">{msg.message}</p>
-              </div>
-            </Card>
-          ))}
+
+           <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+
+              <thead>
+                <tr className="bg-gray-100 dark:bg-white/10 text-sm">
+                  <th className="p-3">Name</th>
+                  <th className="p-3">Email</th>
+                  <th className="p-3">Message</th>
+                  <th className="p-3">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredMessages.map((msg) => (
+                  <tr
+                   key={msg.id}
+                   className="border-b border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                    <td className="p-3 font-medium text-blue-600">
+                      {msg.name}
+                    </td>
+
+                    <td className="p-3">
+                      <div className="flex flex-col">
+                        {/* EMAIL LINK */}
+                        <a
+                          href={`mailto:${msg.email}`}
+                          className="text-blue-600 hover:underline text-sm font-medium" >
+                            {msg.  email}
+                        </a>
+                        {/* ACTIONS */}
+                        <div className="flex gap-3 mt-1 text-xs">
+                          <button
+                            onClick={() => navigator.clipboard.writeText(msg.email)}
+                            className="text-gray-500 hover:text-black dark:hover:text-white" >
+                              Copy
+                          </button>
+                          
+                          <a
+                            href={`mailto:${msg.email}`}
+                            className="text-green-600 hover:underline"  >
+                                Reply
+                          </a>
+
+                        </div>
+
+                      </div>
+                    </td>
+
+
+                    <td className="p-3 text-sm">
+                       {msg.message}
+                    </td>
+
+                    <td className="p-3">
+                      <button
+                        onClick={() => deleteMessage(msg.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs" 
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+            </table>
+          </div>
+
         </Section>
       )}
 
@@ -357,6 +461,8 @@ console.log("Filtered Messages:", filteredMessages);
 }
 
 /* 🔹 Components */
+
+
 
 function SidebarItem({ icon, label, active, setActive, value, collapsed }) {
   return (

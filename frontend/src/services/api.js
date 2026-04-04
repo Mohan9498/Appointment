@@ -10,7 +10,15 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   const access = localStorage.getItem("access");
 
-  if (access) {
+  // ✅ Public routes (NO TOKEN)
+  const publicRoutes = ["contact", "login", "register"];
+
+  const isPublic = publicRoutes.some((route) =>
+    config.url.includes(route)
+  );
+
+  // 🔐 Attach token ONLY for protected routes
+  if (access && !isPublic) {
     config.headers.Authorization = `Bearer ${access}`;
   }
 
