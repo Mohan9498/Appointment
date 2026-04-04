@@ -46,6 +46,55 @@
 }
 
 /* MOBILE */
+@media (min-width: 320px) {
+
+    [dir="rtl"] .aligned .related-lookup,
+    [dir="rtl"] .aligned .datetimeshortcuts {
+        margin-left: 0;
+        margin-right: 15px;
+    }
+
+    [dir="rtl"] .aligned ul,
+    [dir="rtl"] form .aligned ul.errorlist {
+        margin-right: 0;
+    }
+
+    [dir="rtl"] #changelist-filter {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    [dir="rtl"] .object-tools {
+        text-align: right;
+    }
+
+    [dir="rtl"] .aligned .vCheckboxLabel {
+        padding: 1px 5px 0 0;
+    }
+
+    [dir="rtl"] .selector-remove {
+        background-position: 0 0;
+    }
+
+    [dir="rtl"] :enabled.selector-remove:focus,
+    [dir="rtl"] :enabled.selector-remove:hover {
+        background-position: 0 -24px;
+    }
+
+    [dir="rtl"] .selector-add {
+        background-position: 0 -48px;
+    }
+
+    [dir="rtl"] :enabled.selector-add:focus,
+    [dir="rtl"] :enabled.selector-add:hover {
+        background-position: 0 -72px;
+    }
+
+    [dir="rtl"] ul.messagelist li {
+        padding: 10px 40px 10px 10px;
+        background-position-x: calc(100% - 15px);
+    }
+}
 
 @media (max-width: 767px) {
     [dir="rtl"] .aligned .related-lookup,
