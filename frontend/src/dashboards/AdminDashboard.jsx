@@ -270,7 +270,7 @@ console.log("Filtered Messages:", filteredMessages);
             {filteredAppointments.map((item) => (
               <div
                 key={item.id}
-                className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl transition duration-300"
+                className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl item-start transition duration-300"
               >
 
                 {/* HEADER */}
