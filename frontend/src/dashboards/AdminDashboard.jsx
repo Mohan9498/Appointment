@@ -177,7 +177,7 @@ console.log("Messages:", messages);
 console.log("Filtered Messages:", filteredMessages);
 
   return (
-    <div className="min-h-screen w-full flex bg-gray-100 dark:bg-[#0F172A]">
+    <div className="h-screen w-full flex bg-gray-100 dark:bg-[#0F172A]">
       
 
       {/* SIDEBAR */}
@@ -339,7 +339,7 @@ console.log("Filtered Messages:", filteredMessages);
                 </div>
 
                 <p className="text-sm font-medium"> {item.child_name}</p> 
-                
+
                 <p className="text-sm text-gray-500 mb-2">Age: {item.age}</p>
 
                 <p className="text-sm mb-2"> {item.phone}</p>
