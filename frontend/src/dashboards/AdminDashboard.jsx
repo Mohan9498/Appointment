@@ -338,13 +338,17 @@ console.log("Filtered Messages:", filteredMessages);
 
                 </div>
 
-                <p className="text-sm font-medium"> {item.child_name}</p>
+                <p className="text-sm font-medium"> {item.child_name}</p> 
+                
                 <p className="text-sm text-gray-500 mb-2">Age: {item.age}</p>
 
                 <p className="text-sm mb-2"> {item.phone}</p>
 
                 <div className="text-sm text-gray-500 mb-3">
                   <p> {item.branch}</p>
+                </div>
+
+                <div className="text-sm text-gray-500 mb-3">
                   <p> {item.program}</p>
                 </div>
 
