@@ -411,7 +411,7 @@ console.log("Filtered Messages:", filteredMessages);
                         <a
                           href={`mailto:${msg.email}`}
                           className="text-blue-600 hover:underline text-sm font-medium" >
-                            {msg.  email}
+                            {msg.email}
                         </a>
                         {/* ACTIONS */}
                         <div className="flex gap-3 mt-1 text-xs">
