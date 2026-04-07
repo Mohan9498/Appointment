@@ -25,6 +25,8 @@ function AdminDashboard() {
   const [sort, setSort] = useState("latest");
   const [branchFilter, setBranchFilter] = useState("all");
 
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const logout = useAuthStore((state) => state.logout);
 
   const getStatus = (id) => {
@@ -177,41 +179,34 @@ console.log("Messages:", messages);
 console.log("Filtered Messages:", filteredMessages);
 
   return (
-    <div className="h-screen w-full flex bg-gray-100 dark:bg-[#0F172A]">
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-100 dark:bg-[#0F172A]">
+
+      
       
 
       {/* SIDEBAR */}
-      <div
-        className={`${
-          collapsed ? "w-20" : "w-56"
-        } transition-all duration-300 bg-white dark:bg-white/5 border-r border-gray-200 dark:border-white/10 p-4 flex flex-col`}
-      >
+      <div  className={`  fixed md:static top-0 left-0 h-full z-50  ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}  ${collapsed ? "md:w-20" : "md:w-56"}   w-64   transition-all duration-300 ease-in-out   bg-white dark:bg-white/5  border-r border-gray-200 dark:border-white/10  p-4 flex flex-col `}>
 
         {/* TOP */}
-        <div className="flex justify-between items-center mb-6">
-          {!collapsed && (
-            <h1 className="text-xl font-bold text-black dark:text-white">
-              Admin Panel
-            </h1>
-          )}
+        <div className=" p-4 bg-white dark:bg-white/0  sticky top-0 z-40">
+        
+          <h1 className="font-serif text-black dark:text-white">Admin</h1>
+            
+          {/* ☰ COLLAPSE */}
+
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)} className="text-xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition">  ☰
+          </button>
+            
+
+          {/* 🌙 THEME */}
+            
+          <button
+            onClick={() => setDark(!dark)}
+            className="px-2 py-1 rounded-lg text-sm bg-gray-200 dark:bg-white/10 text-black dark:text-white" >
+            {dark ? "☀️" : "🌙"}
+          </button>
           
-          <div className="flex items-center gap-2">
-            
-            {/* ☰ COLLAPSE */}
-            
-            <button
-              onClick={() => setCollapsed(!collapsed)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition" >   ☰
-            </button>
-            
-            
-            {/* 🌙 THEME */}
-            
-            <button
-              onClick={() => setDark(!dark)}
-              className="px-2 py-1 rounded-lg text-sm bg-gray-200 dark:bg-white/10 text-black dark:text-white" >
-              {dark ? "☀️" : "🌙"}
-            </button>
-          </div>
           
         </div>
 
@@ -254,6 +249,8 @@ console.log("Filtered Messages:", filteredMessages);
         </button>
       </div>
 
+      {mobileOpen && ( <div   className="fixed inset-0 bg-black/40 md:hidden z-40"   onClick={() => setMobileOpen(false)} />)}
+
       {/* MAIN CONTENT */}
       <div className="flex-1 p-6">
 
@@ -264,10 +261,14 @@ console.log("Filtered Messages:", filteredMessages);
            type="text"
             placeholder="Search..."
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-white dark:bg-white/10 px-4 py-2 rounded-lg w-72 outline-none"
+            className="bg-white dark:bg-white/10 px-4 py-2 rounded-lg w-full sm:w-72 outline-none"
           />
 
         </div>
+
+        
+
+
 
        {/* DASHBOARD */}
       {active === "dashboard" && (
@@ -310,7 +311,7 @@ console.log("Filtered Messages:", filteredMessages);
           </div>
 
           {/* 🔥 CARDS */}
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
 
             {filteredAppointments.map((item) => (
               <div
@@ -388,7 +389,7 @@ console.log("Filtered Messages:", filteredMessages);
       {active === "messages" && (
         <Section title="Contact Messages" data={filteredMessages}>
 
-           <div className="overflow-x-auto">
+           <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-white/10">
             <table className="w-full text-left border-collapse">
 
               <thead>

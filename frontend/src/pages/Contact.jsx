@@ -76,7 +76,7 @@ function Contact() {
         <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-sky-100 blur-3xl opacity-70" />
         <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-slate-200 blur-3xl opacity-60" />
 
-        <div className="relative w-full px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
 
             {/* LEFT */}

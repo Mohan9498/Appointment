@@ -75,35 +75,36 @@ function Navbar({ onOpenModal = () => {} }) {
       </div>
 
       {/* Mobile Menu */}
-      <div className={`md:hidden ${menuOpen ? "block" : "hidden"} bg-white dark:bg-black/90 px-6 py-6`}>
-            
+      <div className={`md:hidden transition-all duration-300 ${
+        menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+      } bg-white dark:bg-black/95 px-6 py-6 space-y-4`}>
+        
         {navItems.map((item, i) => (
           <Link
-            key={i}
-            to={item.path}
+            key={i} to={item.path}
             onClick={() => setMenuOpen(false)}
-            className="block py-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white"
+            className="block py-3 text-lg font-medium border-b border-gray-200 dark:border-white/10"
           >
             {item.label}
-          </Link>
+            
+          </Link> 
         ))}
-
-        {/* 🌙 TOGGLE IN MOBILE */}
+        
         <button
-          onClick={() => setDark(!dark)}
-          className="mt-3 px-6 py-2 bg-white dark:bg-gray-700 rounded-2xl"
+         onClick={() => setDark(!dark)}
+         className="w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-700"
         >
-          {dark ?  "☀️" : "🌙"}
+          {dark ? "☀️ Light" : "🌙 Dark"}
         </button>
-    
+        
         <button
           onClick={() => {
             setMenuOpen(false);
             onOpenModal();
           }}
-          className="mt-4 w-48 bg-primary text-black dark:text-white py-2 rounded-3xl"
+          className="w-full bg-blue-600 text-white py-3 rounded-xl"
         >
-          Book 
+          Book Appointment
         </button>
         
       </div>

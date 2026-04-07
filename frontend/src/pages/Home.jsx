@@ -10,23 +10,22 @@ function Home() {
   const [openModal, setOpenModal] = useState(false);
 
   return (
-    <div className="text-black dark:text-white transition duration-300"> {/* ✅ UPDATED */}
-
+    <div className="text-black dark:text-white transition duration-300">
+      
       {/* <Navbar onOpenModal={() => setOpenModal(true)} /> */}
 
-      <Hero onOpenModal={() => setOpenModal(true)} />
+      <div className="pt-20"> {/* prevent navbar overlap */}
+        <Hero onOpenModal={() => setOpenModal(true)} />
+        <Features />
+        <Gallery />
+      </div>
 
-      <Features />
-
-      <Gallery />
-
-      {/* MODAL */}
       {openModal && (
         <ContactModal onClose={() => setOpenModal(false)} />
       )}
-
+      
       <Footer />
-
+      
     </div>
   );
 }

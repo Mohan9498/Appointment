@@ -5,7 +5,7 @@ function Footer() {
   return (
     <footer className="text-gray-500 bg-white dark:bg-white/5 dark:text-gray-400 pt-16 pb-6">
 
-      <div className="w-full px-6 grid md:grid-cols-4 text-black dark:text-white gap-12">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
 
         {/* Brand */}
         <div>
@@ -21,7 +21,7 @@ function Footer() {
 
         {/* Links */}
         <div>
-          <h3 className="text-black bg-white dark:bg-white/0  mb-4 text-sm uppercase tracking-wider">
+          <h3 className="text-black dark:text-white dark:bg-white/0  mb-4 text-sm uppercase tracking-wider">
             Explore
           </h3>
 
@@ -43,7 +43,7 @@ function Footer() {
 
         {/* Programs */}
         <div>
-          <h3 className="text-black bg-white dark:bg-white/0 mb-4 text-sm uppercase tracking-wider">
+          <h3 className="text-black dark:text-white dark:bg-white/0 mb-4 text-sm uppercase tracking-wider">
             Programs
           </h3>
 
