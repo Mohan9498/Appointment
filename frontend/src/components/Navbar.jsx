@@ -17,9 +17,9 @@ function Navbar({ onOpenModal = () => {} }) {
   ];
 
   return (
-    <nav className="w-full bg-white fixed top-0 dark:bg-white/5 border-b border-gray-200 dark:border-white/10 dark:border-gray-800 transition">
+    <nav className="w-full  dark:bg-white/5  dark:border-white/10 dark:border-gray-800 transition">
       
-      <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6  flex justify-between items-center">
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
