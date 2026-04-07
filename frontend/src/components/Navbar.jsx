@@ -17,7 +17,7 @@ function Navbar({ onOpenModal = () => {} }) {
   ];
 
   return (
-    <nav className="w-full bg-white dark:bg-white/5 border-b border-gray-200 dark:border-white/10 dark:border-gray-800 transition">
+    <nav className="w-full bg-white fixed top-0 dark:bg-white/5 border-b border-gray-200 dark:border-white/10 dark:border-gray-800 transition">
       
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
 

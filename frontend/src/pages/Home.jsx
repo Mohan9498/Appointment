@@ -12,9 +12,7 @@ function Home() {
   return (
     <div className="text-black dark:text-white transition duration-300">
       
-      {/* <Navbar onOpenModal={() => setOpenModal(true)} /> */}
-
-      <div className="pt-20"> {/* prevent navbar overlap */}
+      <div className="pt-0 md:pt-18"> {/* prevent navbar overlap */}
         <Hero onOpenModal={() => setOpenModal(true)} />
         <Features />
         <Gallery />

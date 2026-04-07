@@ -32,9 +32,6 @@ function App() {
 
   const hideNavbar = location.pathname.startsWith("/admin");
 
-  {!hideNavbar && <Navbar onOpenModal={() => setShowModal(true)} />}
-  
-  {location.pathname !== "/admin" && <Navbar />}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-black text-black dark:text-white transition duration-300">
