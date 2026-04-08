@@ -10,7 +10,7 @@ function Footer({ onOpenModal }) {
 
         {/* Brand */}
         <div>
-          <h2 className="bg-white dark:bg-white/0 text-black text-2xl font-semibold tracking-wide">
+          <h2 className="text-black dark:text-white dark:bg-white/0  mb-4 text-sm uppercase tracking-wider">
             Tiny Todds Therapy
           </h2>
 
@@ -67,7 +67,7 @@ function Footer({ onOpenModal }) {
 
         {/* Contact */}
         <div>
-          <h3 className="text-black  bg-white dark:bg-white/0 mb-4 text-sm uppercase tracking-wider">
+          <h3 className="text-black dark:text-white dark:bg-white/0  mb-4 text-sm uppercase tracking-wider">
             Contact
           </h3>
 
@@ -81,7 +81,7 @@ function Footer({ onOpenModal }) {
           <div className="flex gap-4 mt-5">
 
             {/* WhatsApp */}
-            <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
+            <a href="https://wa.me/919941350646" target="_blank" rel="noreferrer">
               <MessageCircle className="cursor-pointer hover:text-green-400" />
             </a>
 
@@ -98,7 +98,7 @@ function Footer({ onOpenModal }) {
             </a>
 
             {/* Google */}
-            <a href="https://google.com" target="_blank" rel="noreferrer">
+            <a href="https://www.tinytoddstherapycare.com" target="_blank" rel="noreferrer">
               <Chrome className="cursor-pointer hover:text-blue-500" />
             </a>
 
