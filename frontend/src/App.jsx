@@ -12,6 +12,8 @@ import About from "./pages/About";
 import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
 
+import Footer from "./components/Footer";
+
 import AdminDashboard from "./dashboards/AdminDashboard";
 import AdminAppointments from "./components/AdminAppointments";
 import ContactModal from "./components/ContactModal";
@@ -47,12 +49,11 @@ function App() {
         <ContactModal onClose={() => setShowModal(false)} />
       )}
 
-      <Footer onOpenModal={() => setShowModal(true)} />
 
       <Routes>
 
         {/* Public */}
-        <Route path="/" element={<Home />} />
+        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/programs" element={<Programs />} />
@@ -80,6 +81,7 @@ function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+          {/* <Footer onOpenModal={() => setShowModal(true)} /> */}
     </div>
   );
 }

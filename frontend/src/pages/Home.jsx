@@ -6,7 +6,7 @@ import Features from "../components/Features";
 import Gallery from "../components/Gallery";
 import ContactModal from "../components/ContactModal";
 
-function Home() {
+function Home({onOpenModal}) {
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -17,6 +17,8 @@ function Home() {
         <Features />
         <Gallery />
       </div>
+
+      {/* <button onClick={onOpenModal}>  Book Appointment </button> */}
 
       {openModal && (
         <ContactModal onClose={() => setOpenModal(false)} />
