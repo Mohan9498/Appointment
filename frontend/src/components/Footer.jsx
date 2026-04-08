@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { MessageCircle, Instagram, Mail, Chrome } from "lucide-react";
 
-function Footer() {
+function Footer({ onOpenModal }) {
+  
   return (
     <footer className="text-gray-500 bg-white dark:bg-white/5 dark:text-gray-400 pt-16 pb-6">
 
@@ -32,9 +33,13 @@ function Footer() {
             <Link to="/programs" className="hover:text-indigo-500 transition">
               Programs
             </Link>
-            <Link to="/appointment" className="hover:text-indigo-500 transition">
-              Book Appointment
-            </Link>
+            
+            <button
+              onClick={onOpenModal}
+              className="hover:text-indigo-500 transition text-left">
+                Book Appointment
+            </button>
+
             <Link to="/contact" className="hover:text-indigo-500 transition">
               Contact
             </Link>

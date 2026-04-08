@@ -22,7 +22,7 @@ function Home() {
         <ContactModal onClose={() => setOpenModal(false)} />
       )}
       
-      <Footer />
+      <Footer onOpenModal={onOpenModal} />
       
     </div>
   );

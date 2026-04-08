@@ -47,6 +47,8 @@ function App() {
         <ContactModal onClose={() => setShowModal(false)} />
       )}
 
+      <Footer onOpenModal={() => setShowModal(true)} />
+
       <Routes>
 
         {/* Public */}
@@ -55,6 +57,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/programs" element={<Programs />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/" element={<Home onOpenModal={() => setShowModal(true)} />} />
 
         {/* 🔐 ADMIN */}
         <Route
