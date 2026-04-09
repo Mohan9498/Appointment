@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 function Login() {
   const navigate = useNavigate();
-  const controllerRef = useRef(null); // ✅ store controller
+  const controllerRef = useRef(null);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -14,6 +14,7 @@ function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const [error, setError] = useState("");
 
   // ✅ Auto redirect if already logged in
@@ -25,7 +26,6 @@ function Login() {
       navigate("/admin", { replace: true });
     }
 
-    // ✅ Cleanup: cancel request on unmount
     return () => {
       if (controllerRef.current) {
         controllerRef.current.abort();
@@ -42,33 +42,31 @@ function Login() {
     setError("");
   };
 
-  // ✅ Login with AbortController
-  const handleLogin = async (e) => {
-   e.preventDefault();
+  // ✅ Login with retry + cancel
+  const handleLogin = async (e, isRetry = false) => {
+    if (e) e.preventDefault();
 
     const controller = new AbortController();
-   controllerRef.current = controller;
+    controllerRef.current = controller;
 
-     setLoading(true);
-     setError("");
+    setLoading(true);
+    setError("");
+    if (isRetry) setRetrying(true);
 
     try {
-      const res = await API.post(
-        "login/",
-       formData,
-       {
-        timeoute : 5000, 
-        signal: controller.signal }
-      );
+      const res = await API.post("login/", formData, {
+        timeout: 8000, // ✅ FIXED
+        signal: controller.signal,
+      });
 
-      // 🚨 BLOCK NON ADMIN
+      // 🚫 Block non-admin
       if (!res.data.is_admin) {
-       setError("Access denied. Admin only.");
-       setLoading(false);
+        setError("Access denied. Admin only.");
+        setLoading(false);
         return;
-     }
+      }
 
-      // ✅ SAVE
+      // ✅ Save tokens
       localStorage.setItem("access", res.data.access);
       localStorage.setItem("is_admin", String(res.data.is_admin));
 
@@ -77,44 +75,33 @@ function Login() {
     } catch (err) {
       console.log(err);
 
-      // ❌ Ignore cancel error
-      if (err.name === "CanceledError") return;
+      if (err.name === "CanceledError") {
+        setError("Login cancelled");
+        return;
+      }
 
-      // ✅ HANDLE ERRORS PROPERLY
-      if (err.response) {
+      if (err.code === "ECONNABORTED") {
+        setError("Server is slow. Please retry.");
+      } else if (err.response) {
         if (err.response.status === 401) {
           setError("Invalid username or password");
         } else if (err.response.status === 400) {
           setError("Please fill all fields correctly");
-       } else {
+        } else {
           setError(err.response.data?.detail || "Login failed");
         }
-      } else if (err.request) {
-        setError("Server not responding. Try again later.");
       } else {
-        setError("Something went wrong");
+        setError("Server not responding. Try again.");
       }
-  
+
     } finally {
-     setLoading(false);
+      setLoading(false);
+      setRetrying(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-black px-4">
-      
-
-      {/* 🔥 LOADING OVERLAY */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-white text-sm">Signing in...</p>
-          </div>
-        </div>
-      )}
-
-      
 
       <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg">
 
@@ -160,19 +147,58 @@ function Login() {
             </button>
           </div>
 
+          {/* 🔴 ERROR */}
           {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg text-sm animate-pulse">
-                ⚠️ {error}
-              </div>
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg text-sm animate-pulse">
+              ⚠️ {error}
+            </div>
           )}
 
+          {/* 🔵 LOGIN BUTTON */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition disabled:opacity-50 flex justify-center items-center gap-2"
           >
-            Login
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Signing in...
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
+
+          {/* 🔴 CANCEL BUTTON */}
+          {loading && (
+            <button
+              type="button"
+              onClick={() => controllerRef.current?.abort()}
+              className="w-full bg-gray-300 text-black py-2 rounded-xl hover:bg-gray-400 transition"
+            >
+              Cancel
+            </button>
+          )}
+
+          {/* 🟢 RETRY BUTTON */}
+          {error && !loading && (
+            <button
+              type="button"
+              onClick={() => handleLogin(null, true)}
+              className="w-full bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition"
+            >
+              {retrying ? "Retrying..." : "Retry"}
+            </button>
+          )}
+
+          {/* 🔄 SMALL LOADER */}
+          {loading && (
+            <div className="flex items-center justify-center gap-2 text-blue-600 text-sm mt-2">
+              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <span>Signing in...</span>
+            </div>
+          )}
 
         </form>
       </div>
