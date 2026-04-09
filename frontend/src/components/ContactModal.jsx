@@ -128,7 +128,7 @@ function ContactModal({ onClose }) {
             Tiny Todds Appointment
           </h2>
 
-          <p className="text-gray-500 text-sm mb-5">
+          <p className=" dark:text-white text-black/90 text-sm mb-5">
             Fill details & we’ll call you
           </p>
 
@@ -192,13 +192,13 @@ function ContactModal({ onClose }) {
             name="branch"
             value={form.branch}
             onChange={handleChange}
-            className="w-full mb-3 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500"
+            className=" p-1 w-full mb-3 rounded-xl bg-white/5 text-black  dark:text-white dark:border-gray-600 "
           >
-            <option value="">Select Branch *</option>
-            <option value="Chennai">Chennai</option>
-            <option value="WestMambalam">WestMambalam</option>
-            <option value="Coimbatore">Coimbatore</option>
-            <option value="Madurai">Madurai</option>
+            <option value=""  className="bg-white text-black dark:bg-gray-800 dark:text-white" >Select Branch *</option>
+            <option value="Chennai"  className="bg-white text-black dark:bg-gray-800 dark:text-white" >Chennai</option>
+            <option value="WestMambalam"  className="bg-white text-black dark:bg-gray-800 dark:text-white" >WestMambalam</option>
+            <option value="Coimbatore"  className="bg-white text-black dark:bg-gray-800 dark:text-white" >Coimbatore</option>
+            <option value="Madurai"  className="bg-white text-black dark:bg-gray-800 dark:text-white" >Madurai</option>
           </select>
 
           {/* Program */}
@@ -237,7 +237,7 @@ function ContactModal({ onClose }) {
             className={`w-full py-3 rounded-xl font-semibold transition ${
               isValid
                 ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-gray-200 text-gray-400 cursor-allowed"
             }`}
           >
             {loading ? "Submitting..." : "Submit"}
