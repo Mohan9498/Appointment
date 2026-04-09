@@ -55,18 +55,15 @@ function Login() {
 
     try {
       const res = await API.post("login/", formData, {
-        timeout: 8000, // ✅ FIXED
+        timeout: 10000,
         signal: controller.signal,
       });
 
-      // 🚫 Block non-admin
       if (!res.data.is_admin) {
         setError("Access denied. Admin only.");
-        setLoading(false);
         return;
       }
 
-      // ✅ Save tokens
       localStorage.setItem("access", res.data.access);
       localStorage.setItem("is_admin", String(res.data.is_admin));
 
@@ -80,8 +77,23 @@ function Login() {
         return;
       }
 
-      if (err.code === "ECONNABORTED") {
-        setError("Server is slow. Please retry.");
+      // 🔥 HANDLE SLOW SERVER (IMPORTANT)
+      if (err.code === "ECONNABORTED" && !isRetry) {
+        setError("Waking server... please wait ⏳");
+
+        try {
+          const res = await API.post("login/", formData);
+
+          localStorage.setItem("access", res.data.access);
+          localStorage.setItem("is_admin", String(res.data.is_admin));
+
+          navigate("/admin", { replace: true });
+          return;
+
+        } catch {
+          setError("Server is still slow. Please retry.");
+        }
+
       } else if (err.response) {
         if (err.response.status === 401) {
           setError("Invalid username or password");
@@ -93,6 +105,7 @@ function Login() {
       } else {
         setError("Server not responding. Try again.");
       }
+    
 
     } finally {
       setLoading(false);
