@@ -62,6 +62,7 @@ function Login() {
       // 🚨 BLOCK NON ADMIN
       if (!res.data.is_admin) {
        setError("Access denied. Admin only.");
+       setLoading(false);
         return;
      }
 
