@@ -49,14 +49,16 @@ function Login() {
     const controller = new AbortController();
    controllerRef.current = controller;
 
-     setLoading(true);
+    //  setLoading(true);
      setError("");
 
     try {
       const res = await API.post(
         "login/",
        formData,
-       { signal: controller.signal }
+       {
+        timeoute : 5000, 
+        signal: controller.signal }
       );
 
       // 🚨 BLOCK NON ADMIN
