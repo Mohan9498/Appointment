@@ -114,7 +114,7 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-black px-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-white/15 px-4">
 
       <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg">
 

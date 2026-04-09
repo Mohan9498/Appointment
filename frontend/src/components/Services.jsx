@@ -31,7 +31,7 @@ function Services() {
         {/* Heading */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-semibold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-            Our Programs
+            1sams
           </h2>
 
           <p className="text-gray-500 dark:text-gray-400 mt-4 max-w-xl mx-auto text-sm">

@@ -19,7 +19,7 @@ function Hero({ onOpenModal }) {
         <div className="space-y-6 text-center md:text-left">
 
           <h1 className="text-4xl  dark:bg-white/0 dark:bg-black dark:text-white text-black/50 md:text-6xl font-bold leading-tight">
-            Empowering <span className="text-yellow-300">Little Minds</span>
+            Empowering <span className="text-purple-500">Little Minds</span>
           </h1>
 
           <p className="text-lg  dark:text-white text-black/50  max-w-lg mx-auto md:mx-0">

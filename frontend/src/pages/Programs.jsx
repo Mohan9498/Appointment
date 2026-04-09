@@ -29,7 +29,7 @@ function Programs() {
 
       {/* HEADER */}
       <div className="text-center mb-16 px-4">
-        <h2 className="text-4xl md:text-5xl text-blue-300 font-bold">
+        <h2 className="text-4xl md:text-5xl text-blue-500 font-bold">
           Our <span className="text-blue-600">Programs</span>
         </h2>
         <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
