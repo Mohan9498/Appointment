@@ -55,8 +55,9 @@ INSTALLED_APPS = [
 # MIDDLEWARE (CORS FIRST)
 # ======================
 MIDDLEWARE = [
+    'api.middleware.HandleOptionsMiddleware',   
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',   
+    'corsheaders.middleware.CorsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -150,25 +151,10 @@ CHANNEL_LAYERS = {
 # ✅ CORS FIX (CRITICAL)
 # ======================
 CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOW_HEADERS = ["*"]
+CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "authorization",
-    "content-type",
-    "origin",
-    "user-agent",
-]
-
-CORS_ALLOW_METHODS = [
-    "GET",
-    "POST",
-    "PUT",
-    "PATCH",
-    "DELETE",
-    "OPTIONS",
-]
 
 # ======================
 # ✅ CSRF FIX (VERCEL)
