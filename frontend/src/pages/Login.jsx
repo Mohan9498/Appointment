@@ -91,7 +91,7 @@ function Login() {
           return;
 
         } catch {
-          setError("Server is still slow. Please retry.");
+          setError("Connecting to server... please wait ");
         }
 
       } else if (err.response) {
