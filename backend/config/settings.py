@@ -55,8 +55,8 @@ INSTALLED_APPS = [
 # MIDDLEWARE (CORS FIRST)
 # ======================
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',   
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',   
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -151,6 +151,8 @@ CHANNEL_LAYERS = {
 # ======================
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_HEADERS = [
     "accept",
     "authorization",
@@ -171,6 +173,8 @@ CORS_ALLOW_METHODS = [
 # ======================
 # ✅ CSRF FIX (VERCEL)
 # ======================
+CSRF_ALLOW_ALL_ORIGINS = True
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://appointment-tttc.vercel.app",
