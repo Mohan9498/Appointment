@@ -11,7 +11,7 @@ function About() {
       <div className="relative py-20 px-6 bg-gradient-to-br from-blue-50 to-white dark:from-slate-900 dark:to-black">
 
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold text-green-600 tracking-tight mb-4">
             About Tiny Todds
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
