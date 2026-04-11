@@ -11,7 +11,7 @@ function AdminAppointments() {
   //  Fetch appointments
   const fetchAppointments = async () => {
     try {
-      const res = await API.get("appointments/");
+      const res =   ("appointments/");
       setAppointments(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.log(err);

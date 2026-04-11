@@ -99,9 +99,14 @@ function Contact() {
               {/* Cards */}
               <div className="mt-10 grid sm:grid-cols-2 gap-4">
 
-                <InfoCard icon={<Phone size={18} />} title="Call us" value="+91 98765 43210" />
-                <InfoCard icon={<Mail size={18} />} title="Email" value="support@tinytodds.com" />
-                <InfoCard icon={<MapPin size={18} />} title="Location" value="Chennai, Tamil Nadu" />
+                <InfoCard  icon={<Phone size={18} />}  title="Call us"  value={  <a href="tel:+91 99413 50646" className="hover:underline text-blue-600">  +91 99413 50646  </a>  }/>
+                
+                <InfoCard  icon={<Mail size={18} />}  title="Email"  value={  <a href="mailto:support@tinytodds.com" className="hover:underline text-blue-600">  support@tinytodds.com  </a>  }/>
+                
+                <InfoCard  icon={<MapPin size={18} />}  title="Location"  value={  <a  href="https://www.google.com/maps/search/?api=1&query=Chennai,Tamil%20Nadu"  target="_blank"  rel="noopener noreferrer"  className="hover:underline text-blue-600"  >  Chennai, Tamil Nadu  </a>  }/>
+                
+                <InfoCard  icon={<Phone size={18} />}  title="WhatsApp"  value={  <a  href="https://wa.me/919941350646"  target="_blank"  rel="noopener noreferrer"  className="hover:underline text-green-600"  >  Chat on WhatsApp  </a>  }/>
+                
                 <InfoCard icon={<Clock3 size={18} />} title="Hours" value="Mon - Sat, 10 AM - 8 PM" />
 
               </div>
@@ -195,7 +200,9 @@ function InfoCard({ icon, title, value }) {
         </div>
         <div>
           <p className="text-sm text-slate-500">{title}</p>
-          <p className="font-semibold text-slate-900">{value}</p>
+          <div className="font-semibold text-slate-900">
+            {value}
+          </div>
         </div>
       </div>
     </div>

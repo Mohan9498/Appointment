@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
 
 function Login() {
   const navigate = useNavigate();
@@ -14,8 +15,6 @@ function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [retrying, setRetrying] = useState(false);
-  const [error, setError] = useState("");
 
   // ✅ Auto redirect if already logged in
   useEffect(() => {
@@ -39,10 +38,9 @@ function Login() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError("");
   };
 
-  // ✅ Login with retry + cancel
+  // ✅ Login with popup + retry + cancel
   const handleLogin = async (e, isRetry = false) => {
     if (e) e.preventDefault();
 
@@ -50,72 +48,87 @@ function Login() {
     controllerRef.current = controller;
 
     setLoading(true);
-    setError("");
-    if (isRetry) setRetrying(true);
 
     try {
+      toast.loading("Signing in...", { id: "login" });
+
       const res = await API.post("login/", formData, {
         timeout: 10000,
         signal: controller.signal,
       });
 
       if (!res.data.is_admin) {
-        setError("Access denied. Admin only.");
+        toast.dismiss("login");
+        toast.error("Access denied. Admin only.");
         return;
       }
 
       localStorage.setItem("access", res.data.access);
       localStorage.setItem("is_admin", String(res.data.is_admin));
 
+      toast.dismiss("login");
+      toast.success("Login successful 🎉");
+
       navigate("/admin", { replace: true });
 
     } catch (err) {
       console.log(err);
+      toast.dismiss("login");
 
       if (err.name === "CanceledError") {
-        setError("Login cancelled");
+        toast("Login cancelled ❌");
         return;
       }
 
-      // 🔥 HANDLE SLOW SERVER (IMPORTANT)
-      if (err.code === "ECONNABORTED" && !isRetry) {
-        setError("Waking server... please wait ⏳");
+      let message = "Server not responding";
 
-        try {
-          const res = await API.post("login/", formData);
-
-          localStorage.setItem("access", res.data.access);
-          localStorage.setItem("is_admin", String(res.data.is_admin));
-
-          navigate("/admin", { replace: true });
-          return;
-
-        } catch {
-          setError("Connecting to server... please wait ");
-        }
-
-      } else if (err.response) {
+      if (err.response) {
         if (err.response.status === 401) {
-          setError("Invalid username or password");
+          message = "Invalid username or password";
         } else if (err.response.status === 400) {
-          setError("Please fill all fields correctly");
+          message = "Please fill all fields correctly";
         } else {
-          setError(err.response.data?.detail || "Login failed");
+          message = err.response.data?.detail || "Login failed";
         }
-      } else {
-        setError("Server not responding. Try again.");
       }
-    
 
+      // 🔥 Popup with Retry + Cancel
+      toast((t) => (
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium text-yellow-600">
+            ⚠️ Access denied! Only admins can login.
+          </span>
+
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+              }}
+              className="bg-gray-400 text-white px-3 py-1 rounded"
+            >
+              Close
+            </button>
+            
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                setFormData({ username: "", password: "" });
+              }}
+              className="bg-yellow-500 text-white px-3 py-1 rounded"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      ));
+      
     } finally {
       setLoading(false);
-      setRetrying(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-white/15 px-4">
-
       <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg">
 
         <div className="mb-6 text-center">
@@ -160,14 +173,7 @@ function Login() {
             </button>
           </div>
 
-          {/* 🔴 ERROR */}
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg text-sm animate-pulse">
-              ⚠️ {error}
-            </div>
-          )}
-
-          {/* 🔵 LOGIN BUTTON */}
+          {/* LOGIN BUTTON */}
           <button
             type="submit"
             disabled={loading}
@@ -183,35 +189,16 @@ function Login() {
             )}
           </button>
 
-          {/* 🔴 CANCEL BUTTON */}
-          {loading && (
+          {/* CANCEL BUTTON DURING LOADING */}
+          {/* {loading && (
             <button
               type="button"
               onClick={() => controllerRef.current?.abort()}
-              className="w-full bg-gray-300 text-black py-2 rounded-xl hover:bg-gray-400 transition"
+              className="w-5/12 bg-gray-300 text-black py-2 rounded-xl hover:bg-gray-400 transition"
             >
               Cancel
             </button>
-          )}
-
-          {/* 🟢 RETRY BUTTON */}
-          {error && !loading && (
-            <button
-              type="button"
-              onClick={() => handleLogin(null, true)}
-              className="w-full bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition"
-            >
-              {retrying ? "Retrying..." : "Retry"}
-            </button>
-          )}
-
-          {/* 🔄 SMALL LOADER */}
-          {loading && (
-            <div className="flex items-center justify-center gap-2 text-blue-600 text-sm mt-2">
-              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              <span>Signing in...</span>
-            </div>
-          )}
+          )} */}
 
         </form>
       </div>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MessageCircle, Instagram, Mail, Chrome } from "lucide-react";
+import { MessageCircle, Instagram, Mail, Phone, MapPin } from "lucide-react";
 
 function Footer({ onOpenModal }) {
   return (
@@ -61,17 +61,21 @@ function Footer({ onOpenModal }) {
         </div>
 
         {/* CONTACT */}
-        <div>
+        <div className=" mb-4 ">
           <h3 className="text-white font-semibold mb-4">Contact</h3>
 
-          <div className="text-sm space-y-2">
-            <p>Chennai, India</p>
-            <p>+91 9876543210</p>
-            <p>support@tinytodds.com</p>
+          <div className="text-sm  space-y-2">
+
+            <p className="flex flex-row items-center gap-2">  <MapPin size={14} className="text-blue-500" />  <a    href="https://www.google.com/maps/search/?api=1&query=Chennai,Tamil%20Nadu"    target="_blank"    rel="noopener noreferrer"    className="hover:underline text-blue-600"  >    Chennai, Tamil Nadu  </a>  </p>
+
+            <p className="flex flex-row items-center gap-2">  <Phone size={14} className="text-green-500" />  <a    href="tel:+919941350646"    className="hover:underline text-blue-600"  >    +91 99413 50646  </a>  </p>
+      
+            <p className="flex flex-row items-center gap-2">    <Mail size={14} className="text-red-500" />    <a      href="mailto:support@tinytodds.com"      className="hover:underline text-blue-600"    >      support@tinytodds.com    </a>  </p>
+
           </div>
 
           {/* SOCIAL */}
-          <div className="flex gap-4 mt-5 text-lg">
+          <div className="flex gap-4 mt-5 text text-lg">
 
             <a href="https://wa.me/919941350646" target="_blank" rel="noreferrer">
               <MessageCircle className="hover:text-green-400 transition hover:scale-110" />
@@ -89,8 +93,8 @@ function Footer({ onOpenModal }) {
               <Mail className="hover:text-red-500 transition hover:scale-110" />
             </a>
 
-            <a href="https://www.tinytoddstherapycare.com" target="_blank" rel="noreferrer">
-              <Chrome className="hover:text-blue-500 transition hover:scale-110" />
+            <a href="https://www.google.com/maps/search/?api=1&query=Chennai,Tamil%20Nadu">
+              <MapPin className="hover:text-blue-500 transition hover:scale-110" />
             </a>
 
           </div>

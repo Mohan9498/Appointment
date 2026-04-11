@@ -8,8 +8,7 @@ function About() {
       <Navbar />
 
       {/* 🌟 HERO SECTION */}
-      <div className="relative py-20 px-6 bg-gradient-to-br from-blue-50 to-white dark:from-slate-900 dark:to-black">
-
+      <section className="relative py-20 px-6  dark:from-slate-700 dark:to-black">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-green-600 tracking-tight mb-4">
             About Tiny Todds
@@ -18,40 +17,41 @@ function About() {
             Helping children grow through specialized therapy programs.
           </p>
         </div>
+      </section>
 
-        {/* 🎯 Mission & Vision */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mt-14">
+      {/* 🎯 MISSION & VISION SECTION */}
+      <section className="px-6 py-20 bg-gray-50 border border-gray-200 dark:bg-slate-900">
+        <div className="max-w-6xl mx-auto space-y-12">
 
-          {/* Mission */}
-          <div className="p-8 rounded-2xl bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
-            <h2 className="text-2xl font-semibold mb-4 text-blue-500">
-              Our Mission
-            </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-7 text-sm md:text-base">
-              We focus on speech, cognitive, and behavioral development through
-              personalized therapy programs tailored for each child.
-            </p>
+          {/* 🔷 TOP: Mission & Vision */}
+          <div className="grid md:grid-cols-2 gap-8">
+
+            {/* Mission */}
+            <div className="p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
+              <h2 className="text-2xl font-semibold mb-4 text-blue-500">
+                Our Mission
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300 leading-7 text-sm md:text-base">
+                We focus on speech, cognitive, and behavioral development through
+                personalized therapy programs tailored for each child.
+              </p>
+            </div>
+
+            {/* Vision */}
+            <div className="p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
+              <h2 className="text-2xl font-semibold mb-4 text-indigo-500">
+                Our Vision
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300 leading-7 text-sm md:text-base">
+                Every child deserves a chance to succeed, grow confidently, and
+                reach their fullest potential.
+              </p>
+            </div>
+
           </div>
 
-          {/* Vision */}
-          <div className="p-8 rounded-2xl bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
-            <h2 className="text-2xl font-semibold mb-4 text-indigo-500">
-              Our Vision
-            </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-7 text-sm md:text-base">
-              Every child deserves a chance to succeed, grow confidently, and
-              reach their fullest potential.
-            </p>
-          </div>
-
-        </div>
-      </div>
-
-      {/* 📖 CONTENT SECTION */}
-      <div className="px-6 py-20 bg-white dark:bg-slate-900">
-        <div className="max-w-5xl mx-auto">
-
-          <div className="bg-white/80 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-8 md:p-10 backdrop-blur-xl shadow-lg space-y-8">
+          {/* 📖 CONTENT BELOW */}
+          <div className="bg-white/ dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-8 md:p-10 backdrop-blur-xl shadow-lg space-y-8">
 
             <p className="text-gray-700 dark:text-gray-300 leading-8 text-justify indent-10 text-sm md:text-base">
               Tiny Todds Therapy Care is a specialized child development center dedicated to fostering each child’s unique potential
@@ -70,7 +70,7 @@ function About() {
           </div>
 
         </div>
-      </div>
+      </section>
 
       <Footer />
     </div>
