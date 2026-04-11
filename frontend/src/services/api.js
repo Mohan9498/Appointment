@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const BASE_URL = "https://appointment-83q0.onrender.com/api/";
 
@@ -10,7 +11,7 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   const access = localStorage.getItem("access");
 
-  const publicRoutes = ["login", "register" , "appointment"];
+  const publicRoutes = ["login", "register" , "appointments"];
 
   // ✅ ONLY skip token for POST contact
   const isPublicContact =
@@ -42,9 +43,8 @@ API.interceptors.response.use(
       const refresh = localStorage.getItem("refresh");
 
       if (!refresh) {
-        localStorage.clear();
-        window.location.href = "/login";
-        return Promise.reject(error);
+        console.warn("No refresh token found");
+       return Promise.reject(error);
       }
 
       try {
@@ -74,7 +74,12 @@ API.interceptors.response.use(
         console.log("Token refresh failed");
 
         localStorage.clear();
-        window.location.href = "/login";
+        toast.error("Session expired. Please login again");
+
+        setTimeout(() => {
+          localStorage.clear();
+          window.location.replace("/login");
+        }, 1000);
       }
     }
 
