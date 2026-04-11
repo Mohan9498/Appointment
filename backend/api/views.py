@@ -3,12 +3,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser,IsAuthenticated , BasePermission
+from rest_framework.permissions import IsAdminUser,AllowAny,IsAuthenticated , BasePermission
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from appointments.models import Appointment
 from .serializers import AppointmentSerializer
+ 
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -190,8 +191,12 @@ class LogoutView(APIView):
 
 # ✅ APPOINTMENT VIEW
 class AppointmentView(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdminUser]
+    
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [AllowAny()]   # ✅ public booking
+        return [IsAdminUser()]    # ✅ admin only view
 
     def get(self, request):
         try:
@@ -215,7 +220,8 @@ class AppointmentView(APIView):
             data = request.data.copy()
 
             # ✅ attach logged-in user automatically
-            data["user"] = request.user.id
+            if request.user.is_authenticated:
+                data["user"] = request.user.id
 
             serializer = AppointmentSerializer(data=data)
 

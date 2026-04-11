@@ -88,8 +88,11 @@ function ContactModal({ onClose }) {
       toast.success("Submitted successfully 🎉");
       onClose();
 
-    } catch {
-      toast.error("Submission failed");
+    } catch (err) {
+        console.log(err.response?.data || err.message);
+        toast.error(
+          err.response?.data?.error || "Submission failed"
+        );
     } finally {
       setLoading(false);
     }

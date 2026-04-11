@@ -10,7 +10,7 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   const access = localStorage.getItem("access");
 
-  const publicRoutes = ["login", "register"];
+  const publicRoutes = ["login", "register" , "appointment"];
 
   // ✅ ONLY skip token for POST contact
   const isPublicContact =
