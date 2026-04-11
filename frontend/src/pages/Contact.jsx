@@ -65,16 +65,16 @@ function Contact() {
   };
 
   return (
-    <div className="min-h-screen text-black dark:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-black dark:text-white">
 
      
 
-      <section className="relative overflow-hidden pt-28 pb-16">
+      <section className="relative overflow-hidden pt-28 pb-16 bg-slate-50 dark:bg-black text-black dark:text-white">
 
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-sky-50" />
-        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-sky-100 blur-3xl opacity-70" />
-        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-slate-200 blur-3xl opacity-60" />
+        <div className="absolute inset-0 bg-slate-50 dark:bg-black text-black dark:text-white" />
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-slate-50 dark:bg-black text-black dark:text-white blur-3xl opacity-70" />
+        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-slate-50 dark:bg-black text-black dark:text-white blur-3xl opacity-60" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -82,16 +82,16 @@ function Contact() {
             {/* LEFT */}
             <div className="pt-4">
 
-              <p className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white dark:bg-white/5 px-4 py-2 text-sm font-medium text-slate-600 shadow-sm backdrop-blur">
+              <p className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 dark:bg-black text-black dark:text-white px-4 py-2 text-sm font-medium  shadow-sm backdrop-blur">
                 <MessageSquareText size={16} />
                 Get in touch
               </p>
 
-              <h1 className="mt-6 text-4xl md:text-6xl font-bold text-slate-900">
+              <h1 className="mt-6 text-4xl md:text-6xl font-bold bg-slate-50 dark:bg-black text-black dark:text-white">
                 Let’s talk about your child’s care.
               </h1>
 
-              <p className="mt-5 max-w-xl text-lg text-slate-600">
+              <p className="mt-5 max-w-xl text-lg bg-slate-50 dark:bg-black text-black dark:text-white">
                 Reach out for therapy consultation, program details,
                 appointment support, or general questions.
               </p>
@@ -107,19 +107,19 @@ function Contact() {
                 
                 <InfoCard  icon={<Phone size={18} />}  title="WhatsApp"  value={  <a  href="https://wa.me/919941350646"  target="_blank"  rel="noopener noreferrer"  className="hover:underline text-green-600"  >  Chat on WhatsApp  </a>  }/>
                 
-                <InfoCard icon={<Clock3 size={18} />} title="Hours" value="Mon - Sat, 10 AM - 8 PM" />
+                <InfoCard  icon={<Clock3 size={18} />} title="Hours" value={"Mon - Sat, 10 AM - 8 PM " }  />
 
               </div>
             </div>
 
             {/* RIGHT FORM */}
-            <div className="rounded-[2rem] border border-slate-200 bg-white dark:bg-white/5 p-6 md:p-8 shadow-xl backdrop-blur">
+            <div className="rounded-[2rem] border border-slate-200 bg-slate-50 dark:bg-black text-black dark:text-white p-6 md:p-8 shadow-xl backdrop-blur">
 
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className="text-2xl font-bold bg-slate-50 dark:bg-black text-black dark:text-white">
                   Send a message
                 </h2>
-                <p className="text-slate-500">
+                <p className="bg-slate-50 dark:bg-black text-black dark:text-white">
                   Fill in your details and we’ll get back to you soon.
                 </p>
               </div>
@@ -131,7 +131,7 @@ function Contact() {
                 <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} />
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                  <label className="mb-2 block text-sm font-medium bg-slate-50 dark:bg-black text-black dark:text-white">
                     Message
                   </label>
                   <textarea
@@ -148,10 +148,10 @@ function Contact() {
                 <button
                   type="submit"
                   disabled={!isValid || loading}
-                  className={`w-full flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition ${
+                  className={`w-full flex items-center justify-center gap-2  rounded-full px-6 py-3.5 text-sm font-semibold transition ${
                     isValid
                       ? "bg-blue-600 text-white"
-                      : "bg-black text-white cursor-allowed"
+                      : "bg-white text-black cursor-allowed"
                   }`}
                 >
                   <Send size={18} />
@@ -175,7 +175,7 @@ function Contact() {
 function Input({ label, name, value, onChange, type = "text" }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-slate-700">
+      <label className="mb-2 block text-sm font-medium bg-slate-50 dark:bg-black text-black dark:text-white">
         {label}
       </label>
       <input
@@ -191,16 +191,16 @@ function Input({ label, name, value, onChange, type = "text" }) {
   );
 }
 
-function InfoCard({ icon, title, value }) {
+function InfoCard({ icon, title, value ,className=""}) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white dark:bg-white/5 p-5 shadow-sm">
+    <div className="rounded-3xl border border-slate-200 bg-slate-50 dark:bg-black text-black dark:text-white p-5 shadow-sm">
       <div className="flex items-center gap-3">
         <div className="rounded-2xl bg-slate-900 p-3 text-white">
           {icon}
         </div>
         <div>
-          <p className="text-sm text-slate-500">{title}</p>
-          <div className="font-semibold text-slate-900">
+          <p className="text-sm bg-slate-50 dark:bg-black text-black dark:text-white">{title}</p>
+          <div className="font-semibold bg-slate-50 dark:bg-black text-black dark:text-white">
             {value}
           </div>
         </div>

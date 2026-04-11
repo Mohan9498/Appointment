@@ -3,12 +3,12 @@ import Footer from "../components/Footer";
 
 function About() {
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-slate-900 dark:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-black dark:text-white">
 
       <Navbar />
 
       {/* 🌟 HERO SECTION */}
-      <section className="relative py-20 px-6  dark:from-slate-700 dark:to-black">
+      <section className="relative py-20 px-6  bg-slate-50 dark:bg-black/25 text-black dark:text-white">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-green-600 tracking-tight mb-4">
             About Tiny Todds
@@ -20,7 +20,7 @@ function About() {
       </section>
 
       {/* 🎯 MISSION & VISION SECTION */}
-      <section className="px-6 py-20 bg-gray-50 border border-gray-200 dark:bg-slate-900">
+      <section className="px-6 py-20 border border-gray-700 bg-slate-50 dark:bg-black/25 text-black dark:text-white">
         <div className="max-w-6xl mx-auto space-y-12">
 
           {/* 🔷 TOP: Mission & Vision */}

@@ -179,66 +179,64 @@ function AdminDashboard() {
   console.log("Filtered Messages:", filteredMessages);
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-100 dark:bg-[#0F172A]">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100 dark:bg-[#0F172A]">
 
-      
-      
+      {/* ✅ MOBILE HEADER */}
+      <div className="md:hidden h-full flex justify-between items-center p-4 bg-white dark:bg-[#0F172A] border-b sticky top-0 z-50">
+        <h1 className="font-semibold text-black dark:text-white">Admin</h1>
 
-      {/* SIDEBAR */}
-      <div  className={`  fixed md:static top-0 left-0 h-screen  ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}  ${collapsed ? "md:w-80" : "md:max-w-7xl"}   w-72   transition-all duration-300 ease-in-out   bg-white dark:bg-white/5  border-r border-gray-200 dark:border-white/10  p-4 flex flex-col `}>
-
-        {/* 📱 MOBILE TOP BAR */}
-        <div className="md:hidden flex justify-between items-center p-4 bg-white dark:bg-[#0F172A] border-b sticky top-0 z-50">
-
-          <h1 className="font-semibold text-black dark:text-white">
-            Admin
-          </h1>
-
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileOpen(true)}
-            className="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition"
+            className="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
           >
             ☰
           </button>
 
           <button
             onClick={() => setDark(!dark)}
-            className="px-2 py-1 rounded-lg text-sm bg-gray-200 dark:bg-white/10 text-black dark:text-white" >
+            className="px-2 py-1 rounded-lg bg-gray-200 dark:bg-white/10"
+          >
             {dark ? "☀️" : "🌙"}
           </button>
-
         </div>
+      </div>
 
-        {/* TOP */}
-        <div className="flex items-center justify-between mb-6">
+      {/* ✅ SIDEBAR */}
+      <div
+        className={`fixed top-0 left-0 h-full w-72 bg-white dark:bg-white/5 border-r z-50 transform transition-transform duration-300
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0 md:static md:w-64 flex flex-col p-4`}
+      >
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden text-xl mb-4"
+        >
+          ✕
+        </button>
+
+        <nav className="space-y-2 flex-1">
+          {/* 🌙 THEME TOGGLE (DESKTOP) */}
+          <div className="hidden md:flex items-center justify-between mt-4 px-2">
+
+            <h1 className="font-serif text-black dark:text-white">Admin</h1>
+
+
+            <button
+              onClick={() => setDark(!dark)}
+              className="px-3 rounded-lg text-xs bg-gray-200 dark:bg-white/10 text-black dark:text-white"
+            >
+              {dark ? "☀️ Light" : "🌙 Dark"}
+            </button>
+
+          </div>
           
-          <h1 className="font-semibold text-black dark:text-white">  Admin  </h1>
-          
-          {/* ❌ CLOSE BUTTON (MOBILE ONLY) */}
-          <button  onClick={() => setMobileOpen(false)}
-            className="md:hidden text-xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"  >  ✕
-          </button>    
-
-          {/* 🌙 THEME */}
-
-          <button
-            onClick={() => setDark(!dark)}
-            className="px-2 py-1 rounded-lg text-sm bg-gray-200 dark:bg-white/10 text-black dark:text-white" >
-            {dark ? "☀️" : "🌙"}
-          </button>
-
-        </div>
-
-
-        {/* NAV */}
-        <nav className="space-y-2 w-60 md:w-48 shadow- flex-1">
           <SidebarItem
             icon={<LayoutDashboard size={18} />}
             label="Dashboard"
             active={active}
             setActive={setActive}
             value="dashboard"
-            collapsed={collapsed}
             setMobileOpen={setMobileOpen}
           />
 
@@ -248,7 +246,6 @@ function AdminDashboard() {
             active={active}
             setActive={setActive}
             value="appointments"
-            collapsed={collapsed}
             setMobileOpen={setMobileOpen}
           />
 
@@ -258,22 +255,25 @@ function AdminDashboard() {
             active={active}
             setActive={setActive}
             value="messages"
-            collapsed={collapsed}
             setMobileOpen={setMobileOpen}
           />
-
         </nav>
 
-        {/* LOGOUT */}
         <button
           onClick={handleLogout}
-          className="mt-6 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition"
+          className="mt-6 bg-red-500 text-white py-2 rounded-lg"
         >
-          {collapsed ? "⎋" : "Logout"}
+          Logout
         </button>
       </div>
 
-      {mobileOpen && ( <div   className="fixed inset-0 bg-black/40 md:hidden z-40"   onClick={() => setMobileOpen(false)} />)}
+      {/* ✅ OVERLAY */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
       {/* MAIN CONTENT */}
       <div className="flex-1 p-6">
@@ -339,23 +339,18 @@ function AdminDashboard() {
                   className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl flex flex-col items-start transition duration-300">
 
                   {/* HEADER */}
-                  <div className="flex justify-between items-start mb-3">
+                  <div className="flex justify-between items-start gap-14 mb-3">
 
                     <h3 className="text-lg font-semibold text-blue-600">
                       {item.parent_name}
                     </h3>
 
-                    {/* 🟢 STATUS BADGE */}
-                    <span
-                      onClick={() => toggleStatus(item.id)}
-                      className={`text-xs px-3 py-1 rounded-full cursor-pointer ${
-                      getStatus(item.id) === "new"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-200 text-gray-700"
-                      }`}
-                    >
-                    {getStatus(item.id) === "new" ? " New" : " Contacted"}
-                    </span>
+
+                    <p className="text-sm items-end text-black-400 mb-4">
+                    {item.created_at
+                      ? new Date(item.created_at).toLocaleDateString("en-IN")
+                      : "No date"}
+                    </p>                    
 
                   </div>
 
@@ -373,11 +368,7 @@ function AdminDashboard() {
                     <p> {item.program}</p>
                   </div>
 
-                  <p className="text-xs text-gray-400 mb-4">
-                    {item.created_at
-                      ? new Date(item.created_at).toLocaleDateString("en-IN")
-                      : "No date"}
-                  </p>
+                  
 
                   <div className="flex flex-row justify-center items-center gap-3">
                     <a

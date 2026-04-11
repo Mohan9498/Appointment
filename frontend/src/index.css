@@ -45,6 +45,18 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
 
+.react-tel-input .form-control {
+  width: 100% !important;
+  height: 50px !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+}
+
+.react-tel-input .flag-dropdown {
+  background: transparent !important;
+  border: none !important;
+}
+
 /* ROOT VARIABLES */
 :root {
   --text: #6b6375;

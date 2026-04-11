@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import PhoneInput from "react-phone-input-2/dist/lib";
+import "react-phone-input-2/lib/style.css";
 
 function ContactModal({ onClose }) {
 
@@ -16,13 +18,14 @@ function ContactModal({ onClose }) {
 
   const [loading, setLoading] = useState(false);
   const inputRef = useRef();
+  const PhoneInput = require("react-phone-input-2").default;
 
-  // ✅ Auto focus
+  // Auto focus
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  // ✅ ESC close
+  // ESC close
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
@@ -31,40 +34,37 @@ function ContactModal({ onClose }) {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  // ✅ Disable background scroll
+  // Disable scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => (document.body.style.overflow = "auto");
   }, []);
 
-  // ✅ Input handler (FIXED)
+  // Input handler
   const handleChange = (e) => {
     let { name, value } = e.target;
 
-    if (name === "phone") {
-      value = value.replace(/\D/g, "").slice(0, 10);
-    }
-
     if (name === "age") {
-      value = value.replace(/\D/g, "");       // only numbers
-      value = Math.max(0, Number(value));     // no negative
-      if (value > 18) value = 18;             // max limit
+      value = value.replace(/\D/g, "");
+      value = Math.max(0, Number(value));
+      if (value > 30) value = 30;
     }
 
     setForm({ ...form, [name]: value });
   };
 
-  // ✅ Validation
+  // ✅ Validation (global phone)
   const isValid =
     form.parentName &&
     form.childName &&
     form.age > 0 &&
-    form.age <= 18 &&
-    form.phone.length === 10 &&
+    form.age <= 30 &&
+    form.phone &&
+    form.phone.length > 5 &&
     form.branch &&
     form.program;
 
-  // ✅ Submit
+  // Submit
   const handleSubmit = async () => {
     if (!isValid) {
       toast.error("Please fill all fields correctly");
@@ -78,7 +78,7 @@ function ContactModal({ onClose }) {
         parent_name: form.parentName,
         child_name: form.childName,
         age: form.age,
-        phone: form.phone,
+        phone: form.phone, // ✅ includes country code
         branch: form.branch,
         program: form.program,
         date: new Date().toISOString().split("T")[0],
@@ -89,10 +89,8 @@ function ContactModal({ onClose }) {
       onClose();
 
     } catch (err) {
-        console.log(err.response?.data || err.message);
-        toast.error(
-          err.response?.data?.error || "Submission failed"
-        );
+      console.log(err.response?.data || err.message);
+      toast.error(err.response?.data?.error || "Submission failed");
     } finally {
       setLoading(false);
     }
@@ -131,7 +129,7 @@ function ContactModal({ onClose }) {
             Tiny Todds Appointment
           </h2>
 
-          <p className=" dark:text-white text-black/90 text-sm mb-5">
+          <p className="dark:text-white text-black/90 text-sm mb-5">
             Fill details & we’ll call you
           </p>
 
@@ -159,75 +157,84 @@ function ContactModal({ onClose }) {
             type="number"
             name="age"
             min="1"
-            max="18"
+            max="30"
             placeholder="Child Age *"
             value={form.age}
             onChange={handleChange}
             className="w-full mb-1 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
           />
 
-          {form.age && (form.age <= 0 || form.age > 18) && (
+          {form.age && (form.age <= 0 || form.age > 30) && (
             <p className="text-red-500 text-xs mb-3">
-              Age must be between 1 and 18
+              Age must be between 1 and 30
             </p>
           )}
 
-          {/* Phone */}
-          <div className="flex items-center bg-white/5 rounded-xl px-3 mb-2 focus-within:ring-2 focus-within:ring-blue-500">
-            <span className="text-gray-500 mr-2">+91</span>
-            <input
-              name="phone"
-              placeholder="Phone number *"
+          {/* 🌍 GLOBAL PHONE INPUT */}
+          <div className="mb-4">
+            <PhoneInput
+              country={"in"}
+              enableSearch={true}
               value={form.phone}
-              onChange={handleChange}
-              className="w-full py-3 bg-transparent outline-none"
+              onChange={(phone) => setForm({ ...form, phone })}
+
+              inputProps={{
+                name: "phone",
+                required: true,
+              }}
+            
+              containerStyle={{
+                width: "100%"
+              }}
+            
+              inputStyle={{
+                width: "100%",
+                height: "50px",
+                borderRadius: "12px",
+                backgroundColor: "transparent",
+                border: "1px solid #d1d5db",
+                paddingLeft: "60px",
+                fontSize: "14px",
+                color: document.documentElement.classList.contains("dark") ? "white" : "black"
+              }}
+            
+              buttonStyle={{
+                border: "none",
+                background: "transparent"
+              }}
+            
+              dropdownStyle={{
+                borderRadius: "10px"
+              }}
             />
           </div>
-
-          {form.phone && form.phone.length !== 10 && (
-            <p className="text-red-500 text-xs mb-3">
-              Enter valid 10-digit number
-            </p>
-          )}
 
           {/* Branch */}
           <select
             name="branch"
             value={form.branch}
             onChange={handleChange}
-            className=" p-1 w-full mb-3 rounded-xl bg-white/5 text-black  dark:text-white dark:border-gray-600 "
+            className="p-2 w-full mb-3 rounded-xl bg-white/5 text-black dark:text-white"
           >
-            <option value=""  className="bg-white text-black dark:bg-gray-800 dark:text-white" >Select Branch *</option>
-            <option value="Chennai"  className="bg-white text-black dark:bg-gray-800 dark:text-white" >Chennai</option>
-            <option value="WestMambalam"  className="bg-white text-black dark:bg-gray-800 dark:text-white" >WestMambalam</option>
-            <option value="Coimbatore"  className="bg-white text-black dark:bg-gray-800 dark:text-white" >Coimbatore</option>
-            <option value="Madurai"  className="bg-white text-black dark:bg-gray-800 dark:text-white" >Madurai</option>
+            <option value="">Select Branch *</option>
+            <option value="Chennai">Chennai</option>
+            <option value="WestMambalam">WestMambalam</option>
+            <option value="Coimbatore">Coimbatore</option>
+            <option value="Madurai">Madurai</option>
           </select>
 
           {/* Program */}
           <div className="mb-5">
-            <p className="text-sm font-medium mb-2">
-              Select Program *
-            </p>
+            <p className="text-sm font-medium mb-2">Select Program *</p>
 
             <div className="flex gap-6">
               <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  name="program"
-                  value="Speech Cognitive"
-                  onChange={handleChange}
-                />
+                <input type="radio" name="program" value="Speech Cognitive" onChange={handleChange} />
                 Speech Cognitive
               </label>
 
               <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  name="program"
-                  value="Day Care"
-                  onChange={handleChange}
-                />
+                <input type="radio" name="program" value="Day Care" onChange={handleChange} />
                 Day Care
               </label>
             </div>
@@ -240,7 +247,7 @@ function ContactModal({ onClose }) {
             className={`w-full py-3 rounded-xl font-semibold transition ${
               isValid
                 ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-200 text-gray-400 cursor-allowed"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }`}
           >
             {loading ? "Submitting..." : "Submit"}

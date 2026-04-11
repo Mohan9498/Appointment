@@ -16,7 +16,7 @@ function Gallery() {
 
       {/* HEADER */}
       <div className="text-center mb-14 px-4">
-        <h2 className="text-4xl md:text-5xl font-bold">
+        <h2 className="text-4xl md:text-5xl text-blue-600 font-bold">
           Our <span className="text-blue-600">Activities</span>
         </h2>
         <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">

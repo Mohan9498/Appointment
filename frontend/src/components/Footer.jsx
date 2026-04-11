@@ -3,13 +3,13 @@ import { MessageCircle, Instagram, Mail, Phone, MapPin } from "lucide-react";
 
 function Footer({ onOpenModal }) {
   return (
-    <footer className="bg-slate-900 text-gray-400 pt-16 pb-6">
+    <footer className="bg-slate-50 dark:bg-black text-black dark:text-white pt-16 pb-6">
 
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
 
         {/* BRAND */}
         <div>
-          <h2 className="text-white text-lg font-semibold mb-4">
+          <h2 className="bg-slate-50 dark:bg-black text-black dark:text-white text-lg font-semibold mb-4">
             Tiny Todds Therapy
           </h2>
           <p className="text-sm leading-relaxed">
@@ -20,7 +20,7 @@ function Footer({ onOpenModal }) {
 
         {/* EXPLORE */}
         <div>
-          <h3 className="text-white font-semibold mb-4">Explore</h3>
+          <h3 className="bg-slate-50 dark:bg-black text-black dark:text-white font-semibold mb-4">Explore</h3>
 
           <div className="flex flex-col gap-2 text-sm">
             <Link to="/about" className="hover:text-white transition">
@@ -45,7 +45,7 @@ function Footer({ onOpenModal }) {
 
         {/* PROGRAMS */}
         <div>
-          <h3 className="text-white font-semibold mb-4">Programs</h3>
+          <h3 className="bg-slate-50 dark:bg-black text-black dark:text-white font-semibold mb-4">Programs</h3>
 
           <div className="flex flex-col gap-2 text-sm">
             <p className="hover:text-white cursor-pointer transition">
@@ -62,15 +62,15 @@ function Footer({ onOpenModal }) {
 
         {/* CONTACT */}
         <div className=" mb-4 ">
-          <h3 className="text-white font-semibold mb-4">Contact</h3>
+          <h3 className="bg-slate-50 dark:bg-black text-black dark:text-white font-semibold mb-4">Contact</h3>
 
           <div className="text-sm  space-y-2">
 
-            <p className="flex flex-row items-center gap-2">  <MapPin size={14} className="text-blue-500" />  <a    href="https://www.google.com/maps/search/?api=1&query=Chennai,Tamil%20Nadu"    target="_blank"    rel="noopener noreferrer"    className="hover:underline text-blue-600"  >    Chennai, Tamil Nadu  </a>  </p>
+            <p className="flex flex-row items-center gap-2">  <MapPin size={14} className="text-blue-500" />  <a    href="https://www.google.com/maps/search/?api=1&query=Chennai,Tamil%20Nadu"    target="_blank"    rel="noopener noreferrer"    className="hover:underline hover:text-white"  >    Chennai, Tamil Nadu  </a>  </p>
 
-            <p className="flex flex-row items-center gap-2">  <Phone size={14} className="text-green-500" />  <a    href="tel:+919941350646"    className="hover:underline text-blue-600"  >    +91 99413 50646  </a>  </p>
+            <p className="flex flex-row items-center gap-2">  <Phone size={14} className="text-green-500" />  <a    href="tel:+919941350646"    className="hover:underline hover:text-white"  >    +91 99413 50646  </a>  </p>
       
-            <p className="flex flex-row items-center gap-2">    <Mail size={14} className="text-red-500" />    <a      href="mailto:support@tinytodds.com"      className="hover:underline text-blue-600"    >      support@tinytodds.com    </a>  </p>
+            <p className="flex flex-row items-center gap-2">    <Mail size={14} className="text-red-500" />    <a      href="mailto:support@tinytodds.com"      className="hover:underline hover:text-white"    >      support@tinytodds.com    </a>  </p>
 
           </div>
 
