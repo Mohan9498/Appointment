@@ -2,8 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import PhoneInput from "react-phone-input-2/dist/lib";
-import "react-phone-input-2/lib/style.css";
 
 function ContactModal({ onClose }) {
 
@@ -12,13 +10,37 @@ function ContactModal({ onClose }) {
     childName: "",
     age: "",
     phone: "",
+    countryCode: "+91",
     branch: "",
     program: ""
   });
 
+  const countries = [
+    { code: "+93", label: "🇦🇫 " },
+    { code: "+355", label: "🇦🇱 " },
+    { code: "+213", label: "🇩🇿 " },
+    { code: "+1", label: "🇺🇸 " },
+    { code: "+44", label: "🇬🇧 " },
+    { code: "+61", label: "🇦🇺 " },
+    { code: "+91", label: "🇮🇳 " },
+    { code: "+971", label: "🇦🇪 " },
+    { code: "+81", label: "🇯🇵 " },
+    { code: "+49", label: "🇩🇪 " },
+    { code: "+33", label: "🇫🇷 " },
+    { code: "+39", label: "🇮🇹 " },
+    { code: "+34", label: "🇪🇸 " },
+    { code: "+86", label: "🇨🇳 " },
+    { code: "+7", label: "🇷🇺 " },
+    { code: "+55", label: "🇧🇷 " },
+    { code: "+27", label: "🇿🇦 " },
+    { code: "+65", label: "🇸🇬 " },
+    { code: "+82", label: "🇰🇷 " },
+    { code: "+966", label: "🇸🇦 " },
+    
+  ];
+
   const [loading, setLoading] = useState(false);
   const inputRef = useRef();
-  const PhoneInput = require("react-phone-input-2").default;
 
   // Auto focus
   useEffect(() => {
@@ -53,14 +75,14 @@ function ContactModal({ onClose }) {
     setForm({ ...form, [name]: value });
   };
 
-  // ✅ Validation (global phone)
+  // Validation
   const isValid =
     form.parentName &&
     form.childName &&
     form.age > 0 &&
     form.age <= 30 &&
     form.phone &&
-    form.phone.length > 5 &&
+    form.phone.length >= 6 &&
     form.branch &&
     form.program;
 
@@ -78,7 +100,7 @@ function ContactModal({ onClose }) {
         parent_name: form.parentName,
         child_name: form.childName,
         age: form.age,
-        phone: form.phone, // ✅ includes country code
+        phone: `${form.countryCode}${form.phone}`, // ✅ combined
         branch: form.branch,
         program: form.program,
         date: new Date().toISOString().split("T")[0],
@@ -99,14 +121,13 @@ function ContactModal({ onClose }) {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+        className="fixed inset-0 z-50 flex py-3 items-center justify-center bg-black/60 backdrop-blur-sm px-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
       >
 
-        {/* Modal */}
         <motion.div
           initial={{ y: 80, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -134,94 +155,97 @@ function ContactModal({ onClose }) {
           </p>
 
           {/* Parent */}
-          <input
-            ref={inputRef}
-            name="parentName"
-            placeholder="Parent Name *"
-            value={form.parentName}
-            onChange={handleChange}
-            className="w-full mb-3 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+          <div className="mb-3">
+            <label className="text-xs font-medium mt-1 text-gray-700 dark:text-gray-300">
+              Parent Name *
+            </label>
+            <input
+              ref={inputRef}
+              name="parentName"
+              value={form.parentName}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-1 border rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
 
           {/* Child */}
-          <input
-            name="childName"
-            placeholder="Child Name *"
-            value={form.childName}
-            onChange={handleChange}
-            className="w-full mb-3 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+          <div className="mb-3">
+            <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
+              Child Name *
+            </label>
+            <input
+              name="childName"
+              value={form.childName}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-1 border rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
 
           {/* Age */}
-          <input
-            type="number"
-            name="age"
-            min="1"
-            max="30"
-            placeholder="Child Age *"
-            value={form.age}
-            onChange={handleChange}
-            className="w-full mb-1 px-4 py-3 rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+          <div className="mb-3">
+            <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
+              Child Age *
+            </label>
+            <input
+              type="number"
+              name="age"
+              min="1"
+              max="30"
+              value={form.age}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-1 border rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
 
-          {form.age && (form.age <= 0 || form.age > 30) && (
-            <p className="text-red-500 text-xs mb-3">
-              Age must be between 1 and 30
-            </p>
-          )}
+          {/* 🌍 PHONE INPUT */}
+          <div className="flex items-center border border-gray-300 rounded-xl px-2 mb-4 bg-white/5">
+            
+            <select
+              className="bg-transparent outline-none text-xs mr-1 max-h-40 overflow-y-auto"
+              value={form.countryCode}
+              onChange={(e) =>
+                setForm({ ...form, countryCode: e.target.value })
+              }
+            >
 
-          {/* 🌍 GLOBAL PHONE INPUT */}
-          <div className="mb-4">
-            <PhoneInput
-              country={"in"}
-              enableSearch={true}
+              {countries.map((c, i) => (
+                <option key={i} value={c.code}>
+                  {c.label} ({c.code})
+                </option>
+              ))}
+              
+            </select>
+
+            <input
+              type="tel"
+              placeholder="Phone number *"
               value={form.phone}
-              onChange={(phone) => setForm({ ...form, phone })}
-
-              inputProps={{
-                name: "phone",
-                required: true,
-              }}
-            
-              containerStyle={{
-                width: "100%"
-              }}
-            
-              inputStyle={{
-                width: "100%",
-                height: "50px",
-                borderRadius: "12px",
-                backgroundColor: "transparent",
-                border: "1px solid #d1d5db",
-                paddingLeft: "60px",
-                fontSize: "14px",
-                color: document.documentElement.classList.contains("dark") ? "white" : "black"
-              }}
-            
-              buttonStyle={{
-                border: "none",
-                background: "transparent"
-              }}
-            
-              dropdownStyle={{
-                borderRadius: "10px"
-              }}
+              onChange={(e) =>
+                setForm({ ...form, phone: e.target.value })
+              }
+              className="w-full py-2 bg-transparent outline-none"
             />
           </div>
 
           {/* Branch */}
-          <select
-            name="branch"
-            value={form.branch}
-            onChange={handleChange}
-            className="p-2 w-full mb-3 rounded-xl bg-white/5 text-black dark:text-white"
-          >
-            <option value="">Select Branch *</option>
-            <option value="Chennai">Chennai</option>
-            <option value="WestMambalam">WestMambalam</option>
-            <option value="Coimbatore">Coimbatore</option>
-            <option value="Madurai">Madurai</option>
-          </select>
+          <div className="mb-4">
+            <label className="block text-sm mb-2 font-medium text-gray-700 dark:text-gray-300">
+              Select Branch *
+            </label>
+
+            <select
+              name="branch"
+              value={form.branch}
+              onChange={handleChange}
+              className="w-full px-2 py-1 rounded-xl border border-gray-300 dark:border-white/10 bg-white  dark:bg-white/5 text-black dark:text-blue focus:ring-2 focus:ring-blue-500 outline-none transition"
+            >
+              <option value="">Choose your branch</option>
+              <option value="Chennai">Chennai</option>
+              <option value="WestMambalam">West Mambalam</option>
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Madurai">Madurai</option>
+            </select>
+          </div>
 
           {/* Program */}
           <div className="mb-5">
@@ -244,7 +268,7 @@ function ContactModal({ onClose }) {
           <button
             onClick={handleSubmit}
             disabled={!isValid || loading}
-            className={`w-full py-3 rounded-xl font-semibold transition ${
+            className={`w-full py-2  rounded-xl font-semibold transition ${
               isValid
                 ? "bg-blue-600 text-white hover:bg-blue-700"
                 : "bg-gray-200 text-gray-400 cursor-not-allowed"

@@ -18,13 +18,13 @@ function Navbar({ onOpenModal = () => {} }) {
   return (
     <nav className="fixed top-0 w-full z-50 backdrop-blur-lg bg-white/70 dark:bg-black/40 border-b border-gray-200 dark:border-white/10 transition-all duration-300">
 
-      <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 py-1 flex justify-between items-center">
 
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Tiny Todds" className="h-10 object-contain" />
+          <img src={logo} alt="Tiny Todds" className="h-24  object-contain" />
           <span className="text-lg md:text-xl font-semibold text-black dark:text-white">
-            Tiny Todds
+            Tiny Todds Theraphy Care
           </span>
         </Link>
 

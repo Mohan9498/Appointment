@@ -10,6 +10,18 @@ import {
   MessageSquare,
   LayoutDashboard
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from "recharts";
 import useAuthStore from "../store/useAuthStore";
 
 function AdminDashboard() {
@@ -178,16 +190,86 @@ function AdminDashboard() {
   console.log("Messages:", messages);
   console.log("Filtered Messages:", filteredMessages);
 
+
+  // 📊 Chart Data
+  const appointmentData = [
+    { name: "Appointments", value: appointments.length },
+  ];
+
+  const messageData = [
+    { name: "Messages", value: messages.length },
+  ];
+
+  const COLORS = ["#3B82F6", "#22C55E"];
+
+
+  
+  // 📊 REAL MONTHLY ANALYTICS (Last 6 Months)
+  // 📊 COMBINED MONTHLY DATA (Appointments + Messages)
+  const getCombinedMonthlyData = () => {
+    const now = new Date();
+
+    const months = [];
+
+    // Last 6 months
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+
+      months.push({
+        name: d.toLocaleString("default", { month: "short" }),
+        month: d.getMonth(),
+        year: d.getFullYear(),
+        appointments: 0,
+        messages: 0
+      });
+    }
+
+    // Count appointments
+    appointments.forEach((item) => {
+      if (!item.created_at) return;
+
+      const date = new Date(item.created_at);
+
+      const match = months.find(
+        (m) =>
+          m.month === date.getMonth() &&
+          m.year === date.getFullYear()
+      );
+
+      if (match) match.appointments += 1;
+    });
+
+    // Count messages
+    messages.forEach((item) => {
+      if (!item.created_at) return;
+
+      const date = new Date(item.created_at);
+
+      const match = months.find(
+        (m) =>
+          m.month === date.getMonth() &&
+          m.year === date.getFullYear()
+      );
+
+      if (match) match.messages += 1;
+    });
+
+    return months;
+  };
+
+
+
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-100 dark:bg-[#0F172A]">
 
       {/* ✅ MOBILE HEADER */}
-      <div className="md:hidden h-full flex justify-between items-center p-4 bg-white dark:bg-[#0F172A] border-b sticky top-0 z-50">
+      <div className="md:hidden h-full flex justify-between items-center p-2 bg-white dark:bg-[#0F172A] border-b sticky top-0 z-50">
         <h1 className="font-semibold text-black dark:text-white">Admin</h1>
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setMobileOpen(true)}
+            onClick={() => setMobileOpen(!mobileOpen)}
             className="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
           >
             ☰
@@ -204,9 +286,7 @@ function AdminDashboard() {
 
       {/* ✅ SIDEBAR */}
       <div
-        className={`fixed top-0 left-0 h-full w-72 bg-white dark:bg-white/5 border-r z-50 transform transition-transform duration-300
-        ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
-        md:translate-x-0 md:static md:w-64 flex flex-col p-4`}
+        className={`fixed top-0 left-0 h-screen min-h-screen w-64   bg-white dark:bg-white/5 border-r z-50   transform transition-transform duration-300  ${mobileOpen ? "translate-x-0" : "-translate-x-full"}  md:translate-x-0 md:static md:w-64   flex flex-col justify-between p-4`}
       >
         <button
           onClick={() => setMobileOpen(false)}
@@ -215,7 +295,7 @@ function AdminDashboard() {
           ✕
         </button>
 
-        <nav className="space-y-2 flex-1">
+        <nav className="space-y-2 flex-1 overflow-y-auto">
           {/* 🌙 THEME TOGGLE (DESKTOP) */}
           <div className="hidden md:flex items-center justify-between mt-4 px-2">
 
@@ -277,32 +357,82 @@ function AdminDashboard() {
 
       {/* MAIN CONTENT */}
       <div className="flex-1 p-6">
-
-        {/* SEARCH */}
-        <div className="mb-6 flex justify-between items-center">
-
-          <input
-           type="text"
-            placeholder="Search..."
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-white dark:bg-white/10 px-4 py-2 rounded-lg w-full sm:w-72 outline-none"
-          />
-
-        </div>
      
         {/* DASHBOARD */}
         {active === "dashboard" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-6">
+            
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <StatCard icon={<Users />} label="Total Appointments" value={appointments.length} />
+              <StatCard icon={<MessageSquare />} label="Total Messages" value={messages.length} />
+            </div>
 
-            <StatCard icon={<Users />} label="Total Appointments" value= {appointments.length} />
-            <StatCard icon={<MessageSquare />} label="Total Messages" value={messages.length} />
+            {/* Charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-           </div>
-       )}
+              {/* Bar Chart */}
+              {/* 📈 MONTHLY ANALYTICS */}
+              <div className="bg-white dark:bg-white/5 p-5 rounded-2xl shadow">
+                <h3 className="mb-4 font-semibold text-black dark:text-white">
+                  Monthly Analytics
+                </h3>
+
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={getCombinedMonthlyData()}>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+
+                    {/* 🔵 Appointments */}
+                    <Bar dataKey="appointments" fill="#3B82F6" radius={[6, 6, 0, 0]} />
+
+                    {/* 🟢 Messages */}
+                    <Bar dataKey="messages" fill="#22C55E" radius={[6, 6, 0, 0]} />
+
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+                
+              {/* Pie Chart */}
+              <div className="bg-white dark:bg-white/5 p-5 rounded-2xl shadow">
+                <h3 className="mb-4 font-semibold">Distribution</h3>
+                
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: "Appointments", value: appointments.length },
+                        { name: "Messages", value: messages.length }
+                      ]}
+                      dataKey="value"
+                      outerRadius={90}
+                      label
+                    >
+                      {COLORS.map((color, index) => (
+                        <Cell key={index} fill={color} />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+                    
+            </div>
+          </div>
+        )}
 
         {/* APPOINTMENTS */}
         {active === "appointments" && (
           <Section title="Appointment Leads" data={filteredAppointments}>
+
+            <input
+              type="text"
+              placeholder="Search appointments..."
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full sm:w-72 px-4 py-2 rounded-xl border bg-white dark:bg-white/10 outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
             {/* 🔍 FILTER + SORT */}
             <div className="flex flex-wrap gap-3  text-black mb-4">
@@ -400,7 +530,66 @@ function AdminDashboard() {
         {active === "messages" && (
           <Section title="Contact Messages" data={filteredMessages}>
 
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-white/10">
+            <input
+              type="text"
+              placeholder="Search messages..."
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full sm:w-72 px-4 py-2 rounded-xl border bg-white dark:bg-white/10 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            {/* ✅ MOBILE VIEW (CARD UI) */}
+            <div className="md:hidden space-y-4">
+              {filteredMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl flex flex-col transition duration-300"
+                >
+                  {/* HEADER */}
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-blue-600 font-semibold">
+                      {msg.name}
+                    </h3>
+
+                    {/* ✅ DATE */}
+                    <p className="text-xs text-gray-500">
+                      {msg.created_at
+                        ? new Date(msg.created_at).toLocaleDateString("en-IN")
+                        : "No date"}
+                    </p>
+                  </div>
+                      
+                  <a
+                    href={`mailto:${msg.email}`}
+                    className="text-sm text-blue-500 underline"
+                  >
+                    {msg.email}
+                  </a>
+                      
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                    {msg.message}
+                  </p>
+                      
+                  <div className="flex gap-3 mt-3 text-xs">
+                    <button
+                      onClick={() => navigator.clipboard.writeText(msg.email)}
+                      className="text-gray-500 hover:text-black dark:hover:text-white"
+                    >
+                      Copy
+                    </button>
+                      
+                    <a
+                      href={`mailto:${msg.email}`}
+                      className="text-green-600 hover:underline"
+                    >
+                      Reply
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ✅ DESKTOP VIEW (TABLE UI) */}
+            <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 dark:border-white/10">
               <table className="w-full text-left border-collapse">
 
                 <thead>
@@ -408,66 +597,65 @@ function AdminDashboard() {
                     <th className="p-3">Name</th>
                     <th className="p-3">Email</th>
                     <th className="p-3">Message</th>
-                    <th className="p-3">Actions</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {filteredMessages.map((msg) => (
                     <tr
-                     key={msg.id}
-                     className="border-b border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                      key={msg.id}
+                      className="border-b border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition"
+                    >
                       <td className="p-3 font-medium text-blue-600">
-                        {msg.name}
+                        <div className="flex flex-col">
+                          {msg.name}
+                                  
+                          {/* ✅ DATE */}
+                          <span className="text-xs text-gray-500 mt-1">
+                            {msg.created_at
+                              ? new Date(msg.created_at).toLocaleDateString("en-IN")
+                              : "No date"}
+                          </span>
+                        </div>
                       </td>
-
+                            
                       <td className="p-3">
                         <div className="flex flex-col">
-                          {/* EMAIL LINK */}
                           <a
                             href={`mailto:${msg.email}`}
-                            className="text-blue-600 hover:underline text-sm font-medium" >
-                              {msg.email}
+                            className="text-blue-600 hover:underline text-sm font-medium"
+                          >
+                            {msg.email}
                           </a>
-                          {/* ACTIONS */}
+                            
                           <div className="flex gap-3 mt-1 text-xs">
                             <button
                               onClick={() => navigator.clipboard.writeText(msg.email)}
-                              className="text-gray-500 hover:text-black dark:hover:text-white" >
-                                Copy
+                              className="text-gray-500 hover:text-black dark:hover:text-white"
+                            >
+                              Copy
                             </button>
-                          
+                            
                             <a
                               href={`mailto:${msg.email}`}
-                              className="text-green-600 hover:underline"  >
-                                Reply
+                              className="text-green-600 hover:underline"
+                            >
+                              Reply
                             </a>
-
                           </div>
-
                         </div>
                       </td>
-
-
+                            
                       <td className="p-3 text-sm">
-                       {msg.message}
-                      </td>
-
-                      <td className="p-3">
-                        <button
-                          onClick={() => deleteMessage(msg.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs" 
-                        >
-                          Delete
-                        </button>
+                        {msg.message}
                       </td>
                     </tr>
                   ))}
                 </tbody>
-
+                
               </table>
             </div>
-
+              
           </Section>
         )}
 
