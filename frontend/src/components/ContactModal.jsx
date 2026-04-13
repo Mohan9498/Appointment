@@ -3,51 +3,61 @@ import API from "../services/api";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
-function ContactModal({ onClose }) {
-
+function ContactModal({ onClose, prefill = null }) {
   const [form, setForm] = useState({
-    parentName: "",
-    childName: "",
-    age: "",
-    phone: "",
-    countryCode: "+91",
-    branch: "",
-    program: ""
+    parentName: prefill?.parentName || "",
+    childName: prefill?.childName || "",
+    age: prefill?.age || "",
+    phone: prefill?.phone || "",
+    countryCode: prefill?.countryCode || "+91",
+    branch: prefill?.branch || "",
+    program: prefill?.program || "",
   });
 
   const countries = [
-    { code: "+93", label: "🇦🇫 " },
-    { code: "+355", label: "🇦🇱 " },
-    { code: "+213", label: "🇩🇿 " },
-    { code: "+1", label: "🇺🇸 " },
-    { code: "+44", label: "🇬🇧 " },
-    { code: "+61", label: "🇦🇺 " },
-    { code: "+91", label: "🇮🇳 " },
-    { code: "+971", label: "🇦🇪 " },
-    { code: "+81", label: "🇯🇵 " },
-    { code: "+49", label: "🇩🇪 " },
-    { code: "+33", label: "🇫🇷 " },
-    { code: "+39", label: "🇮🇹 " },
-    { code: "+34", label: "🇪🇸 " },
-    { code: "+86", label: "🇨🇳 " },
-    { code: "+7", label: "🇷🇺 " },
-    { code: "+55", label: "🇧🇷 " },
-    { code: "+27", label: "🇿🇦 " },
-    { code: "+65", label: "🇸🇬 " },
-    { code: "+82", label: "🇰🇷 " },
-    { code: "+966", label: "🇸🇦 " },
-    
+    { code: "+91", label: "🇮🇳" },
+    { code: "+1", label: "🇺🇸" },
+    { code: "+44", label: "🇬🇧" },
+    { code: "+61", label: "🇦🇺" },
+    { code: "+971", label: "🇦🇪" },
+    { code: "+81", label: "🇯🇵" },
+    { code: "+49", label: "🇩🇪" },
+    { code: "+33", label: "🇫🇷" },
+    { code: "+39", label: "🇮🇹" },
+    { code: "+34", label: "🇪🇸" },
+    { code: "+86", label: "🇨🇳" },
+    { code: "+7", label: "🇷🇺" },
+    { code: "+55", label: "🇧🇷" },
+    { code: "+27", label: "🇿🇦" },
+    { code: "+65", label: "🇸🇬" },
+    { code: "+82", label: "🇰🇷" },
+    { code: "+966", label: "🇸🇦" },
+    { code: "+93", label: "🇦🇫" },
+    { code: "+213", label: "🇩🇿" },
+  ];
+
+  const programs = [
+    { value: "Speech Therapy", label: "Speech Therapy" },
+    { value: "Cognitive Therapy", label: "Cognitive Therapy" },
+    { value: "Day Care", label: "Day Care" },
   ];
 
   const [loading, setLoading] = useState(false);
   const inputRef = useRef();
 
-  // Auto focus
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  // ESC close
+  useEffect(() => {
+    if (prefill) {
+      setForm((prev) => ({
+        ...prev,
+        ...prefill,
+      }));
+    }
+  }, [prefill]);
+
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
@@ -56,13 +66,13 @@ function ContactModal({ onClose }) {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  // Disable scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    return () => (document.body.style.overflow = "auto");
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, []);
 
-  // Input handler
   const handleChange = (e) => {
     let { name, value } = e.target;
 
@@ -75,18 +85,16 @@ function ContactModal({ onClose }) {
     setForm({ ...form, [name]: value });
   };
 
-  // Validation
   const isValid =
     form.parentName &&
     form.childName &&
-    form.age > 0 &&
-    form.age <= 30 &&
+    Number(form.age) > 0 &&
+    Number(form.age) <= 30 &&
     form.phone &&
     form.phone.length >= 6 &&
     form.branch &&
     form.program;
 
-  // Submit
   const handleSubmit = async () => {
     if (!isValid) {
       toast.error("Please fill all fields correctly");
@@ -100,16 +108,15 @@ function ContactModal({ onClose }) {
         parent_name: form.parentName,
         child_name: form.childName,
         age: form.age,
-        phone: `${form.countryCode}${form.phone}`, // ✅ combined
+        phone: `${form.countryCode}${form.phone}`,
         branch: form.branch,
         program: form.program,
         date: new Date().toISOString().split("T")[0],
-        time: "Flexible"
+        time: "Flexible",
       });
 
       toast.success("Submitted successfully 🎉");
       onClose();
-
     } catch (err) {
       console.log(err.response?.data || err.message);
       toast.error(err.response?.data?.error || "Submission failed");
@@ -127,65 +134,51 @@ function ContactModal({ onClose }) {
         exit={{ opacity: 0 }}
         onClick={onClose}
       >
-
         <motion.div
           initial={{ y: 80, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 80, opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-md bg-white dark:bg-white/5 rounded-3xl shadow-2xl p-6"
+          className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6 overflow-y-auto max-h-[95vh]"
         >
-
-          {/* Close */}
           <button
             onClick={onClose}
-            className="absolute top-3 right-4 text-gray-500 hover:text-black text-lg"
+            className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-white text-xl leading-none"
+            type="button"
           >
             ✕
           </button>
 
-          {/* Title */}
-          <h2 className="text-xl text-black dark:text-white font-bold mb-1">
-            Tiny Todds Appointment
+          <h2 className="text-xl text-gray-900 dark:text-white font-bold mb-1">
+            Book an Appointment
           </h2>
-
-          <p className="dark:text-white text-black/90 text-sm mb-5">
-            Fill details & we’ll call you
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-5">
+            Fill in the details and we'll call you to confirm.
           </p>
 
-          {/* Parent */}
-          <div className="mb-3">
-            <label className="text-xs font-medium mt-1 text-gray-700 dark:text-gray-300">
-              Parent Name *
-            </label>
+          <Field label="Parent Name">
             <input
               ref={inputRef}
               name="parentName"
               value={form.parentName}
               onChange={handleChange}
-              className="w-full mt-1 px-4 py-1 border rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="e.g. Madhan"
+              className={inputCls}
             />
-          </div>
+          </Field>
 
-          {/* Child */}
-          <div className="mb-3">
-            <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
-              Child Name *
-            </label>
+          <Field label="Child Name">
             <input
               name="childName"
               value={form.childName}
               onChange={handleChange}
-              className="w-full mt-1 px-4 py-1 border rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="e.g. Aryan"
+              className={inputCls}
             />
-          </div>
+          </Field>
 
-          {/* Age */}
-          <div className="mb-3">
-            <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
-              Child Age *
-            </label>
+          <Field label="Child Age (years)">
             <input
               type="number"
               name="age"
@@ -193,93 +186,116 @@ function ContactModal({ onClose }) {
               max="30"
               value={form.age}
               onChange={handleChange}
-              className="w-full mt-1 px-4 py-1 border rounded-xl bg-white/5 focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="1 – 30"
+              className={inputCls}
             />
-          </div>
+          </Field>
 
-          {/* 🌍 PHONE INPUT */}
-          <div className="flex items-center border border-gray-300 rounded-xl px-2 mb-4 bg-white/5">
-            
-            <select
-              className="bg-transparent outline-none text-xs mr-1 max-h-40 overflow-y-auto"
-              value={form.countryCode}
-              onChange={(e) =>
-                setForm({ ...form, countryCode: e.target.value })
-              }
-            >
+          <Field label="Phone Number">
+            <div className="flex items-center border border-gray-300 dark:border-white/10 rounded-xl px-3 bg-white dark:bg-white/5 focus-within:ring-2 focus-within:ring-blue-500">
+              <select
+                className="bg-transparent outline-none text-sm py-2 pr-2 text-gray-700 dark:text-gray-200"
+                value={form.countryCode}
+                onChange={(e) =>
+                  setForm({ ...form, countryCode: e.target.value })
+                }
+              >
+                {countries.map((c, i) => (
+                  <option key={i} value={c.code}>
+                    {c.label} {c.code}
+                  </option>
+                ))}
+              </select>
 
-              {countries.map((c, i) => (
-                <option key={i} value={c.code}>
-                  {c.label} ({c.code})
-                </option>
-              ))}
-              
-            </select>
+              <input
+                type="tel"
+                placeholder="Phone number"
+                value={form.phone}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    phone: e.target.value.replace(/\D/g, ""),
+                  })
+                }
+                className="w-full py-2 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400"
+              />
+            </div>
+          </Field>
 
-            <input
-              type="tel"
-              placeholder="Phone number *"
-              value={form.phone}
-              onChange={(e) =>
-                setForm({ ...form, phone: e.target.value })
-              }
-              className="w-full py-2 bg-transparent outline-none"
-            />
-          </div>
-
-          {/* Branch */}
-          <div className="mb-4">
-            <label className="block text-sm mb-2 font-medium text-gray-700 dark:text-gray-300">
-              Select Branch *
-            </label>
-
+          <Field label="Select Branch">
             <select
               name="branch"
               value={form.branch}
               onChange={handleChange}
-              className="w-full px-2 py-1 rounded-xl border border-gray-300 dark:border-white/10 bg-white  dark:bg-white/5 text-black dark:text-blue focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className={inputCls}
             >
-              <option value="">Choose your branch</option>
-              <option value="Chennai">Chennai</option>
-              <option value="WestMambalam">West Mambalam</option>
-              <option value="Coimbatore">Coimbatore</option>
-              <option value="Madurai">Madurai</option>
+              <option value="">Choose your nearest branch</option>
+              <option value="WestMambalam">WestMambalam</option>
+              <option value="Choolaimedu">Choolaimedu</option>
+              <option value="Anna Nagar">Anna Nagar</option>
+              <option value="Adambakkam">Adambakkam</option>
+              <option value="Egmore">Egmore</option>
+              <option value="Tambaram">Tambaram</option>
+              <option value="Porur">Porur</option>
+              <option value="Thiruvanmiyur">Thiruvanmiyur</option>
+              <option value="Mylapore">Mylapore</option>
+              <option value="K.K. Nagar">K.K. Nagar</option>
             </select>
-          </div>
+          </Field>
 
-          {/* Program */}
           <div className="mb-5">
-            <p className="text-sm font-medium mb-2">Select Program *</p>
-
-            <div className="flex gap-6">
-              <label className="flex items-center gap-2 text-sm">
-                <input type="radio" name="program" value="Speech Cognitive" onChange={handleChange} />
-                Speech Cognitive
-              </label>
-
-              <label className="flex items-center gap-2 text-sm">
-                <input type="radio" name="program" value="Day Care" onChange={handleChange} />
-                Day Care
-              </label>
+            <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">
+              Select Program *
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {programs.map((p) => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => setForm({ ...form, program: p.value })}
+                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-sm font-medium transition ${
+                    form.program === p.value
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
+                      : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-blue-300"
+                  }`}
+                >
+                  <span className="text-xs text-center leading-tight">
+                    {p.label}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Submit */}
           <button
             onClick={handleSubmit}
             disabled={!isValid || loading}
-            className={`w-full py-2  rounded-xl font-semibold transition ${
+            className={`w-full py-3 rounded-xl font-semibold transition ${
               isValid
                 ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed"
             }`}
+            type="button"
           >
-            {loading ? "Submitting..." : "Submit"}
+            {loading ? "Submitting..." : "Submit Appointment"}
           </button>
-
         </motion.div>
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+const inputCls =
+  "w-full mt-1 px-4 py-1 border border-gray-300 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-black placeholder-gray-400 focus:ring-2 focus:ring-blue-500 outline-none transition";
+
+function Field({ label, children }) {
+  return (
+    <div className="mb-3">
+      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+        {label} *
+      </label>
+      {children}
+    </div>
   );
 }
 

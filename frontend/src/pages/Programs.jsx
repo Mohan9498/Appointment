@@ -25,7 +25,7 @@ function Programs() {
   ];
 
   return (
-    <section className="min-h-screen py-20 bg-slate-50 dark:bg-black text-black dark:text-white">
+    <section className="min-h-screen py-24 bg-slate-50 dark:bg-black text-black dark:text-white">
 
       {/* HEADER */}
       <div className="text-center mb-16 px-4">

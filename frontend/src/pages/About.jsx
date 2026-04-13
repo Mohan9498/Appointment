@@ -51,7 +51,7 @@ function About() {
           </div>
 
           {/* 📖 CONTENT BELOW */}
-          <div className="bg-white/ dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-8 md:p-10 backdrop-blur-xl shadow-lg space-y-8">
+          <div className="bg-white/80 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-8 md:p-10 backdrop-blur-xl shadow-lg space-y-8">
 
             <p className="text-gray-700 dark:text-gray-300 leading-8 text-justify indent-10 text-sm md:text-base">
               Tiny Todds Therapy Care is a specialized child development center dedicated to fostering each child’s unique potential

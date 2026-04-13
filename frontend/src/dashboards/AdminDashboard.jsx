@@ -113,9 +113,9 @@ function AdminDashboard() {
      console.log("MESSAGES RESPONSE:", res.data);
 
       // ✅ Handle both formats safely
-     const messages = Array.isArray(res.data)
-        ? res.data
-        : res.data?.data || [];
+      // const messages = Array.isArray(res.data)
+      //   ? res.data
+      //   : res.data?.data || [];
 
       setMessages(messages);
 
@@ -174,15 +174,15 @@ function AdminDashboard() {
   }, [dark]);
 
 
-  useEffect(() => {
-    const isAdmin =
-      localStorage.getItem("access") &&
-      localStorage.getItem("is_admin") === "true";
+  // useEffect(() => {
+  //   const isAdmin =
+  //     localStorage.getItem("access") &&
+  //     localStorage.getItem("is_admin") === "true";
 
-    if (!isAdmin) {
-      navigate("/login", { replace: true });
-    }
-  }, []);
+  //   if (!isAdmin) {
+  //     navigate("/login", { replace: true });
+  //   }
+  // }, []);
 
 
   console.log("Appointments:", appointments);

@@ -7,21 +7,20 @@ const API = axios.create({
   baseURL: BASE_URL,
 });
 
-// ✅ REQUEST INTERCEPTOR (Attach access token)
+// ✅ REQUEST INTERCEPTOR (Attach token safely)
 API.interceptors.request.use((config) => {
   const access = localStorage.getItem("access");
 
-  const publicRoutes = ["login", "register" , "appointments"];
+  // ✅ Only truly public routes
+  const publicRoutes = ["login/", "register/"];
 
-  // ✅ ONLY skip token for POST contact
+  const isPublicRoute = publicRoutes.includes(config.url);
+
+  // ✅ Allow contact form without token
   const isPublicContact =
-    config.method === "post" && config.url.includes("contact");
+    config.method === "post" && config.url === "contact/";
 
-  if (
-    access &&
-    !publicRoutes.some((route) => config.url.includes(route)) &&
-    !isPublicContact
-  ) {
+  if (access && !isPublicRoute && !isPublicContact) {
     config.headers.Authorization = `Bearer ${access}`;
   }
 
@@ -30,21 +29,23 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// ✅ RESPONSE INTERCEPTOR (Handle 401 + refresh token)
+// ✅ RESPONSE INTERCEPTOR (Handle token refresh)
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // 🔥 If unauthorized & not retried
+    // 🔐 Handle expired token
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refresh = localStorage.getItem("refresh");
 
+      // ❌ No refresh → force logout
       if (!refresh) {
-        console.warn("No refresh token found");
-       return Promise.reject(error);
+        localStorage.clear();
+        window.location.replace("/login");
+        return Promise.reject(error);
       }
 
       try {
@@ -56,7 +57,7 @@ API.interceptors.response.use(
 
         const newAccess = res.data.access;
 
-        // ✅ Save new access token
+        // ✅ Save new token
         localStorage.setItem("access", newAccess);
 
         // ✅ Update headers globally
@@ -77,7 +78,6 @@ API.interceptors.response.use(
         toast.error("Session expired. Please login again");
 
         setTimeout(() => {
-          localStorage.clear();
           window.location.replace("/login");
         }, 1000);
       }

@@ -8,10 +8,11 @@ function AdminAppointments() {
   const [loadingId, setLoadingId] = useState(null);
   const [filter, setFilter] = useState("all");
 
-  //  Fetch appointments
+  // Fetch appointments
   const fetchAppointments = async () => {
     try {
-      const res =   ("appointments/");
+      // FIX: was `const res = ("appointments/")` — missing await API.get
+      const res = await API.get("appointments/");
       setAppointments(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.log(err);
@@ -19,67 +20,46 @@ function AdminAppointments() {
     }
   };
 
-  //  INITIAL LOAD + WEBSOCKET
+  // INITIAL LOAD + WEBSOCKET
   useEffect(() => {
     fetchAppointments();
 
     const socket = new WebSocket("ws://127.0.0.1:8000/ws/appointments/");
 
-    socket.onopen = () => {
-      console.log(" WebSocket connected");
-    };
+    socket.onopen = () => console.log("WebSocket connected");
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
-      console.log(" Realtime update:", data);
-
-      //  Toast notification from backend
-      if (data.message) {
-        toast.success(data.message);
-      }
-
-      //  Refresh instantly
+      if (data.message) toast.success(data.message);
       fetchAppointments();
     };
 
-    socket.onerror = (err) => {
-      console.log("WebSocket error:", err);
-    };
-
-    socket.onclose = () => {
-      console.log("❌ WebSocket disconnected");
-    };
+    socket.onerror = (err) => console.log("WebSocket error:", err);
+    socket.onclose = () => console.log("WebSocket disconnected");
 
     return () => socket.close();
   }, []);
 
-  //  Approve / Reject
+  // Approve / Reject
   const updateStatus = async (id, action) => {
     try {
       setLoadingId(id);
 
       await API.post(`approve/${id}/`, { action });
 
-      //  Optimistic update
       setAppointments((prev) =>
         prev.map((item) =>
           item.id === id
-            ? {
-                ...item,
-                status: action === "reject" ? "rejected" : "approved",
-              }
+            ? { ...item, status: action === "reject" ? "rejected" : "approved" }
             : item
         )
       );
 
-      //  Toast
       if (action === "reject") {
         toast.error("Appointment rejected");
       } else {
         toast.success("Appointment approved");
       }
-
     } catch (err) {
       console.log(err);
       toast.error("Failed to update appointment");
@@ -89,79 +69,131 @@ function AdminAppointments() {
   };
 
   const statusStyle = {
-    pending: "bg-yellow-500/20 text-yellow-300",
-    approved: "bg-green-500/20 text-green-300",
-    rejected: "bg-red-500/20 text-red-300",
+    pending:  "bg-yellow-500/20 text-yellow-600 dark:text-yellow-300",
+    approved: "bg-green-500/20  text-green-600  dark:text-green-300",
+    rejected: "bg-red-500/20    text-red-600    dark:text-red-300",
   };
 
+  // FIX: filter was never applied — now connected to state
   const filteredAppointments =
     filter === "all"
       ? appointments
       : appointments.filter((a) => a.status === filter);
 
+  // FIX: filter button helper to avoid repeating active/inactive class logic
+  const filterBtn = (label, value) => (
+    <button
+      onClick={() => setFilter(value)}
+      className={`px-4 py-2 rounded-full text-sm transition font-medium ${
+        filter === value
+          ? "bg-blue-600 text-white"
+          : "bg-white dark:bg-white/5 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/10"
+      }`}
+    >
+      {label}
+    </button>
+  );
+
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-black p-6">
       <div className="max-w-7xl mx-auto">
 
-        {/* Heading */}
-        <h1 className="text-3xl font-bold bg-surface border border-border text-text-main hover:bg-surfacelight mb-6">
+        {/* Heading — FIX: was styled like a button card; now a clean heading */}
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           Admin Dashboard
         </h1>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+          Manage all appointment requests in real time.
+        </p>
 
-        {/* Filter Buttons */}
+        {/* Analytics */}
+        <AdminAnalytics appointments={appointments} />
+
+        {/* Filter Buttons — FIX: all wired to setFilter */}
         <div className="flex gap-3 mb-6 flex-wrap">
-           <button className="bg-primary text-white px-4 py-2 rounded-full text-sm hover:bg-primary-hover transition">
-            Active
-           </button>
-
-           <button className=" text-text-main hover:bg-surfaceLight  hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
-             Pending
-           </button>
-
-           <button className=" text-text-main hover:bg-surfaceLight  hover:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
-             Approved
-           </button>
-
-           <button className=" text-text-main hover:bg-surfaceLight over:bg-surfacelight px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition">
-             Rejected
-           </button>
+          {filterBtn("All", "all")}
+          {filterBtn("Pending", "pending")}
+          {filterBtn("Approved", "approved")}
+          {filterBtn("Rejected", "rejected")}
         </div>
 
-        {/* Card */}
-        <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition">
+        {/* Appointment count */}
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Showing {filteredAppointments.length} appointment{filteredAppointments.length !== 1 ? "s" : ""}
+        </p>
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-            {/* User Info */}
-            <div>
-              <p className="bg-surface border border-border text-text-main hover:bg-surfacelight font-semibold text-lg">
-                User Name
-              </p>
-              <p className="text-text-light text-sm mt-1">
-                Date • Time
+        {/* FIX: was hardcoded static card — now maps real appointment data */}
+        <div className="space-y-4">
+          {filteredAppointments.length === 0 ? (
+            // FIX: empty state added
+            <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-10 text-center text-gray-400 dark:text-gray-500">
+              <p className="text-4xl mb-3">📭</p>
+              <p className="font-medium">
+                No {filter === "all" ? "" : filter} appointments found.
               </p>
             </div>
+          ) : (
+            filteredAppointments.map((appt) => (
+              <div
+                key={appt.id}
+                className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+              >
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-            {/* Status + Actions */}
-            <div className="flex items-center gap-3 flex-wrap">
+                  {/* User Info */}
+                  <div>
+                    <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                      {appt.parent_name}
+                      {appt.child_name && (
+                        <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
+                          (Child: {appt.child_name})
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                      {appt.date} • {appt.time} • {appt.branch}
+                    </p>
+                    {appt.program && (
+                      <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                        Program: {appt.program}
+                      </p>
+                    )}
+                  </div>
 
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-warning/10 text-warning">
-                Pending
-              </span>
+                  {/* Status + Actions */}
+                  <div className="flex items-center gap-3 flex-wrap">
 
-              <button className="px-4 py-2 rounded-full bg-primary text-white text-sm hover:bg-primary-hover transition">
-                Approve
-              </button>
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${statusStyle[appt.status]}`}>
+                      {appt.status}
+                    </span>
 
-              <button className="px-4 py-2 rounded-full bg-surface border border-border text-text-main hover:bg-surfacelight text-sm hover:bg-gray-300 transition">
-                Reject
-              </button>
+                    {appt.status === "pending" && (
+                      <>
+                        <button
+                          onClick={() => updateStatus(appt.id, "approve")}
+                          disabled={loadingId === appt.id}
+                          className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition disabled:opacity-50"
+                        >
+                          {loadingId === appt.id ? "..." : "Approve"}
+                        </button>
 
-             </div>
+                        <button
+                          onClick={() => updateStatus(appt.id, "reject")}
+                          disabled={loadingId === appt.id}
+                          className="px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 text-sm hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 hover:border-red-300 transition disabled:opacity-50"
+                        >
+                          {loadingId === appt.id ? "..." : "Reject"}
+                        </button>
+                      </>
+                    )}
 
-          </div>
-
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
+
       </div>
     </div>
   );

@@ -165,7 +165,7 @@ function Contact() {
         </div>
       </section>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

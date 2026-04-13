@@ -30,8 +30,7 @@ function Footer({ onOpenModal }) {
               Programs
             </Link>
 
-            <button
-              onClick={onOpenModal}
+            <button onClick={() => onOpenModal && onOpenModal()}
               className=" hover:text-white transition"
             >
               Book Appointment
@@ -61,7 +60,7 @@ function Footer({ onOpenModal }) {
         </div>
 
         {/* CONTACT */}
-        <div className=" mb-4 ">
+        <div className=" flex flex-col mb-4 items-center justify-center">
           <h3 className="bg-slate-50 dark:bg-black text-black dark:text-white font-semibold mb-4">Contact</h3>
 
           <div className="text-sm  space-y-2">
@@ -75,7 +74,7 @@ function Footer({ onOpenModal }) {
           </div>
 
           {/* SOCIAL */}
-          <div className="flex gap-4 mt-5 text text-lg">
+          <div className="flex gap-4 mt-5  text-lg">
 
             <a href="https://wa.me/919941350646" target="_blank" rel="noreferrer">
               <MessageCircle className="hover:text-green-400 transition hover:scale-110" />

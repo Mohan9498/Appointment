@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function ProgramCard({ title, description, image }) {
   return (
-    <div className="group relative rounded-2xl overflow-hidden border border-border bg-surface shadow-md hover:shadow-xl transition duration-300">
+    <div className="group relative rounded-2xl overflow-hidden border border-border bg-surface shadow-md hover:shadow-xl transition-all duration-500 ease-in-out ">
 
       {/* Image */}
       <div className="overflow-hidden relative">
@@ -16,7 +16,7 @@ function ProgramCard({ title, description, image }) {
         />
 
         {/* ✅ Hover Overlay */}
-        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out"></div>
       </div>
 
       {/* Content */}
@@ -32,7 +32,7 @@ function ProgramCard({ title, description, image }) {
 
         <Link
           to={`/programs/${title.toLowerCase().replace(/\s+/g, "-")}`}
-          className="mt-5 inline-block text-sm text-accent font-medium group-hover:translate-x-1 transition"
+          className="mt-5 inline-block text-sm text-accent font-medium group-hover:translate-x-1 transition-all duration-500 ease-in-out"
         >
           Learn More →
         </Link>
@@ -40,7 +40,7 @@ function ProgramCard({ title, description, image }) {
       </div>
 
       {/* Glow Effect */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-transparent via-accent/20 to-transparent blur-xl"></div>
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out bg-gradient-to-r from-transparent via-accent/20 to-transparent blur-xl"></div>
 
     </div>
   );

@@ -22,9 +22,10 @@ function Navbar({ onOpenModal = () => {} }) {
 
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Tiny Todds" className="h-24  object-contain" />
+          <img src={logo} alt="Tiny Todds" className="h-20 object-contain" />
+          
           <span className="text-lg md:text-xl font-semibold text-black dark:text-white">
-            Tiny Todds Theraphy Care
+            Tiny Todds Therapy Care
           </span>
         </Link>
 
@@ -45,7 +46,7 @@ function Navbar({ onOpenModal = () => {} }) {
             </Link>
           ))}
 
-          {/* 🔐 ADMIN LOGIN */}
+          {/* ADMIN LOGIN */}
           <Link
             to="/login"
             className={`transition ${
@@ -100,7 +101,6 @@ function Navbar({ onOpenModal = () => {} }) {
           </Link>
         ))}
 
-        {/* 🔐 ADMIN LOGIN MOBILE */}
         <Link
           to="/login"
           onClick={() => setMenuOpen(false)}
@@ -109,7 +109,6 @@ function Navbar({ onOpenModal = () => {} }) {
           Admin Login
         </Link>
 
-        {/* DARK MODE */}
         <button
           onClick={() => setDark(!dark)}
           className="w-full py-2 rounded-lg bg-gray-100 dark:bg-gray-700"
@@ -117,7 +116,6 @@ function Navbar({ onOpenModal = () => {} }) {
           {dark ? "☀️ Light Mode" : "🌙 Dark Mode"}
         </button>
 
-        {/* CTA */}
         <button
           onClick={() => {
             setMenuOpen(false);

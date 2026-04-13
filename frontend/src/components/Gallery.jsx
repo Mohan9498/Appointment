@@ -30,18 +30,18 @@ function Gallery() {
         {images.map((img, i) => (
           <div
             key={i}
-            className="relative overflow-hidden rounded-2xl group shadow-md hover:shadow-xl transition duration-500"
+            className="relative overflow-hidden rounded-2xl group shadow-md hover:shadow-xl transition-all  duration-500 ease-in-out"
           >
 
             {/* IMAGE */}
             <img
               src={img.src}
               alt={img.title}
-              className="w-full h-48 object-cover group-hover:scale-110 transition duration-500"
+              className="w-full h-48 object-cover group-hover:scale-110 transition-all  duration-500 ease-in-out"
             />
 
             {/* OVERLAY */}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all    duration-500 ease-in-out flex items-center justify-center">
               <h3 className="text-white font-semibold text-lg">
                 {img.title}
               </h3>
