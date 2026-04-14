@@ -113,9 +113,9 @@ function AdminDashboard() {
      console.log("MESSAGES RESPONSE:", res.data);
 
       // ✅ Handle both formats safely
-      // const messages = Array.isArray(res.data)
-      //   ? res.data
-      //   : res.data?.data || [];
+      const messages = Array.isArray(res.data)
+        ? res.data
+        : res.data?.data || [];
 
       setMessages(messages);
 
@@ -148,9 +148,9 @@ function AdminDashboard() {
   )
   .sort((a, b) => {
     if (sort === "latest") {
-      return new Date(b.created_at) - new Date(a.created_at);
+      return new Date(b.created_at || b.date) - new Date(a.created_at || a.date);
     } else {
-      return new Date(a.created_at) - new Date(b.created_at);
+      return new Date(a.created_at || a.date) - new Date(b.created_at || b.date);
     }
   });
   const filteredMessages = messages.filter((m) =>
@@ -245,12 +245,14 @@ function AdminDashboard() {
 
       const date = new Date(item.created_at);
 
+      if (isNaN(date)) return;
+
       const match = months.find(
         (m) =>
           m.month === date.getMonth() &&
           m.year === date.getFullYear()
       );
-
+    
       if (match) match.messages += 1;
     });
 
@@ -286,7 +288,7 @@ function AdminDashboard() {
 
       {/* ✅ SIDEBAR */}
       <div
-        className={`fixed top-0 left-0 h-screen min-h-screen w-64   bg-white dark:bg-white/5 border-r z-50   transform transition-transform duration-300  ${mobileOpen ? "translate-x-0" : "-translate-x-full"}  md:translate-x-0 md:static md:w-64   flex flex-col justify-between p-4`}
+        className={`fixed top-0 left-0 h-full min-h-screen w-64   bg-white dark:bg-white/5 border-r z-50   transform transition-transform duration-300  ${mobileOpen ? "translate-x-0" : "-translate-x-full"}  md:translate-x-0 md:static md:w-64   flex flex-col justify-between p-4`}
       >
         <button
           onClick={() => setMobileOpen(false)}
@@ -477,9 +479,14 @@ function AdminDashboard() {
 
 
                     <p className="text-sm items-end text-black-400 mb-4">
-                    {item.created_at
-                      ? new Date(item.created_at).toLocaleDateString("en-IN")
-                      : "No date"}
+                      {item.created_at
+                        ? new Date(item.created_at).toLocaleDateString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric"
+
+                          })
+                        : item.date || "No date"}
                     </p>                    
 
                   </div>

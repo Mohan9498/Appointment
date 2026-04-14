@@ -128,7 +128,7 @@ function ContactModal({ onClose, prefill = null }) {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex py-3 items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+        className="fixed inset-0 z-50 flex py-1 items-center justify-center bg-black/60 backdrop-blur-sm px-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -140,7 +140,7 @@ function ContactModal({ onClose, prefill = null }) {
           exit={{ y: 80, opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6 overflow-y-auto max-h-[95vh]"
+          className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-4 overflow-y-auto max-h-[95vh]"
         >
           <button
             onClick={onClose}

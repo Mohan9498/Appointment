@@ -30,7 +30,7 @@ function Features() {
     {
       icon: <Star size={28} className="text-orange-500" />,
       title: "Proven Results",
-      description: "Over 100 children have made meaningful developmental progress across our 15 branches.",
+      description: "Over 500 children have made meaningful developmental progress across our 15 branches.",
     },
   ];
 

@@ -65,7 +65,7 @@ function Footer({ onOpenModal }) {
 
           <div className="text-sm  space-y-2">
 
-            <p className="flex flex-row items-center gap-2">  <MapPin size={14} className="text-blue-500" />  <a    href="https://www.google.com/maps/search/?api=1&query=Chennai,Tamil%20Nadu"    target="_blank"    rel="noopener noreferrer"    className="hover:underline hover:text-white"  >    Chennai, Tamil Nadu  </a>  </p>
+            <p className="flex flex-row items-center gap-2">  <MapPin size={14} className="text-blue-500" />  <a    href="https://www.google.com/maps/search/?api=1&query=26Q9%2B8W%20Chennai%2C%20Tamil%20Nadu"    target="_blank"    rel="noopener noreferrer"    className="hover:underline hover:text-white"  >     Chennai, Tamil Nadu  </a> </p>
 
             <p className="flex flex-row items-center gap-2">  <Phone size={14} className="text-green-500" />  <a    href="tel:+919941350646"    className="hover:underline hover:text-white"  >    +91 99413 50646  </a>  </p>
       
@@ -92,8 +92,8 @@ function Footer({ onOpenModal }) {
               <Mail className="hover:text-red-500 transition hover:scale-110" />
             </a>
 
-            <a href="https://www.google.com/maps/search/?api=1&query=Chennai,Tamil%20Nadu">
-              <MapPin className="hover:text-blue-500 transition hover:scale-110" />
+            <a href="https://www.google.com/maps/search/?api=1&query=26Q9%2B8W%20Chennai%2C%20Tamil%20Nadu"target="_blank"  rel="noopener     noreferrer"> 
+             <MapPin className="hover:text-blue-500 transition hover:scale-110" />
             </a>
 
           </div>

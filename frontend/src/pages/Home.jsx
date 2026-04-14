@@ -17,7 +17,7 @@ function Home({ onOpenModal }) {
         <Gallery />
       </div>
 
-      {/* <Footer onOpenModal={onOpenModal} /> */}
+      <Footer onOpenModal={onOpenModal} />
 
     </div>
   );
