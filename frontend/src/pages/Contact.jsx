@@ -103,7 +103,7 @@ function Contact() {
                 
                 <InfoCard  icon={<Mail size={18} />}  title="Email"  value={  <a href="mailto:support@tinytodds.com" className="hover:underline text-blue-600">  support@tinytodds.com  </a>  }/>
                 
-                <InfoCard  icon={<MapPin size={18} />}  title="Location"  value={  <a  href="https://www.google.com/maps/search/?api=1&query=Chennai,Tamil%20Nadu"  target="_blank"  rel="noopener noreferrer"  className="hover:underline text-blue-600"  >  Chennai, Tamil Nadu  </a>  }/>
+                <InfoCard  icon={<MapPin size={18} />}  title="Location"  value={  <a  href="https://www.google.com/maps/search/?api=1&query=26Q9%2B8W%20Chennai%2C%20Tamil%20Nadu"  target="_blank"  rel="noopener noreferrer"  className="hover:underline text-blue-600"  >  Chennai, Tamil Nadu  </a>  }/>
                 
                 <InfoCard  icon={<Phone size={18} />}  title="WhatsApp"  value={  <a  href="https://wa.me/919941350646"  target="_blank"  rel="noopener noreferrer"  className="hover:underline text-green-600"  >  Chat on WhatsApp  </a>  }/>
                 
