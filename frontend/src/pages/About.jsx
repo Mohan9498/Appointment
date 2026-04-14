@@ -8,7 +8,7 @@ function About() {
       <Navbar />
 
       {/* 🌟 HERO SECTION */}
-      <section className="relative py-20 px-6  bg-slate-50 dark:bg-black/25 text-black dark:text-white">
+      <section className="relative py-24 px-6  bg-slate-50 dark:bg-black/25 text-black dark:text-white">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-green-600 tracking-tight mb-4">
             About Tiny Todds
