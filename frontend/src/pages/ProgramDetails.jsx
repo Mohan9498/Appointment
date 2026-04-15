@@ -1,4 +1,6 @@
 import { useParams, Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const programDetails = {
   "speech-therapy": {
@@ -42,17 +44,18 @@ const programDetails = {
   },
 };
 
-function ProgramDetails() {
-  // FIX: was `.replace("-", " ")` — only replaced the first hyphen.
-  // e.g. "speech-cognitive-therapy" → "speech cognitive-therapy" (wrong)
-  // Now uses regex /g flag to replace ALL hyphens.
+function ProgramDetails({ onOpenModal }) {
   const { name } = useParams();
   const displayName = name.replace(/-/g, " ");
   const details = programDetails[name];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black px-6 py-16">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-black dark:text-white">
+
+      {/* FIX: Navbar was missing — users had no navigation from program detail pages */}
+      <Navbar onOpenModal={onOpenModal} />
+
+      <div className="max-w-3xl mx-auto px-6 py-24">
 
         <Link
           to="/programs"
@@ -110,12 +113,16 @@ function ProgramDetails() {
         ) : (
           <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-6 shadow-sm">
             <p className="text-gray-500 dark:text-gray-400">
-              Detailed information about the <span className="font-medium capitalize">{displayName}</span> program is coming soon.
+              Detailed information about the{" "}
+              <span className="font-medium capitalize">{displayName}</span> program is coming soon.
             </p>
           </div>
         )}
 
       </div>
+
+      {/* FIX: Footer was missing */}
+      <Footer onOpenModal={onOpenModal} />
     </div>
   );
 }

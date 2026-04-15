@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Link, useLocation } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import logo from "../assets/navbar_logo_tiny_todds.png";
 
 function Navbar({ onOpenModal = () => {} }) {
@@ -18,12 +19,15 @@ function Navbar({ onOpenModal = () => {} }) {
   return (
     <nav className="fixed top-0 w-full z-50 backdrop-blur-lg bg-white/70 dark:bg-black/40 border-b border-gray-200 dark:border-white/10 transition-all duration-300">
 
-      <div className="max-w-7xl mx-auto px-6 py-1 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
 
-        {/* LOGO */}
+        {/* LOGO — FIX: removed invalid h-18 class from wrapper, added dark:invert for visibility */}
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Tiny Todds" className="h-20 object-contain" />
-          
+          <img
+            src={logo}
+            alt="Tiny Todds"
+            className="h-12 w-auto object-contain dark:invert"
+          />
           <span className="text-lg md:text-xl font-semibold text-black dark:text-white">
             Tiny Todds Therapy Care
           </span>
@@ -78,9 +82,10 @@ function Navbar({ onOpenModal = () => {} }) {
         {/* MOBILE MENU BUTTON */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-2xl text-black dark:text-white"
+          className="md:hidden text-black dark:text-white p-1"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
         >
-          {menuOpen ? "✕" : "☰"}
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
@@ -95,7 +100,7 @@ function Navbar({ onOpenModal = () => {} }) {
             key={i}
             to={item.path}
             onClick={() => setMenuOpen(false)}
-            className="block text-lg font-medium text-gray-800 dark:text-gray-200 border-b pb-2"
+            className="block text-lg font-medium text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-white/10 pb-2"
           >
             {item.label}
           </Link>
@@ -104,14 +109,14 @@ function Navbar({ onOpenModal = () => {} }) {
         <Link
           to="/login"
           onClick={() => setMenuOpen(false)}
-          className="block text-lg font-medium text-blue-600 border-b pb-2"
+          className="block text-lg font-medium text-blue-600 border-b border-gray-100 dark:border-white/10 pb-2"
         >
           Admin Login
         </Link>
 
         <button
           onClick={() => setDark(!dark)}
-          className="w-full py-2 rounded-lg bg-gray-100 dark:bg-gray-700"
+          className="w-full py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
         >
           {dark ? "☀️ Light Mode" : "🌙 Dark Mode"}
         </button>
@@ -121,7 +126,7 @@ function Navbar({ onOpenModal = () => {} }) {
             setMenuOpen(false);
             onOpenModal();
           }}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
         >
           Book Appointment
         </button>

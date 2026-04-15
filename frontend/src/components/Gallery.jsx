@@ -16,7 +16,8 @@ function Gallery() {
 
       {/* HEADER */}
       <div className="text-center mb-14 px-4">
-        <h2 className="text-4xl md:text-5xl text-blue-600 font-bold">
+        {/* FIX: outer text was also text-blue-600, making the span highlight pointless */}
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
           Our <span className="text-blue-600">Activities</span>
         </h2>
         <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
@@ -30,18 +31,18 @@ function Gallery() {
         {images.map((img, i) => (
           <div
             key={i}
-            className="relative overflow-hidden rounded-2xl group shadow-md hover:shadow-xl transition-all  duration-500 ease-in-out"
+            className="relative overflow-hidden rounded-2xl group shadow-md hover:shadow-xl transition-all duration-500 ease-in-out"
           >
 
             {/* IMAGE */}
             <img
               src={img.src}
               alt={img.title}
-              className="w-full h-48 object-cover group-hover:scale-110 transition-all  duration-500 ease-in-out"
+              className="w-full h-48 object-cover group-hover:scale-110 transition-all duration-500 ease-in-out"
             />
 
             {/* OVERLAY */}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all    duration-500 ease-in-out flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out flex items-center justify-center">
               <h3 className="text-white font-semibold text-lg">
                 {img.title}
               </h3>

@@ -1,16 +1,17 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-function About() {
+function About({ onOpenModal }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black text-black dark:text-white">
 
-      <Navbar />
+      <Navbar onOpenModal={onOpenModal} />
 
-      {/* 🌟 HERO SECTION */}
-      <section className="relative py-24 px-6  bg-slate-50 dark:bg-black/25 text-black dark:text-white">
+      {/* HERO SECTION */}
+      <section className="relative py-24 px-6 bg-slate-50 dark:bg-black text-black dark:text-white">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-green-600 tracking-tight mb-4">
+          {/* FIX: was text-green-600 — inconsistent with brand blue used on all other pages */}
+          <h1 className="text-4xl md:text-6xl font-serif text-blue-600 tracking-tight mb-4">
             About Tiny Todds
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
@@ -19,14 +20,14 @@ function About() {
         </div>
       </section>
 
-      {/* 🎯 MISSION & VISION SECTION */}
-      <section className="px-6 py-20 border border-gray-700 bg-slate-50 dark:bg-black/25 text-black dark:text-white">
+      {/* MISSION & VISION SECTION */}
+      {/* FIX: was border-gray-700 (dark hardcoded) — now responsive for both modes */}
+      <section className="px-6 py-20 border border-gray-200 dark:border-gray-700 bg-slate-50 dark:bg-black text-black dark:text-white">
         <div className="max-w-6xl mx-auto space-y-12">
 
-          {/* 🔷 TOP: Mission & Vision */}
+          {/* Mission & Vision */}
           <div className="grid md:grid-cols-2 gap-8">
 
-            {/* Mission */}
             <div className="p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
               <h2 className="text-2xl font-semibold mb-4 text-blue-500">
                 Our Mission
@@ -37,7 +38,6 @@ function About() {
               </p>
             </div>
 
-            {/* Vision */}
             <div className="p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
               <h2 className="text-2xl font-semibold mb-4 text-indigo-500">
                 Our Vision
@@ -50,11 +50,11 @@ function About() {
 
           </div>
 
-          {/* 📖 CONTENT BELOW */}
+          {/* Content */}
           <div className="bg-white/80 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-8 md:p-10 backdrop-blur-xl shadow-lg space-y-8">
 
             <p className="text-gray-700 dark:text-gray-300 leading-8 text-justify indent-10 text-sm md:text-base">
-              Tiny Todds Therapy Care is a specialized child development center dedicated to fostering each child’s unique potential
+              Tiny Todds Therapy Care is a specialized child development center dedicated to fostering each child's unique potential
               through evidence-based therapy and compassionate, individualized care. Recognizing that early childhood is a critical period
               for cognitive, emotional, and social development, we emphasize early intervention and structured programs that support communication,
               learning abilities, and confidence building. Our approach is rooted in a deep understanding that every child is different,
@@ -72,7 +72,7 @@ function About() {
         </div>
       </section>
 
-      <Footer />
+      <Footer onOpenModal={onOpenModal} />
     </div>
   );
 }
