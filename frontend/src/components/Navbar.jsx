@@ -21,12 +21,16 @@ function Navbar({ onOpenModal = () => {} }) {
 
       <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
 
-        {/* LOGO — FIX: removed invalid h-18 class from wrapper, added dark:invert for visibility */}
+        {/* LOGO
+            The PNG has a black background.
+            mix-blend-multiply  → black bg disappears on the light/white navbar.
+            dark:mix-blend-screen → black bg disappears on the dark navbar.
+            All original logo colors stay intact in both modes. */}
         <Link to="/" className="flex items-center gap-2">
           <img
             src={logo}
             alt="Tiny Todds"
-            className="h-12 w-auto object-contain dark:invert"
+            className="h-14 w-auto object-contain mix-blend-multiply dark:mix-blend-screen"
           />
           <span className="text-lg md:text-xl font-semibold text-black dark:text-white">
             Tiny Todds Therapy Care
