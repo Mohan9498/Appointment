@@ -36,7 +36,7 @@ function Programs({ onOpenModal }) {
 
         {/* HEADER */}
         <div className="text-center mb-16 px-4">
-          {/* FIX: was text-blue-500 outer + text-blue-600 span — near-identical shades */}
+          {/* FIX: was text-blue-600 outer + text-blue-600 span — near-identical shades */}
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
             Our <span className="text-blue-600">Programs</span>
           </h2>

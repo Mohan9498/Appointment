@@ -36,7 +36,7 @@ function AdminAnalytics({ appointments }) {
       {
         label: "Appointments",
         data: Object.values(byDateMap),
-        backgroundColor: "rgba(59, 130, 246, 0.6)",  // blue-500/60
+        backgroundColor: "rgba(37, 99, 235, 0.6)",  // blue-600/60
         borderColor: "rgba(59, 130, 246, 1)",
         borderWidth: 1,
         borderRadius: 6,

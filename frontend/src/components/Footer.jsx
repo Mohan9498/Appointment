@@ -67,7 +67,7 @@ function Footer({ onOpenModal }) {
           <div className="text-sm space-y-2  text-gray-600 dark:text-gray-400">
 
             <p className="flex flex-row items-center gap-2">
-              <MapPin size={14} className="text-blue-500 flex-shrink-0" />
+              <MapPin size={14} className="text-blue-600 flex-shrink-0" />
               <a
                 href="https://www.google.com/maps/search/?api=1&query=26Q9%2B8W%20Chennai%2C%20Tamil%20Nadu"
                 target="_blank"
@@ -105,7 +105,7 @@ function Footer({ onOpenModal }) {
             <a href="https://wa.me/919941350646" target="_blank" rel="noreferrer">
               <MessageCircle className="hover:text-green-500 transition hover:scale-110" />
             </a>
-            <a href="https://www.instagram.com/tinytoddstherapycentre" target="_blank" rel="noreferrer">
+            <a href="https://www.instagram.com/tinytoddstherapycentre" aria-label="Follow us on Instagram" target="_blank" rel="noreferrer">
               <Instagram className="hover:text-pink-500 transition hover:scale-110" />
             </a>
             <a href="mailto:tinytoddstherapycare@gmail.com">
@@ -116,7 +116,7 @@ function Footer({ onOpenModal }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <MapPin className="hover:text-blue-500 transition hover:scale-110" />
+              <MapPin className="hover:text-blue-600 transition hover:scale-110" />
             </a>
           </div>
         </div>

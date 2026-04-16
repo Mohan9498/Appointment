@@ -34,7 +34,7 @@ function ProgramCard({ title, description, image }) {
         {/* FIX: was text-accent (undefined var) — replaced with real Tailwind class */}
         <button
           to={`/programs/${title.toLowerCase().replace(/\s+/g, "-")}`}
-          className="mt-5 inline-block text-sm text-blue-500 dark:text-blue-400 font-medium group-hover:translate-x-1 transition-all duration-500 ease-in-out cursor-pointer"
+          className="mt-5 inline-block text-sm text-blue-600 dark:text-blue-400 font-medium group-hover:translate-x-1 transition-all duration-500 ease-in-out cursor-pointer"
         >
           Learn More →
         </button>
@@ -42,7 +42,7 @@ function ProgramCard({ title, description, image }) {
       </div>
 
       {/* Glow Effect */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out bg-gradient-to-r from-transparent via-blue-500/20 to-transparent blur-xl" />
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out bg-gradient-to-r from-transparent via-blue-600/20 to-transparent blur-xl" />
 
     </div>
   );

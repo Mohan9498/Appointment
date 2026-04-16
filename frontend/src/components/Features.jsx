@@ -3,7 +3,7 @@ import { ShieldCheck, Heart, Brain, Clock, Users, Star } from "lucide-react";
 function Features() {
   const data = [
     {
-      icon: <Brain size={28} className="text-blue-500" />,
+      icon: <Brain size={28} className="text-blue-600" />,
       title: "Expert Therapists",
       description: "Our certified specialists bring years of experience in pediatric speech, cognitive, and behavioral therapy.",
     },

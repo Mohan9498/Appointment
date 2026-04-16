@@ -120,7 +120,7 @@ function Contact({ onOpenModal }) {
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Tell us how we can help"
-                    className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-white/10 transition"
+                    className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 text-slate-900 dark:text-white outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-white/10 transition"
                     required
                   />
                 </div>
@@ -163,7 +163,7 @@ function Input({ label, name, value, onChange, type = "text" }) {
         value={value}
         onChange={onChange}
         placeholder={`Enter your ${label.toLowerCase()}`}
-        className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-white/10 transition"
+        className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 text-slate-900 dark:text-white outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-white/10 transition"
         required
       />
     </div>

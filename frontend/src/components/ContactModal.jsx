@@ -259,7 +259,7 @@ function ContactModal({ onClose, prefill = null }) {
                       ? "border-red-400 dark:border-red-500 focus-within:ring-red-400"
                       : phoneValid
                       ? "border-green-400 dark:border-green-500 focus-within:ring-green-400"
-                      : "border-gray-300 dark:border-white/10 focus-within:ring-blue-500"
+                      : "border-gray-300 dark:border-white/10 focus-within:ring-blue-600"
                   }`}
                 >
                   <select
@@ -358,7 +358,7 @@ function ContactModal({ onClose, prefill = null }) {
                       onClick={() => setForm({ ...form, program: p.value })}
                       className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-sm font-medium transition ${
                         form.program === p.value
-                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
+                          ? "border-blue-600 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
                           : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-blue-300"
                       }`}
                     >
@@ -389,7 +389,7 @@ function ContactModal({ onClose, prefill = null }) {
 }
 
 const inputCls =
-  "w-full mt-1 px-4 py-1 border border-gray-300 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 outline-none transition";
+  "w-full mt-1 px-4 py-1 border border-gray-300 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-600 outline-none transition";
 
 function Field({ label, children }) {
   return (

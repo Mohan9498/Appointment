@@ -44,8 +44,8 @@ function Navbar({ onOpenModal = () => {} }) {
               to={item.path}
               className={`relative transition ${
                 location.pathname === item.path
-                  ? "text-blue-600 dark:text-blue-400 after:absolute after:left-0 after:-bottom-1 after:w-full after:h-[2px] after:bg-blue-500"
-                  : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                  ? "text-blue-600 dark:text-blue-400 after:absolute after:left-0 after:-bottom-1 after:w-full after:h-[2px] after:bg-blue-600"
+                  : "text-gray-700 dark:text-gray-300 hover:text-blue-600"
               }`}
             >
               {item.label}
@@ -57,7 +57,7 @@ function Navbar({ onOpenModal = () => {} }) {
             className={`transition ${
               location.pathname === "/login"
                 ? "text-blue-600 dark:text-blue-400 font-semibold"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                : "text-gray-700 dark:text-gray-300 hover:text-blue-600"
             }`}
           >
             Admin
@@ -74,7 +74,7 @@ function Navbar({ onOpenModal = () => {} }) {
 
           <button
             onClick={onOpenModal}
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-2 rounded-full shadow-md hover:scale-105 transition"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-full shadow-md hover:scale-105 transition"
           >
             Book Appointment
           </button>

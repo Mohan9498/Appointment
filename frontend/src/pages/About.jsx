@@ -29,7 +29,7 @@ function About({ onOpenModal }) {
           <div className="grid md:grid-cols-2 gap-8">
 
             <div className="p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
-              <h2 className="text-2xl font-semibold mb-4 text-blue-500">
+              <h2 className="text-2xl font-semibold mb-4 text-blue-600">
                 Our Mission
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-7 text-sm md:text-base">

@@ -90,6 +90,7 @@ export default function Chatbot() {
       {/* FLOAT BUTTON */}
       <button
         onClick={() => setOpen((prev) => !prev)}
+        aria-label="Open chat assistant"
         className="fixed bottom-5 right-5 z-[9999] flex items-center justify-center rounded-full bg-blue-600 p-4 text-white shadow-xl transition hover:scale-105 hover:bg-blue-700"
       >
         {open ? <X size={20} /> : <MessageCircle size={20} />}
@@ -159,7 +160,7 @@ export default function Chatbot() {
                   e.key === "Enter" && handleSubmit()
                 }
                 placeholder="Ask about programs, timings, locations…"
-                className="flex-1 rounded-full border border-gray-300 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:border-white/10 dark:bg-gray-950 dark:text-white"
+                className="flex-1 rounded-full border border-gray-300 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-blue-600 dark:border-white/10 dark:bg-gray-950 dark:text-white"
               />
 
               <button
