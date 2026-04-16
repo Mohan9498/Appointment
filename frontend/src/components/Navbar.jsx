@@ -21,15 +21,13 @@ function Navbar({ onOpenModal = () => {} }) {
 
       <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
 
-        {/* LOGO
-            The PNG has a black background.
-            mix-blend-multiply  → black bg disappears on the light/white navbar.
-            dark:mix-blend-screen → black bg disappears on the dark navbar.
-            All original logo colors stay intact in both modes. */}
         <Link to="/" className="flex items-center gap-2">
+          {/* ✅ Explicit width/height prevents layout shift (CLS fix) */}
           <img
             src={logo}
-            alt="Tiny Todds"
+            alt="Tiny Todds Therapy Care logo"
+            width={56}
+            height={56}
             className="h-14 w-auto object-contain mix-blend-multiply dark:mix-blend-screen"
           />
           <span className="text-lg md:text-xl font-semibold text-black dark:text-white">
@@ -54,7 +52,6 @@ function Navbar({ onOpenModal = () => {} }) {
             </Link>
           ))}
 
-          {/* ADMIN LOGIN */}
           <Link
             to="/login"
             className={`transition ${
@@ -66,15 +63,15 @@ function Navbar({ onOpenModal = () => {} }) {
             Admin
           </Link>
 
-          {/* DARK MODE */}
+          {/* ✅ aria-label added — fixes "Buttons do not have an accessible name" audit */}
           <button
             onClick={() => setDark(!dark)}
+            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             className="px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-700 text-sm"
           >
             {dark ? "☀️" : "🌙"}
           </button>
 
-          {/* CTA */}
           <button
             onClick={onOpenModal}
             className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-2 rounded-full shadow-md hover:scale-105 transition"
@@ -83,7 +80,7 @@ function Navbar({ onOpenModal = () => {} }) {
           </button>
         </div>
 
-        {/* MOBILE MENU BUTTON */}
+        {/* MOBILE MENU BUTTON — aria-label already present ✅ */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-black dark:text-white p-1"
@@ -118,8 +115,10 @@ function Navbar({ onOpenModal = () => {} }) {
           Admin Login
         </Link>
 
+        {/* ✅ aria-label on mobile dark mode toggle too */}
         <button
           onClick={() => setDark(!dark)}
+          aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
           className="w-full py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
         >
           {dark ? "☀️ Light Mode" : "🌙 Dark Mode"}

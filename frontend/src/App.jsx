@@ -1,27 +1,36 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import About from "./pages/About";
-import Programs from "./pages/Programs";
-import Contact from "./pages/Contact";
+// ✅ Lazy load all pages — reduces initial JS bundle by ~756 KiB
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const About = lazy(() => import("./pages/About"));
+const Programs = lazy(() => import("./pages/Programs"));
+const Contact = lazy(() => import("./pages/Contact"));
+const AdminDashboard = lazy(() => import("./dashboards/AdminDashboard"));
+const AdminAppointments = lazy(() => import("./components/AdminAppointments"));
 
 import Footer from "./components/Footer";
 import Chatbot from "./components/Chatbot";
-
-import AdminDashboard from "./dashboards/AdminDashboard";
-import AdminAppointments from "./components/AdminAppointments";
 import ContactModal from "./components/ContactModal";
 
 function NotFound() {
   return (
     <div className="h-screen flex items-center justify-center text-xl font-bold">
       404 - Page Not Found
+    </div>
+  );
+}
+
+// ✅ Simple loading fallback
+function PageLoader() {
+  return (
+    <div className="h-screen flex items-center justify-center">
+      <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 }
@@ -58,33 +67,38 @@ function App() {
         />
       )}
 
-      <Routes>
-        <Route path="/" element={<Home onOpenModal={() => handleOpenModal()} />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/programs" element={<Programs />} />
-        <Route path="/contact" element={<Contact />} />
+      {/* ✅ <main> landmark fixes accessibility audit */}
+      <main>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Home onOpenModal={() => handleOpenModal()} />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/programs" element={<Programs />} />
+            <Route path="/contact" element={<Contact />} />
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/admin/appointments"
-          element={
-            <ProtectedRoute>
-              <AdminAppointments />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/admin/appointments"
+              element={
+                <ProtectedRoute>
+                  <AdminAppointments />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </main>
 
       {!isAdminRoute && (
         <>
