@@ -6,17 +6,17 @@ function Services() {
     {
       title: "Speech Therapy",
       description: "Improve communication, language, and social skills through evidence-based speech development techniques tailored to each child.",
-      image: "https://img.freepik.com/free-vector/speech-therapy-concept_23-2148655407.jpg"
+      image: "https://autism.jeevaniyam.in/wp-content/themes/jeevaniyam-landing/images/j3.webp"
     },
     {
       title: "Cognitive Therapy",
       description: "Enhance memory, attention, and problem-solving abilities with structured cognitive training programs.",
-      image: "https://img.freepik.com/free-vector/brain-development-concept_23-2148655412.jpg"
+      image: "https://autism.jeevaniyam.in/wp-content/themes/jeevaniyam-landing/images/j5.webp"
     },
     {
       title: "Day Care",
       description: "A safe, nurturing, and engaging environment for learning, play, and social growth throughout the day.",
-      image: "https://img.freepik.com/free-vector/daycare-concept_23-2148655383.jpg"
+      image: "https://autism.jeevaniyam.in/wp-content/themes/jeevaniyam-landing/images/j4.webp"
     }
   ];
 

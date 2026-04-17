@@ -1,14 +1,14 @@
-import g1 from "../assets/g1.jpeg";
-import g2 from "../assets/g2.jpeg";
-import g3 from "../assets/g3.jpeg";
-import g4 from "../assets/g4.jpeg";
+import c1 from "../assets/c1.jpg";
+import c2 from "../assets/c2.jpg";
+import j6 from "../assets/j6.webp";
+import j7 from "../assets/j7.webp";
 
 function Gallery() {
   const images = [
-    { src: g1, title: "Speech Activities" },
-    { src: g2, title: "Learning Sessions" },
-    { src: g3, title: "Cognitive Training" },
-    { src: g4, title: "Play & Growth" },
+    { src: c1, title: "Speech Activities" },
+    { src: c2, title: "Learning Sessions" },
+    { src: j6, title: "Cognitive Training" },
+    { src: j7, title: "Play & Growth" },
   ];
 
   return (

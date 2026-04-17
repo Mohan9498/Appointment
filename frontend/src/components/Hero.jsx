@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import g1 from "../assets/g1.jpeg";
+import g1 from "../assets/j-1.webp";
 
 function Hero({ onOpenModal }) {
   return (
-    <section className="relative pt-24 min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-black">
+    <section className="relative pt-20 min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-black">
 
       {/* Soft Glow */}
       <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
