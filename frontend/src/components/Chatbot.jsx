@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, RotateCcw } from "lucide-react";
+import { MessageCircle, X, Send, RotateCcw, Bot } from "lucide-react";
 
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
@@ -43,7 +43,7 @@ export default function Chatbot() {
 
     if (text.includes("speech")) {
       reply =
-        "Speech therapy helps children improve communication and language skills. It’s suitable for ages 1 to 12.";
+        "Speech therapy helps children improve communication and language skills. It's suitable for ages 1 to 12.";
     } 
     else if (text.includes("cognitive")) {
       reply =
@@ -91,41 +91,50 @@ export default function Chatbot() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         aria-label="Open chat assistant"
-        className="fixed bottom-5 right-5 z-[9999] flex items-center justify-center rounded-full bg-blue-600 p-4 text-white shadow-xl transition hover:scale-105 hover:bg-blue-700"
+        className={`fixed bottom-6 right-6 z-[9999] flex items-center justify-center rounded-2xl p-4 text-white shadow-xl transition-all duration-300 hover:scale-105 ${
+          open
+            ? 'bg-gray-800 dark:bg-gray-700 hover:bg-gray-700 dark:hover:bg-gray-600 rounded-full'
+            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-glow-blue'
+        }`}
       >
         {open ? <X size={20} /> : <MessageCircle size={20} />}
       </button>
 
       {open && (
-        <div className="fixed bottom-24 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-gray-900">
+        <div className="fixed bottom-24 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-slate-900 shadow-2xl animate-scale-in">
 
           {/* HEADER */}
-          <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-white">
-            <div>
-              <h3 className="font-semibold">Tiny Todds Assistant</h3>
-              <p className="text-xs text-blue-100">Ask me anything 💬</p>
+          <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 text-white">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                <Bot size={18} />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm">Tiny Todds Assistant</h3>
+                <p className="text-[11px] text-blue-100/80">Ask me anything 💬</p>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={resetChat}
-                className="rounded-full bg-white/10 p-2 hover:bg-white/20"
+                className="rounded-xl bg-white/10 p-2 hover:bg-white/20 transition-colors"
                 title="Reset"
               >
-                <RotateCcw size={16} />
+                <RotateCcw size={14} />
               </button>
 
               <button
                 onClick={() => setOpen(false)}
-                className="rounded-full bg-white/10 p-2 hover:bg-white/20"
+                className="rounded-xl bg-white/10 p-2 hover:bg-white/20 transition-colors"
               >
-                <X size={16} />
+                <X size={14} />
               </button>
             </div>
           </div>
 
           {/* MESSAGES */}
-          <div className="h-96 space-y-3 overflow-y-auto bg-gray-50 p-3 dark:bg-gray-950">
+          <div className="h-80 space-y-3 overflow-y-auto bg-gray-50 dark:bg-slate-950 p-4">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
@@ -136,10 +145,10 @@ export default function Chatbot() {
                 }`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-blue-600 text-white"
-                      : "border border-gray-200 bg-white text-gray-800 dark:border-white/10 dark:bg-gray-900 dark:text-white"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-br-md"
+                      : "border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 rounded-bl-md"
                   }`}
                 >
                   {msg.text}
@@ -151,7 +160,7 @@ export default function Chatbot() {
           </div>
 
           {/* INPUT */}
-          <div className="border-t border-gray-200 bg-white p-3 dark:border-white/10 dark:bg-gray-900">
+          <div className="border-t border-gray-200 dark:border-white/[0.06] bg-white dark:bg-slate-900 p-3">
             <div className="flex items-center gap-2">
               <input
                 value={input}
@@ -159,15 +168,15 @@ export default function Chatbot() {
                 onKeyDown={(e) =>
                   e.key === "Enter" && handleSubmit()
                 }
-                placeholder="Ask about programs, timings, locations…"
-                className="flex-1 rounded-full border border-gray-300 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-blue-600 dark:border-white/10 dark:bg-gray-950 dark:text-white"
+                placeholder="Ask about programs, timings…"
+                className="flex-1 rounded-xl border border-gray-200 dark:border-white/[0.06] bg-gray-50/50 dark:bg-slate-950 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:text-white transition-all duration-300"
               />
 
               <button
                 onClick={handleSubmit}
-                className="rounded-full bg-blue-600 p-3 text-white hover:bg-blue-700"
+                className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 p-3 text-white hover:shadow-glow-blue hover:scale-105 transition-all duration-300"
               >
-                <Send size={18} />
+                <Send size={16} />
               </button>
             </div>
           </div>

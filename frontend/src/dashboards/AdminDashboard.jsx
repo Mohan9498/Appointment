@@ -12,6 +12,7 @@ import {
   Plus,
   Trash2,
   Save,
+  PenLine,
 } from "lucide-react";
 import {
   BarChart,
@@ -29,6 +30,22 @@ import useAuthStore from "../store/useAuthStore";
 
 const CMS_PAGES = ["home", "about", "programs"];
 
+// ✅ PRE-DEFINED SECTION MAP — matches exactly what the frontend pages use
+const PAGE_SECTIONS = {
+  home: [
+    { section: "hero", label: "Hero Section", description: "Main heading, subtitle, and hero image on the home page", hasCards: false },
+    { section: "services", label: "Services Section", description: "Service cards (Speech Therapy, Cognitive Therapy, Day Care)", hasCards: true },
+    { section: "features", label: "Why Choose Us", description: "Feature cards (Expert Therapists, Safe Environment, etc.)", hasCards: true },
+    { section: "gallery", label: "Gallery / Activities", description: "Activity images shown in the gallery grid", hasCards: true },
+  ],
+  about: [
+    { section: "about-main", label: "About Content", description: "Main description text on the About page", hasCards: false },
+  ],
+  programs: [
+    { section: "programs", label: "Programs List", description: "Program cards (Speech Therapy, Cognitive Therapy, Day Care)", hasCards: true },
+  ],
+};
+
 function AdminDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -44,6 +61,7 @@ function AdminDashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cmsPage, setCmsPage] = useState("home");
   const [savingIds, setSavingIds] = useState([]);
+  const [pagesTab, setPagesTab] = useState("home");
 
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
@@ -152,6 +170,28 @@ function AdminDashboard() {
     } catch (err) {
       console.log(err.response?.data || err.message);
       toast.error("Create failed");
+    }
+  };
+
+  // ✅ AUTO-CREATE a section if it doesn't exist yet
+  const autoCreateSection = async (page, section) => {
+    // Check if already exists
+    const exists = content.find((c) => c.page === page && c.section === section);
+    if (exists) return;
+
+    try {
+      await API.post("content/", {
+        page,
+        section,
+        title: "",
+        description: "",
+        data: [],
+      });
+      await fetchContent();
+      toast.success(`"${section}" section created`);
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+      toast.error("Failed to create section");
     }
   };
 
@@ -315,21 +355,21 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100 dark:bg-[#0F172A]">
-      <div className="md:hidden h-full flex justify-between items-center p-2 bg-white dark:bg-[#0F172A] border-b sticky top-0 z-50">
-        <h1 className="font-semibold text-black dark:text-white">Admin</h1>
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-slate-950">
+      <div className="md:hidden flex justify-between items-center px-4 py-3 bg-white dark:bg-slate-900 border-b border-gray-200/50 dark:border-white/[0.06] sticky top-0 z-50">
+        <h1 className="font-bold text-gray-900 dark:text-white tracking-tight">Admin Panel</h1>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition text-gray-700 dark:text-white"
           >
             ☰
           </button>
 
           <button
             onClick={() => setDark(!dark)}
-            className="px-2 py-1 rounded-lg bg-gray-200 dark:bg-white/10"
+            className="p-2.5 rounded-xl bg-gray-100 dark:bg-white/10 transition hover:bg-gray-200 dark:hover:bg-white/20"
           >
             {dark ? "☀️" : "🌙"}
           </button>
@@ -337,23 +377,23 @@ function AdminDashboard() {
       </div>
 
       <div
-        className={`fixed top-0 left-0 h-full min-h-screen w-64 bg-white dark:bg-white/5 border-r z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full min-h-screen w-64 bg-white dark:bg-slate-900 border-r border-gray-200/50 dark:border-white/[0.06] z-50 transform transition-transform duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 md:static md:w-64 flex flex-col justify-between p-4`}
       >
-        <button onClick={() => setMobileOpen(false)} className="md:hidden text-xl mb-4">
+        <button onClick={() => setMobileOpen(false)} className="md:hidden text-xl mb-4 text-gray-500 hover:text-gray-700 dark:hover:text-white transition">
           ✕
         </button>
 
-        <nav className="space-y-2  max-h-full flex-1 overflow-y-auto">
-          <div className="hidden md:flex items-center justify-between mt-4 px-2">
-            <h1 className="font-serif text-black dark:text-white">Admin</h1>
+        <nav className="space-y-1.5 max-h-full flex-1 overflow-y-auto">
+          <div className="hidden md:flex items-center justify-between mt-2 mb-6 px-2">
+            <h1 className="font-bold text-lg tracking-tight text-gray-900 dark:text-white">Admin Panel</h1>
 
             <button
               onClick={() => setDark(!dark)}
-              className="px-3 rounded-lg text-xs bg-gray-200 dark:bg-white/10 text-black dark:text-white"
+              className="p-2 rounded-xl text-xs bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition"
             >
-              {dark ? "☀️ Light" : "🌙 Dark"}
+              {dark ? "☀️" : "🌙"}
             </button>
           </div>
 
@@ -385,8 +425,17 @@ function AdminDashboard() {
           />
 
           <SidebarItem
+            icon={<PenLine size={18} />}
+            label="Pages"
+            active={active}
+            setActive={setActive}
+            value="pages"
+            setMobileOpen={setMobileOpen}
+          />
+
+          <SidebarItem
             icon={<FileText size={18} />}
-            label="Content"
+            label="Advanced CMS"
             active={active}
             setActive={setActive}
             value="content"
@@ -394,7 +443,7 @@ function AdminDashboard() {
           />
         </nav>
 
-        <button onClick={handleLogout} className="mt-6 bg-red-500 text-white py-2 rounded-lg">
+        <button onClick={handleLogout} className="mt-6 bg-red-500/90 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm font-medium transition-colors">
           Logout
         </button>
       </div>
@@ -406,7 +455,7 @@ function AdminDashboard() {
         />
       )}
 
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 overflow-y-auto">
         {active === "dashboard" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -416,8 +465,8 @@ function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white dark:bg-white/5 p-5 rounded-2xl shadow">
-                <h3 className="mb-4 font-semibold text-black dark:text-white">Monthly Analytics</h3>
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
+                <h3 className="mb-4 font-bold tracking-tight text-gray-900 dark:text-white">Monthly Analytics</h3>
 
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={getCombinedMonthlyData()}>
@@ -431,8 +480,8 @@ function AdminDashboard() {
                 </ResponsiveContainer>
               </div>
 
-              <div className="bg-white dark:bg-white/5 p-5 rounded-2xl shadow">
-                <h3 className="mb-4 font-semibold">Distribution</h3>
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
+                <h3 className="mb-4 font-bold tracking-tight text-gray-900 dark:text-white">Distribution</h3>
 
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
@@ -463,14 +512,14 @@ function AdminDashboard() {
               type="text"
               placeholder="Search appointments..."
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full sm:w-72 px-4 py-2 rounded-xl border bg-white dark:bg-white/10 outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full sm:w-72 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-white text-sm transition-all duration-300"
             />
 
             <div className="flex flex-wrap gap-3 text-black mb-4">
               <select
                 value={branchFilter}
                 onChange={(e) => setBranchFilter(e.target.value)}
-                className="px-3 py-2 rounded-lg bg-white dark:bg-white/10 border"
+                className="px-3 py-2 rounded-xl bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
               >
                 <option value="all">All Branches</option>
                 <option value="Chennai">Chennai</option>
@@ -482,7 +531,7 @@ function AdminDashboard() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="px-3 py-2 rounded-lg bg-white dark:bg-white/10 border"
+                className="px-3 py-2 rounded-xl bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
               >
                 <option value="latest">Latest</option>
                 <option value="oldest">Oldest</option>
@@ -493,7 +542,7 @@ function AdminDashboard() {
               {filteredAppointments.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl flex flex-col items-start transition duration-300"
+                  className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-5 shadow-sm hover:shadow-lg flex flex-col items-start transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <div className="flex justify-between items-start gap-14 mb-3 w-full">
                     <h3 className="text-lg font-semibold text-blue-600">{item.parent_name}</h3>
@@ -521,10 +570,10 @@ function AdminDashboard() {
                     <p>{item.program}</p>
                   </div>
 
-                  <div className="flex flex-row justify-center items-center gap-3">
+                    <div className="flex flex-row justify-center items-center gap-3 w-full mt-2">
                     <a
                       href={`tel:${item.phone}`}
-                      className="flex-auto text-center w-24 bg-green-500 hover:bg-green-600 text-white py-1 rounded-2xl text-lg"
+                      className="flex-auto text-center bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl text-sm font-medium transition-colors"
                     >
                       Call
                     </a>
@@ -533,7 +582,7 @@ function AdminDashboard() {
                       href={`https://wa.me/91${item.phone}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex-auto text-center w-24 bg-emerald-400 hover:bg-emerald-500 text-white py-2 rounded-2xl text-sm"
+                      className="flex-auto text-center bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-xl text-sm font-medium transition-colors"
                     >
                       WhatsApp
                     </a>
@@ -550,14 +599,14 @@ function AdminDashboard() {
               type="text"
               placeholder="Search messages..."
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full sm:w-72 px-4 py-2 rounded-xl border bg-white dark:bg-white/10 outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full sm:w-72 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-white text-sm transition-all duration-300"
             />
 
             <div className="md:hidden space-y-4">
               {filteredMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow hover:shadow-xl flex flex-col transition duration-300"
+                  className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-5 shadow-sm hover:shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-blue-600 font-semibold">{msg.name}</h3>
@@ -646,8 +695,201 @@ function AdminDashboard() {
           </Section>
         )}
 
+        {/* ===== PAGES EDITOR (NO SECTION KEY NEEDED) ===== */}
+        {active === "pages" && (
+          <div className="space-y-6">
+
+            {/* Page Tabs */}
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
+              <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-1">Edit Page Content</h2>
+              <p className="text-sm text-gray-400 dark:text-gray-500 mb-5">Select a page and edit its sections directly. No section keys needed.</p>
+
+              <div className="flex flex-wrap gap-2">
+                {Object.keys(PAGE_SECTIONS).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setPagesTab(page)}
+                    className={`px-5 py-2.5 rounded-xl border text-sm capitalize font-medium transition-all duration-200 ${
+                      pagesTab === page
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-sm"
+                        : "bg-white dark:bg-white/[0.02] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-700"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sections for selected page */}
+            {PAGE_SECTIONS[pagesTab]?.map((def) => {
+              const item = content.find((c) => c.page === pagesTab && c.section === def.section);
+
+              return (
+                <div
+                  key={def.section}
+                  className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-2xl shadow-sm overflow-hidden"
+                >
+                  {/* Section Header */}
+                  <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">{def.label}</h3>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{def.description}</p>
+                    </div>
+
+                    {item ? (
+                      <button
+                        onClick={() => saveContent(item)}
+                        disabled={savingIds.includes(item.id)}
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-glow-blue text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 disabled:opacity-60"
+                      >
+                        <Save size={14} />
+                        {savingIds.includes(item.id) ? "Saving..." : "Save Changes"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => autoCreateSection(pagesTab, def.section)}
+                        className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                      >
+                        <Plus size={14} />
+                        Enable Section
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Section Body */}
+                  {item ? (
+                    <div className="p-6 space-y-4">
+                      {/* Title */}
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Title</label>
+                        <input
+                          value={item.title || ""}
+                          onChange={(e) => updateLocalContent(item.id, { title: e.target.value })}
+                          className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-gray-50/50 dark:bg-white/[0.02] text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-sm"
+                          placeholder="Section title"
+                        />
+                      </div>
+
+                      {/* Description */}
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Description</label>
+                        <textarea
+                          value={item.description || ""}
+                          onChange={(e) => updateLocalContent(item.id, { description: e.target.value })}
+                          className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl min-h-[100px] bg-gray-50/50 dark:bg-white/[0.02] text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-sm"
+                          placeholder="Section description"
+                        />
+                      </div>
+
+                      {/* Image Upload */}
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Section Image</label>
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.title || "section"}
+                            className="w-full max-w-xs h-40 object-cover rounded-xl border border-gray-200 dark:border-white/[0.06] mb-2"
+                          />
+                        ) : (
+                          <div className="w-full max-w-xs h-32 rounded-xl border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center text-gray-400 mb-2">
+                            <div className="flex flex-col items-center gap-1 text-xs">
+                              <ImageIcon size={20} />
+                              No image
+                            </div>
+                          </div>
+                        )}
+                        <input type="file" accept="image/*" onChange={(e) => uploadImage(item.id, e.target.files?.[0])} className="text-sm text-gray-500" />
+                      </div>
+
+                      {/* Cards (for sections that support it) */}
+                      {def.hasCards && (
+                        <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-white/[0.06]">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-bold text-sm text-gray-900 dark:text-white">Cards / Items</h4>
+                            <button
+                              onClick={() => addCard(item.id)}
+                              className="inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                            >
+                              <Plus size={12} />
+                              Add Card
+                            </button>
+                          </div>
+
+                          {(item.data || []).length === 0 ? (
+                            <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-xl p-6 text-sm text-gray-400 text-center">
+                              No cards added yet. Click "Add Card" to start.
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              {(item.data || []).map((card, index) => (
+                                <div
+                                  key={`${item.id}-${index}`}
+                                  className="border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 bg-gray-50/50 dark:bg-white/[0.02] space-y-3"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <h5 className="font-medium text-sm text-gray-700 dark:text-gray-300">Card {index + 1}</h5>
+                                    <button
+                                      onClick={() => removeCard(item.id, index)}
+                                      className="text-red-500 text-xs hover:underline font-medium"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+
+                                  <input
+                                    value={card.title || ""}
+                                    onChange={(e) => updateCard(item.id, index, "title", e.target.value)}
+                                    className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                    placeholder="Card title"
+                                  />
+
+                                  <textarea
+                                    value={card.description || ""}
+                                    onChange={(e) => updateCard(item.id, index, "description", e.target.value)}
+                                    className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl min-h-[80px] bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                    placeholder="Card description"
+                                  />
+
+                                  {/* Image URL for card */}
+                                  <div>
+                                    <input
+                                      value={card.image || card.src || ""}
+                                      onChange={(e) => updateCard(item.id, index, "image", e.target.value)}
+                                      className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                      placeholder="Image URL (paste image link here)"
+                                    />
+                                    {(card.image || card.src) && (
+                                      <img
+                                        src={card.image || card.src}
+                                        alt={card.title || "card"}
+                                        className="mt-2 w-24 h-16 object-cover rounded-lg border border-gray-200 dark:border-white/[0.06]"
+                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center">
+                      <p className="text-sm text-gray-400 dark:text-gray-500">Click "Enable Section" to start editing this section.</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+          </div>
+        )}
+
+        {/* ===== ADVANCED CMS (ORIGINAL) ===== */}
         {active === "content" && (
-          <div className="bg-white dark:bg-white/5 p-5 rounded-2xl shadow space-y-5">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm space-y-5">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               {/* <div>
                 <h2 className="text-xl font-semibold text-black dark:text-white">Multi-page CMS</h2>
@@ -867,8 +1109,10 @@ function SidebarItem({ icon, label, active, setActive, value, collapsed, setMobi
         setActive(value);
         setMobileOpen(false);
       }}
-      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition ${
-        active === value ? "bg-blue-600 text-white" : "hover:bg-gray-100 dark:hover:bg-white/10"
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-medium transition-all duration-200 ${
+        active === value
+          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+          : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] hover:text-gray-900 dark:hover:text-white"
       }`}
     >
       {icon}
@@ -879,12 +1123,14 @@ function SidebarItem({ icon, label, active, setActive, value, collapsed, setMobi
 
 function StatCard({ icon, label, value }) {
   return (
-    <div className="bg-white dark:bg-white/25 p-4 rounded-2xl shadow">
-      <div className="flex items-center gap-3">
-        {icon}
+    <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+          {icon}
+        </div>
         <div>
-          <p className="text-sm text-black dark:text-white">{label}</p>
-          <h2 className="text-lg font-semibold text-black dark:text-white">{value}</h2>
+          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">{label}</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{value}</h2>
         </div>
       </div>
     </div>
@@ -893,9 +1139,9 @@ function StatCard({ icon, label, value }) {
 
 function Section({ title, children, data = [] }) {
   return (
-    <div className="bg-white dark:bg-white/5 p-5 rounded-2xl shadow space-y-4">
-      <h2 className="text-lg font-semibold text-black dark:text-white">{title}</h2>
-      {data.length > 0 ? children : <div className="text-center py-10 text-gray-500">No data found</div>}
+    <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm space-y-5">
+      <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h2>
+      {data.length > 0 ? children : <div className="text-center py-12 text-gray-400 dark:text-gray-500">No data found</div>}
     </div>
   );
 }

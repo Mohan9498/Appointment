@@ -2,10 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ✅ GLOBAL BODY THEME (TAILWIND APPLY) */
+/* ============================= */
+/*    GLOBAL PREMIUM STYLES      */
+/* ============================= */
+
+/* ✅ BASE BODY */
 body {
-  @apply bg-slate-50 text-slate-800 transition-colors duration-300;
+  @apply bg-slate-50 text-slate-800 transition-colors duration-300 font-sans;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ✅ DARK MODE */
@@ -13,13 +19,26 @@ body {
   @apply bg-slate-900 text-white;
 }
 
-/* ✅ OPTIONAL: SMOOTH FONT RENDER */
+/* ✅ SMOOTH FONT RENDER */
 * {
   @apply antialiased;
 }
 
+/* ✅ SMOOTH SCROLLING */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ✅ SELECTION COLOR */
+::selection {
+  @apply bg-blue-600/30 text-blue-900;
+}
+.dark ::selection {
+  @apply bg-blue-400/30 text-blue-100;
+}
+
 /* ============================= */
-/* YOUR EXISTING CUSTOM STYLES   */
+/*      CUSTOM ANIMATIONS        */
 /* ============================= */
 
 @keyframes zoomInOut {
@@ -35,15 +54,45 @@ body {
   animation: zoomInOut 13s ease-out infinite;
 }
 
-/* GLASS EFFECT */
+/* ============================= */
+/*     GLASSMORPHISM UTILITIES   */
+/* ============================= */
+
 .glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.dark .glass {
   background: rgba(17, 24, 39, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
+
+/* ✅ GRADIENT TEXT UTILITY */
+.text-gradient {
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6, #6366F1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-warm {
+  background: linear-gradient(135deg, #6366F1, #A855F7, #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================= */
+/*     PHONE INPUT OVERRIDES     */
+/* ============================= */
 
 .react-tel-input .form-control {
   width: 100% !important;
@@ -57,7 +106,10 @@ body {
   border: none !important;
 }
 
-/* ROOT VARIABLES */
+/* ============================= */
+/*      ROOT VARIABLES           */
+/* ============================= */
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -72,7 +124,7 @@ body {
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px,
     rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  font: 18px/145% system-ui, 'Segoe UI', Roboto, sans-serif;
+  font: 18px/145% 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* DARK ROOT */
@@ -102,14 +154,35 @@ body {
 h1,
 h2 {
   color: var(--text-h);
+  letter-spacing: -0.02em;
 }
 
 h1 {
   font-size: 56px;
   margin: 32px 0;
+  font-weight: 800;
 }
 
 h2 {
   font-size: 24px;
   margin-bottom: 8px;
+  font-weight: 700;
+}
+
+/* ============================= */
+/*     SCROLLBAR STYLING         */
+/* ============================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 99px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
 }

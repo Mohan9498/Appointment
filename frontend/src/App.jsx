@@ -1,6 +1,8 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useState, lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
+import { Home as HomeIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -10,6 +12,7 @@ const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const About = lazy(() => import("./pages/About"));
 const Programs = lazy(() => import("./pages/Programs"));
+const ProgramDetails = lazy(() => import("./pages/ProgramDetails"));
 const Contact = lazy(() => import("./pages/Contact"));
 const AdminDashboard = lazy(() => import("./dashboards/AdminDashboard"));
 const AdminAppointments = lazy(() => import("./components/AdminAppointments"));
@@ -20,17 +23,33 @@ import ContactModal from "./components/ContactModal";
 
 function NotFound() {
   return (
-    <div className="h-screen flex items-center justify-center text-xl font-bold">
-      404 - Page Not Found
+    <div className="min-h-screen flex items-center justify-center px-6 bg-white dark:bg-slate-950">
+      <div className="text-center animate-fade-in-up">
+        <div className="text-8xl font-extrabold text-gradient mb-4">404</div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Page Not Found</h2>
+        <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-semibold text-sm hover:shadow-glow-blue hover:scale-[1.03] transition-all duration-300"
+        >
+          <HomeIcon size={16} />
+          Back to Home
+        </Link>
+      </div>
     </div>
   );
 }
 
-// ✅ Simple loading fallback
+// ✅ Premium loading fallback
 function PageLoader() {
   return (
-    <div className="h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+    <div className="h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-950 gap-4">
+      <div className="relative">
+        <div className="w-12 h-12 border-[3px] border-gray-200 dark:border-white/10 border-t-blue-600 rounded-full animate-spin" />
+      </div>
+      <p className="text-sm text-gray-400 dark:text-gray-500 font-medium animate-pulse">Loading...</p>
     </div>
   );
 }
@@ -53,12 +72,23 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-black text-black dark:text-white transition duration-300">
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white transition-colors duration-300">
       {!isAdminRoute && (
         <Navbar onOpenModal={() => handleOpenModal()} />
       )}
 
-      <Toaster position="top-center" />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            borderRadius: '12px',
+            background: '#1e293b',
+            color: '#fff',
+            fontSize: '14px',
+            fontFamily: 'Inter, system-ui, sans-serif',
+          },
+        }}
+      />
 
       {showModal && (
         <ContactModal
@@ -75,6 +105,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
             <Route path="/programs" element={<Programs />} />
+            <Route path="/programs/:name" element={<ProgramDetails onOpenModal={() => handleOpenModal()} />} />
             <Route path="/contact" element={<Contact />} />
 
             <Route
