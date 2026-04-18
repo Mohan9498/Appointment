@@ -1,28 +1,27 @@
-from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from .views import (
-    AppointmentView,
     RegisterView,
     LoginView,
     LogoutView,
-    AdminLoginView,
-      
-    
+    AppointmentView,
+    ApproveAppointment,
+    ContentViewSet
 )
 
+router = DefaultRouter()
+router.register(r"content", ContentViewSet, basename="content")
+
 urlpatterns = [
-    # ✅ AUTH
-    path("register/", RegisterView.as_view(), name="register"),
-    path("login/", LoginView.as_view(), name="login"),
+    path("register/", RegisterView.as_view()),
+    path("login/", LoginView.as_view()),
     path("logout/", LogoutView.as_view()),
-    path("admin-login/", AdminLoginView.as_view(), name="admin-login"),
+    path("appointments/", AppointmentView.as_view()),
+    path("appointments/<int:id>/", ApproveAppointment.as_view()),
 
-    # ✅ APPOINTMENTS
-    path("appointments/", AppointmentView.as_view(), name="appointments"),
-
-  
-
-    # ✅ JWT REFRESH
-    path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    # ✅ contact inside api
+    path("contact/", include("contact.urls")),
 ]
+
+urlpatterns += router.urls
