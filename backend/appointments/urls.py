@@ -5,7 +5,7 @@ from .views import (
     LoginView,
     LogoutView,
     AppointmentView,
-    ContentView,
+  
     ContentViewSet,
     ApproveAppointment
 )
@@ -16,8 +16,7 @@ router.register(r"content", ContentViewSet, basename="content")
 urlpatterns = [
     path("api/register/", RegisterView.as_view()),
     path("api/login/", LoginView.as_view()),
-    path("api/logout/", LogoutView.as_view(), name="logout" ),
-    path("api/content/",ContentView.as_view()),  
+    path("api/logout/", LogoutView.as_view(), name="logout" ), 
     path("api/appointments/", AppointmentView.as_view()),
     path("api/appointments/<int:id>/", ApproveAppointment.as_view()),
 ]

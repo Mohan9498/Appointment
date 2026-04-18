@@ -7,7 +7,7 @@ from .views import (
     LoginView,
     LogoutView,
     AdminLoginView,
-    ContentView,  
+      
     
 )
 
@@ -21,8 +21,7 @@ urlpatterns = [
     # ✅ APPOINTMENTS
     path("appointments/", AppointmentView.as_view(), name="appointments"),
 
-    # ✅ CONTENT (NEW)
-    path("content/", ContentView.as_view(), name="content"),
+  
 
     # ✅ JWT REFRESH
     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
