@@ -1,17 +1,21 @@
+// hooks/useCMS.js
 import { useEffect, useState } from "react";
 import API from "../services/api";
 
-export default function useCms(page) {
+export default function useCMS(page) {
   const [content, setContent] = useState([]);
 
   useEffect(() => {
-    API.get(`content/?page=${page}`)
+    API.get("content/")
       .then(res => setContent(res.data))
-      .catch(err => console.log(err));
-  }, [page]);
+      .catch(() => setContent([]));
+  }, []);
 
-  const get = (section) =>
-    content.find((c) => c.section === section);
+  const getSection = (section) => {
+    return content.find(
+      (c) => c.page === page && c.section === section
+    );
+  };
 
-  return { content, get };
+  return { content, getSection };
 }

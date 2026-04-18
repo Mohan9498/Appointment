@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import useCMS from "../hooks/useCMS";
+
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import j3 from "../assets/j3.webp";
@@ -8,7 +10,12 @@ import j4 from "../assets/j4.webp";
 function Programs({ onOpenModal }) {
   const navigate = useNavigate();
 
-  const programs = [
+  // ✅ CMS HOOK
+  const { getSection } = useCMS("programs");
+  const cms = getSection("programs");
+
+  // ✅ STATIC (your existing content)
+  const staticPrograms = [
     {
       title: "Speech Therapy",
       description: "Improve communication and language development skills in children.",
@@ -26,17 +33,18 @@ function Programs({ onOpenModal }) {
     },
   ];
 
+  // ✅ CMS + FALLBACK (your requirement)
+  const programs = cms?.data?.length ? cms.data : staticPrograms;
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black text-black dark:text-white">
 
-      {/* FIX: Navbar was missing — added so users can navigate from this page */}
       <Navbar onOpenModal={onOpenModal} />
 
       <section className="py-24">
 
         {/* HEADER */}
         <div className="text-center mb-16 px-4">
-          {/* FIX: was text-blue-600 outer + text-blue-600 span — near-identical shades */}
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
             Our <span className="text-blue-600">Programs</span>
           </h2>
@@ -56,7 +64,7 @@ function Programs({ onOpenModal }) {
 
               {/* IMAGE */}
               <img
-                src={program.image}
+                src={program.image || program.src} // ✅ supports CMS image
                 alt={program.title}
                 className="w-full h-64 object-cover group-hover:scale-110 transition duration-500"
               />
@@ -69,7 +77,6 @@ function Programs({ onOpenModal }) {
                 <h3 className="text-xl font-semibold">{program.title}</h3>
                 <p className="text-sm text-gray-200 mt-2">{program.description}</p>
 
-                {/* CTA — navigates to contact instead of just navigating to '/' */}
                 <button
                   onClick={() => navigate("/contact")}
                   className="mt-4 px-4 py-2 bg-blue-600 rounded-full text-sm hover:bg-blue-700 transition"
@@ -84,9 +91,6 @@ function Programs({ onOpenModal }) {
         </div>
 
       </section>
-
-      {/* FIX: removed fixed floating "Home" button that overlapped the chatbot widget
-      <Footer onOpenModal={onOpenModal} /> */}
 
     </div>
   );

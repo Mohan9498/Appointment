@@ -1,8 +1,13 @@
+import useCMS from "../hooks/useCMS";
 import ProgramCard from "./ProgramCard";
 
 function Services() {
 
-  const data = [
+  const { getSection } = useCMS("home");
+  const cms = getSection("services");
+
+  // ✅ YOUR ORIGINAL DATA (IMPORTANT)
+  const staticData = [
     {
       title: "Speech Therapy",
       description: "Improve communication, language, and social skills through evidence-based speech development techniques tailored to each child.",
@@ -19,6 +24,9 @@ function Services() {
       image: "https://autism.jeevaniyam.in/wp-content/themes/jeevaniyam-landing/images/j4.webp"
     }
   ];
+
+  // ✅ CMS override
+  const data = cms?.data?.length ? cms.data : staticData;
 
   return (
     <section className="relative py-24 overflow-hidden">

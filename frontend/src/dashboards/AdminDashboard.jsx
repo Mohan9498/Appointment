@@ -202,9 +202,7 @@ function AdminDashboard() {
 
     try {
       setSaving(id, true);
-      await API.patch(`content/${id}/`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await API.patch(`content/${id}/`, formData);
       await fetchContent();
       toast.success("Image uploaded");
     } catch (err) {
@@ -651,12 +649,12 @@ function AdminDashboard() {
         {active === "content" && (
           <div className="bg-white dark:bg-white/5 p-5 rounded-2xl shadow space-y-5">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div>
+              {/* <div>
                 <h2 className="text-xl font-semibold text-black dark:text-white">Multi-page CMS</h2>
                 <p className="text-sm text-gray-500 mt-1">
                   Manage Home, About, and Programs sections professionally without changing your frontend UI.
                 </p>
-              </div>
+              </div> */}
 
               <div className="flex flex-wrap gap-2">
                 {CMS_PAGES.map((page) => (

@@ -4,6 +4,8 @@ import Footer from "../components/Footer";
 import Features from "../components/Features";
 import Services from "../components/Services";
 import Gallery from "../components/Gallery";
+
+
  
 function Home({ onOpenModal }) {
   return (

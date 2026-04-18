@@ -7,49 +7,58 @@ const API = axios.create({
   baseURL: BASE_URL,
 });
 
-// ✅ REQUEST INTERCEPTOR (Attach token safely)
+// 🔥 REQUEST INTERCEPTOR (YOUR LOGIC PRESERVED)
 API.interceptors.request.use((config) => {
   const access = localStorage.getItem("access");
 
-  // ✅ Only truly public routes
-  const publicRoutes = ["login/", "register/"];
+  const publicRoutes = ["login", "register"];
 
-  const isPublicRoute = publicRoutes.includes(config.url);
+  const isPublicRoute = publicRoutes.some((route) =>
+    config.url?.includes(route)
+  );
 
-  // ✅ Allow contact form without token
   const isPublicContact =
-    config.method === "post" && config.url === "contact/";
+    config.method === "post" &&
+    config.url?.includes("contact");
+
+  // ✅ Ensure headers exist
+  config.headers = config.headers || {};
 
   if (access && !isPublicRoute && !isPublicContact) {
     config.headers.Authorization = `Bearer ${access}`;
   }
 
-  config.headers["Content-Type"] = "application/json";
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  } else {
+    config.headers["Content-Type"] = "application/json";
+  }
 
   return config;
 });
 
-// ✅ RESPONSE INTERCEPTOR (Handle token refresh)
+// 🔥 RESPONSE INTERCEPTOR (AUTO REFRESH — IMPROVED)
 API.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  (res) => res,
+  async (err) => {
+    const original = err.config;
 
-    // 🔐 Handle expired token
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    // ❌ If no config → reject
+    if (!original) return Promise.reject(err);
 
-      const refresh = localStorage.getItem("refresh");
-
-      // ❌ No refresh → force logout
-      if (!refresh) {
-        localStorage.clear();
-        window.location.replace("/login");
-        return Promise.reject(error);
-      }
+    if (err.response?.status === 401 && !original._retry) {
+      original._retry = true;
 
       try {
-        // 🔄 Get new access token
+        const refresh = localStorage.getItem("refresh");
+
+        // ❌ No refresh token → logout
+        if (!refresh) {
+          localStorage.clear();
+          window.location.href = "/login";
+          return Promise.reject(err);
+        }
+
         const res = await axios.post(
           `${BASE_URL}token/refresh/`,
           { refresh }
@@ -57,33 +66,31 @@ API.interceptors.response.use(
 
         const newAccess = res.data.access;
 
-        // ✅ Save new token
+        // ✅ Save token
         localStorage.setItem("access", newAccess);
 
-        // ✅ Update headers globally
+        // ✅ Update global header
         API.defaults.headers.common[
           "Authorization"
         ] = `Bearer ${newAccess}`;
 
         // ✅ Retry original request
-        originalRequest.headers[
-          "Authorization"
-        ] = `Bearer ${newAccess}`;
+        original.headers.Authorization = `Bearer ${newAccess}`;
 
-        return API(originalRequest);
-      } catch (err) {
-        console.log("Token refresh failed");
-
+        return API(original);
+      } catch (e) {
+        // 🔥 Clean logout
         localStorage.clear();
+
         toast.error("Session expired. Please login again");
 
         setTimeout(() => {
-          window.location.replace("/login");
+          window.location.href = "/login";
         }, 1000);
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 

@@ -1,7 +1,13 @@
 import { ShieldCheck, Heart, Brain, Clock, Users, Star } from "lucide-react";
+import useCMS from "../hooks/useCMS";
 
 function Features() {
-  const data = [
+
+  const { getSection } = useCMS("home");
+  const cms = getSection("features");
+
+  // ✅ KEEP YOUR ORIGINAL DATA
+  const staticData = [
     {
       icon: <Brain size={28} className="text-blue-600" />,
       title: "Expert Therapists",
@@ -34,12 +40,13 @@ function Features() {
     },
   ];
 
+  // ✅ CMS override logic
+  const data = cms?.data?.length ? cms.data : staticData;
+
   return (
     <section className="py-16 px-6 bg-slate-50 dark:bg-black">
-
       <div className="max-w-7xl mx-auto">
 
-        {/* Heading */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white">
             Why Choose <span className="text-blue-600">Tiny Todds?</span>
@@ -55,10 +62,12 @@ function Features() {
               key={i}
               className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-6 shadow-sm hover:shadow-2xl transition duration-300 group"
             >
-              {/* Icon */}
-              <div className="mb-4 group-hover:scale-110 transition duration-300 inline-block">
-                {item.icon}
-              </div>
+              {/* ✅ ICON only for static fallback */}
+              {item.icon && (
+                <div className="mb-4 group-hover:scale-110 transition duration-300 inline-block">
+                  {item.icon}
+                </div>
+              )}
 
               <h3 className="text-black dark:text-white text-lg font-semibold mb-2">
                 {item.title}
