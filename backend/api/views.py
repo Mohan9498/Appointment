@@ -9,7 +9,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from appointments.models import Appointment
 from .serializers import AppointmentSerializer
- 
+
+from appointments.models import Content
+from .serializers import ContentSerializer
+
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -256,4 +259,99 @@ class AppointmentView(APIView):
             return Response(
                 {"error": "Unable to save appointment"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ContentView(APIView):
+
+    # ✅ Only admin can modify, anyone can view
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return []  # public access
+        return [IsAdminUserCustom()]  # admin only for POST/PATCH/DELETE
+
+    # ✅ GET all content
+    def get(self, request):
+        try:
+            content = Content.objects.all().order_by("-id")
+            serializer = ContentSerializer(content, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"error": "Failed to fetch content"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    # ✅ CREATE content
+    def post(self, request):
+        serializer = ContentSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "message": "Content created successfully",
+                    "data": serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # ✅ UPDATE content
+    def patch(self, request):
+        content_id = request.data.get("id")
+
+        if not content_id:
+            return Response(
+                {"error": "Content ID is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            content = Content.objects.get(id=content_id)
+        except Content.DoesNotExist:
+            return Response(
+                {"error": "Content not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = ContentSerializer(content, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "message": "Content updated successfully",
+                    "data": serializer.data
+                },
+                status=status.HTTP_200_OK
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # ✅ DELETE content
+    def delete(self, request):
+        content_id = request.data.get("id")
+
+        if not content_id:
+            return Response(
+                {"error": "Content ID is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            content = Content.objects.get(id=content_id)
+            content.delete()
+
+            return Response(
+                {"message": "Content deleted successfully"},
+                status=status.HTTP_200_OK
+            )
+
+        except Content.DoesNotExist:
+            return Response(
+                {"error": "Content not found"},
+                status=status.HTTP_404_NOT_FOUND
             )

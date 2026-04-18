@@ -21,3 +21,19 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.parent_name} - {self.child_name}"
+
+
+
+class Content(models.Model):
+    page = models.CharField(max_length=50)   # home, about, programs
+    section = models.CharField(max_length=50)  # hero, footer, cards
+
+    title = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
+
+    image = models.ImageField(upload_to="content/", null=True, blank=True)
+
+    data = models.JSONField(null=True, blank=True)  # for cards, lists
+
+    def __str__(self):
+        return f"{self.page} - {self.section}"
