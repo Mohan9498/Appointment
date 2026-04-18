@@ -11,13 +11,8 @@ urlpatterns = [
 
     path('', home),
 
-    # ✅ MAIN API
+    # ✅ ONLY ONE API ENTRY POINT
     path("api/", include("api.urls")),
-
-    # ✅ OTHER APPS (NO "api/" prefix here)
-    path("accounts/", include("accounts.urls")),
-    path("programs/", include("programs.urls")),
-    path("api/contact/", include("contact.urls")),
 
     path('admin/', admin.site.urls),
 ]
