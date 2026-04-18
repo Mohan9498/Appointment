@@ -17,7 +17,7 @@ urlpatterns = [
     # ✅ OTHER APPS (NO "api/" prefix here)
     path("accounts/", include("accounts.urls")),
     path("programs/", include("programs.urls")),
-    path("contact/", include("contact.urls")),
+    path("api/contact/", include("contact.urls")),
 
     path('admin/', admin.site.urls),
 ]
