@@ -7,29 +7,23 @@ from .views import (
     LogoutView,
     AppointmentView,
     ApproveAppointment,
-    ContentViewSet,
+    ContentViewSet
 )
 
-# 🔥 Router for CMS
+# 🔥 ROUTER
 router = DefaultRouter()
 router.register(r"content", ContentViewSet, basename="content")
 
 urlpatterns = [
-
-    # AUTH
     path("register/", RegisterView.as_view()),
     path("login/", LoginView.as_view()),
     path("logout/", LogoutView.as_view()),
-
-    # APPOINTMENTS
     path("appointments/", AppointmentView.as_view()),
     path("appointments/<int:id>/", ApproveAppointment.as_view()),
 
-    # 🔥 INCLUDE OTHER APPS INSIDE API
+    # 🔥 ADD THIS (YOU ARE MISSING THIS)
     path("contact/", include("contact.urls")),
-    path("accounts/", include("accounts.urls")),
-    path("programs/", include("programs.urls")),
 ]
 
-# 🔥 ENABLE /api/content/
+# 🔥 CRITICAL LINE
 urlpatterns += router.urls
