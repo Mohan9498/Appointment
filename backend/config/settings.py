@@ -38,7 +38,7 @@ INSTALLED_APPS = [
 
     # external
     'corsheaders',
-    'channels',
+    # 'channels',
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
@@ -145,16 +145,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # ======================
 # CHANNELS (optional)
 # ======================
-ASGI_APPLICATION = "config.asgi.application"
+# ASGI_APPLICATION = "config.asgi.application"
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
 
 # ======================
 # ✅ CORS FIX (CRITICAL)
