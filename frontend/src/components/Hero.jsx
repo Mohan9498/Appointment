@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useCMS from "../hooks/useCMS";
+import useCMS from "../hooks/useCms";
 import g1 from "../assets/j-1.webp";
 
 function Hero({ onOpenModal }) {

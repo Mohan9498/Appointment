@@ -1,4 +1,4 @@
-import useCMS from "../hooks/useCMS";
+import useCMS from "../hooks/useCms";
 import c1 from "../assets/c1.jpg";
 import c2 from "../assets/c2.jpg";
 import j6 from "../assets/j6.webp";

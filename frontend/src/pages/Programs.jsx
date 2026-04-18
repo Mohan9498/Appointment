@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import useCMS from "../hooks/useCMS";
+import useCMS from "../hooks/useCms";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
