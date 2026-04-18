@@ -1,40 +1,75 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import useCms from "../hooks/useCms.js";
 
 function About({ onOpenModal }) {
-
-  const { get } = useCms("about");
-
-  const hero = get("hero");
-  const mission = get("mission");
-  const vision = get("vision");
-  const content = get("content");
-
   return (
-    <div>
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-black dark:text-white">
 
       <Navbar onOpenModal={onOpenModal} />
 
-      <section className="pt-24 text-center">
-        <h1>{hero?.title}</h1>
-        <p>{hero?.description}</p>
-      </section>
-
-      <section className="grid md:grid-cols-2 gap-6 p-10">
-        <div>
-          <h2>{mission?.title}</h2>
-          <p>{mission?.description}</p>
-        </div>
-
-        <div>
-          <h2>{vision?.title}</h2>
-          <p>{vision?.description}</p>
+      {/* HERO SECTION */}
+      <section className="relative py-24 px-6 bg-slate-50 dark:bg-black text-black dark:text-white">
+        <div className="max-w-6xl mx-auto text-center">
+          {/* FIX: was text-green-600 — inconsistent with brand blue used on all other pages */}
+          <h1 className="text-4xl md:text-6xl font-serif text-blue-600 tracking-tight mb-4">
+            About Tiny Todds
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
+            Helping children grow through specialized therapy programs.
+          </p>
         </div>
       </section>
 
-      <section className="p-10">
-        <p>{content?.description}</p>
+      {/* MISSION & VISION SECTION */}
+      {/* FIX: was border-gray-700 (dark hardcoded) — now responsive for both modes */}
+      <section className="px-6 py-20 border border-gray-200 dark:border-gray-700 bg-slate-50 dark:bg-black text-black dark:text-white">
+        <div className="max-w-6xl mx-auto space-y-12">
+
+          {/* Mission & Vision */}
+          <div className="grid md:grid-cols-2 gap-8">
+
+            <div className="p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
+              <h2 className="text-2xl font-semibold mb-4 text-blue-600">
+                Our Mission
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300 leading-7 text-sm md:text-base">
+                We focus on speech, cognitive, and behavioral development through
+                personalized therapy programs tailored for each child.
+              </p>
+            </div>
+
+            <div className="p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-md hover:shadow-xl transition duration-300">
+              <h2 className="text-2xl font-semibold mb-4 text-indigo-500">
+                Our Vision
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300 leading-7 text-sm md:text-base">
+                Every child deserves a chance to succeed, grow confidently, and
+                reach their fullest potential.
+              </p>
+            </div>
+
+          </div>
+
+          {/* Content */}
+          <div className="bg-white/80 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-8 md:p-10 backdrop-blur-xl shadow-lg space-y-8">
+
+            <p className="text-gray-700 dark:text-gray-300 leading-8 text-justify indent-10 text-sm md:text-base">
+              Tiny Todds Therapy Care is a specialized child development center dedicated to fostering each child's unique potential
+              through evidence-based therapy and compassionate, individualized care. Recognizing that early childhood is a critical period
+              for cognitive, emotional, and social development, we emphasize early intervention and structured programs that support communication,
+              learning abilities, and confidence building. Our approach is rooted in a deep understanding that every child is different,
+              and therefore requires a tailored pathway to growth.
+            </p>
+
+            <p className="text-gray-700 dark:text-gray-300 leading-8 text-justify indent-10 text-sm md:text-base">
+              At Tiny Todds, we strive to provide a safe, engaging, and supportive atmosphere where children are encouraged to explore,
+              learn, and express themselves with confidence. Our therapy sessions integrate speech development, cognitive enhancement,
+              and interactive learning techniques designed to promote essential life skills and emotional well-being.
+            </p>
+
+          </div>
+
+        </div>
       </section>
 
       <Footer onOpenModal={onOpenModal} />

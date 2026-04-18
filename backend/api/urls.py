@@ -7,7 +7,7 @@ from .views import (
     LoginView,
     LogoutView,
     AdminLoginView,
-    ContentView  
+    ContentView,  
     
 )
 

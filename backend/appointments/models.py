@@ -25,15 +25,31 @@ class Appointment(models.Model):
 
 
 class Content(models.Model):
-    page = models.CharField(max_length=50)   # home, about, programs
-    section = models.CharField(max_length=50)  # hero, footer, cards
+    PAGE_CHOICES = [
+        ("home", "Home"),
+        ("about", "About"),
+        ("programs", "Programs"),
+    ]
+
+    page = models.CharField(max_length=50, choices=PAGE_CHOICES, db_index=True)
+    section = models.CharField(max_length=100, db_index=True)
 
     title = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
 
-    image = models.ImageField(upload_to="content/", null=True, blank=True)
+    # 🔥 dynamic cards
+    data = models.JSONField(default=list, blank=True)
 
-    data = models.JSONField(null=True, blank=True)  # for cards, lists
+    # 🖼 image
+    image = models.ImageField(upload_to="content/", blank=True, null=True)
+
+    # 🔥 ordering (VERY IMPORTANT)
+    order = models.IntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "-id"]
 
     def __str__(self):
         return f"{self.page} - {self.section}"

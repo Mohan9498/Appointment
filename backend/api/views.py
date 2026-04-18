@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAdminUser,AllowAny,IsAuthenticated , BasePermission
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.viewsets import ModelViewSet
 
 from appointments.models import Appointment
 from .serializers import AppointmentSerializer
@@ -262,96 +263,32 @@ class AppointmentView(APIView):
             )
 
 
-class ContentView(APIView):
+class ContentViewSet(ModelViewSet):
+    queryset = Content.objects.all().order_by("-id")
+    serializer_class = ContentSerializer
 
-    # ✅ Only admin can modify, anyone can view
+    authentication_classes = [JWTAuthentication]
+
+    # 🔥 DYNAMIC PERMISSIONS
     def get_permissions(self):
-        if self.request.method == "GET":
-            return []  # public access
-        return [IsAdminUserCustom()]  # admin only for POST/PATCH/DELETE
+        # ✅ PUBLIC READ (Frontend pages)
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
 
-    # ✅ GET all content
-    def get(self, request):
-        try:
-            content = Content.objects.all().order_by("-id")
-            serializer = ContentSerializer(content, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        # 🔐 ADMIN WRITE (CMS Dashboard)
+        return [IsAdminUserCustom()]
 
-        except Exception as e:
-            return Response(
-                {"error": "Failed to fetch content"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+    # 🔥 MULTI-PAGE FILTER
+    def get_queryset(self):
+        queryset = Content.objects.all().order_by("-id")
 
-    # ✅ CREATE content
-    def post(self, request):
-        serializer = ContentSerializer(data=request.data)
+        page = self.request.query_params.get("page")
+        section = self.request.query_params.get("section")
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    "message": "Content created successfully",
-                    "data": serializer.data
-                },
-                status=status.HTTP_201_CREATED
-            )
+        if page:
+            queryset = queryset.filter(page=page)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if section:
+            queryset = queryset.filter(section=section)
 
-    # ✅ UPDATE content
-    def patch(self, request):
-        content_id = request.data.get("id")
-
-        if not content_id:
-            return Response(
-                {"error": "Content ID is required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            content = Content.objects.get(id=content_id)
-        except Content.DoesNotExist:
-            return Response(
-                {"error": "Content not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = ContentSerializer(content, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    "message": "Content updated successfully",
-                    "data": serializer.data
-                },
-                status=status.HTTP_200_OK
-            )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # ✅ DELETE content
-    def delete(self, request):
-        content_id = request.data.get("id")
-
-        if not content_id:
-            return Response(
-                {"error": "Content ID is required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            content = Content.objects.get(id=content_id)
-            content.delete()
-
-            return Response(
-                {"message": "Content deleted successfully"},
-                status=status.HTTP_200_OK
-            )
-
-        except Content.DoesNotExist:
-            return Response(
-                {"error": "Content not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+        return queryset
