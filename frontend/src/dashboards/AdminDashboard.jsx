@@ -355,158 +355,189 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-slate-950">
-      <div className="md:hidden flex justify-between items-center px-4 py-3 bg-white dark:bg-slate-900 border-b border-gray-200/50 dark:border-white/[0.06] sticky top-0 z-50">
-        <h1 className="font-bold text-gray-900 dark:text-white tracking-tight">Admin Panel</h1>
-
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 dark:bg-[#0a0e1a]">
+      {/* ── MOBILE HEADER ── */}
+      <div className="md:hidden flex justify-between items-center px-5 py-3.5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-200/60 dark:border-white/[0.06] sticky top-0 z-50">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">A</div>
+          <h1 className="font-bold text-gray-900 dark:text-white tracking-tight">Admin</h1>
+        </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition text-gray-700 dark:text-white"
-          >
-            ☰
-          </button>
+          <button onClick={() => setDark(!dark)} className="p-2 rounded-lg bg-gray-100 dark:bg-white/10 transition hover:bg-gray-200 dark:hover:bg-white/20 text-sm">{dark ? "☀️" : "🌙"}</button>
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition text-gray-700 dark:text-white">☰</button>
+        </div>
+      </div>
 
-          <button
-            onClick={() => setDark(!dark)}
-            className="p-2.5 rounded-xl bg-gray-100 dark:bg-white/10 transition hover:bg-gray-200 dark:hover:bg-white/20"
-          >
-            {dark ? "☀️" : "🌙"}
+      {/* ── SIDEBAR ── */}
+      <div
+        className={`fixed top-0 left-0 h-screen w-[260px] bg-white dark:bg-[#0f1629] border-r border-gray-200/60 dark:border-white/[0.06] z-50 transform transition-transform duration-300 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 md:sticky md:top-0 md:w-[260px] md:shrink-0 flex flex-col overflow-y-auto`}
+      >
+        <button onClick={() => setMobileOpen(false)} className="md:hidden absolute top-4 right-4 text-lg text-gray-400 hover:text-gray-700 dark:hover:text-white transition">✕</button>
+
+        {/* Logo */}
+        <div className="hidden md:flex items-center gap-3 px-6 pt-6 pb-5 border-b border-gray-100 dark:border-white/[0.06]">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-blue-600/20">A</div>
+          <div>
+            <h1 className="font-bold text-gray-900 dark:text-white tracking-tight text-[12px]">Admin Panel</h1>
+            
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600 px-3 mb-2">Main Menu</p>
+          <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" active={active} setActive={setActive} value="dashboard" setMobileOpen={setMobileOpen} />
+          <SidebarItem icon={<Calendar size={18} />} label="Appointments" active={active} setActive={setActive} value="appointments" setMobileOpen={setMobileOpen} count={appointments.length} />
+          <SidebarItem icon={<MessageSquare size={18} />} label="Messages" active={active} setActive={setActive} value="messages" setMobileOpen={setMobileOpen} count={messages.length} />
+
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600 px-3 mt-5 mb-2">Content</p>
+          <SidebarItem icon={<PenLine size={18} />} label="Pages" active={active} setActive={setActive} value="pages" setMobileOpen={setMobileOpen} />
+          <SidebarItem icon={<FileText size={18} />} label="Advanced CMS" active={active} setActive={setActive} value="content" setMobileOpen={setMobileOpen} />
+        </nav>
+
+        {/* Bottom */}
+        <div className="px-4 pb-5 space-y-3 border-t border-gray-100 dark:border-white/[0.06] pt-4">
+          <button onClick={() => setDark(!dark)} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition">
+            <span>{dark ? "☀️" : "🌙"}</span>
+            <span>{dark ? "Light Mode" : "Dark Mode"}</span>
+          </button>
+          <button onClick={handleLogout} className="w-full bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white py-2.5 rounded-xl text-sm font-medium transition-all shadow-sm hover:shadow-md">
+            Logout
           </button>
         </div>
       </div>
 
-      <div
-        className={`fixed top-0 left-0 h-full min-h-screen w-64 bg-white dark:bg-slate-900 border-r border-gray-200/50 dark:border-white/[0.06] z-50 transform transition-transform duration-300 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:static md:w-64 flex flex-col justify-between p-4`}
-      >
-        <button onClick={() => setMobileOpen(false)} className="md:hidden text-xl mb-4 text-gray-500 hover:text-gray-700 dark:hover:text-white transition">
-          ✕
-        </button>
+      {/* Mobile overlay */}
+      {mobileOpen && <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden" onClick={() => setMobileOpen(false)} />}
 
-        <nav className="space-y-1.5 max-h-full flex-1 overflow-y-auto">
-          <div className="hidden md:flex items-center justify-between mt-2 mb-6 px-2">
-            <h1 className="font-bold text-lg tracking-tight text-gray-900 dark:text-white">Admin Panel</h1>
-
-            <button
-              onClick={() => setDark(!dark)}
-              className="p-2 rounded-xl text-xs bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition"
-            >
-              {dark ? "☀️" : "🌙"}
-            </button>
-          </div>
-
-          <SidebarItem
-            icon={<LayoutDashboard size={18} />}
-            label="Dashboard"
-            active={active}
-            setActive={setActive}
-            value="dashboard"
-            setMobileOpen={setMobileOpen}
-          />
-
-          <SidebarItem
-            icon={<Calendar size={18} />}
-            label="Appointments"
-            active={active}
-            setActive={setActive}
-            value="appointments"
-            setMobileOpen={setMobileOpen}
-          />
-
-          <SidebarItem
-            icon={<MessageSquare size={18} />}
-            label="Messages"
-            active={active}
-            setActive={setActive}
-            value="messages"
-            setMobileOpen={setMobileOpen}
-          />
-
-          <SidebarItem
-            icon={<PenLine size={18} />}
-            label="Pages"
-            active={active}
-            setActive={setActive}
-            value="pages"
-            setMobileOpen={setMobileOpen}
-          />
-
-          <SidebarItem
-            icon={<FileText size={18} />}
-            label="Advanced CMS"
-            active={active}
-            setActive={setActive}
-            value="content"
-            setMobileOpen={setMobileOpen}
-          />
-        </nav>
-
-        <button onClick={handleLogout} className="mt-6 bg-red-500/90 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm font-medium transition-colors">
-          Logout
-        </button>
-      </div>
-
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      <div className="flex-1 p-6 overflow-y-auto">
+      {/* ── MAIN CONTENT ── */}
+      <div className="flex-1 min-h-screen">
         {active === "dashboard" && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <StatCard icon={<Users />} label="Total Appointments" value={appointments.length} />
-              <StatCard icon={<MessageSquare />} label="Total Messages" value={messages.length} />
-              <StatCard icon={<FileText />} label="Total CMS Sections" value={content.length} />
+          <div className="p-6 space-y-6">
+            {/* Page Header */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Dashboard</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Overview of your clinic management</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
-                <h3 className="mb-4 font-bold tracking-tight text-gray-900 dark:text-white">Monthly Analytics</h3>
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard icon={<Users size={22} />} label="Appointments" value={appointments.length} color="blue" />
+              <StatCard icon={<MessageSquare size={22} />} label="Messages" value={messages.length} color="emerald" />
+              <StatCard icon={<FileText size={22} />} label="CMS Sections" value={content.length} color="violet" />
+            </div>
 
-                <ResponsiveContainer width="100%" height={300}>
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Monthly Analytics</h3>
+                <p className="text-xs text-gray-400 mb-5">Appointments vs Messages (last 6 months)</p>
+                <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={getCombinedMonthlyData()}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+                    <YAxis tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }} />
                     <Legend />
-                    <Bar dataKey="appointments" fill="#3B82F6" radius={[6, 6, 0, 0]} />
-                    <Bar dataKey="messages" fill="#22C55E" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="appointments" fill="#3B82F6" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="messages" fill="#10B981" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
-                <h3 className="mb-4 font-bold tracking-tight text-gray-900 dark:text-white">Distribution</h3>
-
-                <ResponsiveContainer width="100%" height={250}>
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Distribution</h3>
+                <p className="text-xs text-gray-400 mb-5">Appointments vs Messages ratio</p>
+                <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
-                    <Pie
-                      data={[
-                        { name: "Appointments", value: appointments.length },
-                        { name: "Messages", value: messages.length },
-                      ]}
-                      dataKey="value"
-                      outerRadius={90}
-                      label
-                    >
-                      {COLORS.map((color, index) => (
-                        <Cell key={index} fill={color} />
-                      ))}
+                    <Pie data={[{ name: "Appointments", value: appointments.length }, { name: "Messages", value: messages.length }]} dataKey="value" outerRadius={95} innerRadius={55} label strokeWidth={0}>
+                      {COLORS.map((color, index) => (<Cell key={index} fill={color} />))}
                     </Pie>
                     <Legend />
+                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+            </div>
+
+            {/* Recent Appointments & Messages */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+              {/* Recent Appointments */}
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Recent Appointments</h3>
+                    <p className="text-xs text-gray-400 mt-0.5">Latest 5 bookings</p>
+                  </div>
+                  <button onClick={() => setActive("appointments")} className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">View All →</button>
+                </div>
+                {appointments.length === 0 ? (
+                  <div className="p-10 text-center text-sm text-gray-400 dark:text-gray-500">
+                    <Calendar size={28} className="mx-auto mb-2 opacity-40" />
+                    No appointments yet
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+                    {appointments.slice(0, 5).map((a) => (
+                      <div key={a.id} className="px-6 py-3.5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xs font-bold">
+                            {(a.parent_name || "?").charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">{a.parent_name}</p>
+                            <p className="text-xs text-gray-400">{a.child_name} · {a.branch}</p>
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-gray-400 whitespace-nowrap">
+                          {a.created_at ? new Date(a.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : a.date || "—"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Recent Messages */}
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Recent Messages</h3>
+                    <p className="text-xs text-gray-400 mt-0.5">Latest 5 contacts</p>
+                  </div>
+                  <button onClick={() => setActive("messages")} className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">View All →</button>
+                </div>
+                {messages.length === 0 ? (
+                  <div className="p-10 text-center text-sm text-gray-400 dark:text-gray-500">
+                    <MessageSquare size={28} className="mx-auto mb-2 opacity-40" />
+                    No messages yet
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+                    {messages.slice(0, 5).map((msg) => (
+                      <div key={msg.id} className="px-6 py-3.5 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{msg.name}</p>
+                          <span className="text-[11px] text-gray-400 whitespace-nowrap">
+                            {msg.created_at ? new Date(msg.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "—"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[300px]">{msg.message}</p>
+                        <a href={`mailto:${msg.email}`} className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline mt-0.5 inline-block">{msg.email}</a>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
         )}
 
         {active === "appointments" && (
+          <div className="p-6">
           <Section title="Appointment Leads" data={filteredAppointments}>
             <input
               type="text"
@@ -591,9 +622,11 @@ function AdminDashboard() {
               ))}
             </div>
           </Section>
+          </div>
         )}
 
         {active === "messages" && (
+          <div className="p-6">
           <Section title="Contact Messages" data={filteredMessages}>
             <input
               type="text"
@@ -693,11 +726,12 @@ function AdminDashboard() {
               </table>
             </div>
           </Section>
+          </div>
         )}
 
-        {/* ===== PAGES EDITOR (NO SECTION KEY NEEDED) ===== */}
+        {/* ===== PAGES EDITOR ===== */}
         {active === "pages" && (
-          <div className="space-y-6">
+          <div className="p-6 space-y-6">
 
             {/* Page Tabs */}
             <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
@@ -887,9 +921,9 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* ===== ADVANCED CMS (ORIGINAL) ===== */}
+        {/* ===== ADVANCED CMS ===== */}
         {active === "content" && (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm space-y-5">
+          <div className="p-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               {/* <div>
                 <h2 className="text-xl font-semibold text-black dark:text-white">Multi-page CMS</h2>
@@ -976,10 +1010,10 @@ function AdminDashboard() {
                         <select
                           value={item.page || "home"}
                           onChange={(e) => updateLocalContent(item.id, { page: e.target.value })}
-                          className="border p-3 w-full rounded-xl bg-white dark:bg-white/10"
+                          className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/10 text-gray-900 dark:text-white outline-none focus:border-blue-500 transition"
                         >
                           {CMS_PAGES.map((page) => (
-                            <option key={page} value={page}>
+                            <option key={page} value={page} className="text-gray-900 dark:text-white dark:bg-slate-800">
                               {page}
                             </option>
                           ))}
@@ -991,7 +1025,7 @@ function AdminDashboard() {
                         <input
                           value={item.section || ""}
                           onChange={(e) => updateLocalContent(item.id, { section: e.target.value })}
-                          className="border p-3 w-full rounded-xl bg-white dark:bg-white/10"
+                          className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/10 text-gray-900 dark:text-white outline-none focus:border-blue-500 transition"
                           placeholder="hero, services, about-story"
                         />
                       </div>
@@ -1002,7 +1036,7 @@ function AdminDashboard() {
                       <input
                         value={item.title || ""}
                         onChange={(e) => updateLocalContent(item.id, { title: e.target.value })}
-                        className="border p-3 w-full rounded-xl bg-white dark:bg-white/10"
+                        className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/10 text-gray-900 dark:text-white outline-none focus:border-blue-500 transition"
                         placeholder="Section title"
                       />
                     </div>
@@ -1012,7 +1046,7 @@ function AdminDashboard() {
                       <textarea
                         value={item.description || ""}
                         onChange={(e) => updateLocalContent(item.id, { description: e.target.value })}
-                        className="border p-3 w-full rounded-xl min-h-[120px] bg-white dark:bg-white/10"
+                        className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl min-h-[120px] bg-white dark:bg-white/10 text-gray-900 dark:text-white outline-none focus:border-blue-500 transition"
                         placeholder="Section description"
                       />
                     </div>
@@ -1075,14 +1109,14 @@ function AdminDashboard() {
                                 <input
                                   value={card.title || ""}
                                   onChange={(e) => updateCard(item.id, index, "title", e.target.value)}
-                                  className="border p-3 w-full rounded-xl bg-white dark:bg-white/10"
+                                  className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/10 text-gray-900 dark:text-white outline-none focus:border-blue-500 transition"
                                   placeholder="Card title"
                                 />
 
                                 <textarea
                                   value={card.description || ""}
                                   onChange={(e) => updateCard(item.id, index, "description", e.target.value)}
-                                  className="border p-3 w-full rounded-xl min-h-[90px] bg-white dark:bg-white/10"
+                                  className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl min-h-[90px] bg-white dark:bg-white/10 text-gray-900 dark:text-white outline-none focus:border-blue-500 transition"
                                   placeholder="Card description"
                                 />
                               </div>
@@ -1102,34 +1136,42 @@ function AdminDashboard() {
   );
 }
 
-function SidebarItem({ icon, label, active, setActive, value, collapsed, setMobileOpen }) {
+function SidebarItem({ icon, label, active, setActive, value, collapsed, setMobileOpen, count }) {
   return (
     <div
-      onClick={() => {
-        setActive(value);
-        setMobileOpen(false);
-      }}
+      onClick={() => { setActive(value); setMobileOpen(false); }}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-medium transition-all duration-200 ${
         active === value
-          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20"
           : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] hover:text-gray-900 dark:hover:text-white"
       }`}
     >
       {icon}
-      {!collapsed && <span>{label}</span>}
+      {!collapsed && <span className="flex-1">{label}</span>}
+      {!collapsed && count > 0 && (
+        <span className={`text-[11px] min-w-[20px] text-center px-1.5 py-0.5 rounded-full font-semibold ${
+          active === value ? "bg-white/20 text-white" : "bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400"
+        }`}>{count}</span>
+      )}
     </div>
   );
 }
 
-function StatCard({ icon, label, value }) {
+function StatCard({ icon, label, value, color = "blue" }) {
+  const colors = {
+    blue: { bg: "bg-blue-50 dark:bg-blue-500/10", text: "text-blue-600 dark:text-blue-400", border: "border-l-blue-500" },
+    emerald: { bg: "bg-emerald-50 dark:bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", border: "border-l-emerald-500" },
+    violet: { bg: "bg-violet-50 dark:bg-violet-500/10", text: "text-violet-600 dark:text-violet-400", border: "border-l-violet-500" },
+  };
+  const c = colors[color] || colors.blue;
   return (
-    <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+    <div className={`bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] border-l-4 ${c.border} p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group`}>
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+        <div className={`w-12 h-12 rounded-xl ${c.bg} flex items-center justify-center ${c.text} group-hover:scale-105 transition-transform duration-300`}>
           {icon}
         </div>
         <div>
-          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">{label}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider">{label}</p>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{value}</h2>
         </div>
       </div>
@@ -1141,7 +1183,8 @@ function Section({ title, children, data = [] }) {
   return (
     <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm space-y-5">
       <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h2>
-      {data.length > 0 ? children : <div className="text-center py-12 text-gray-400 dark:text-gray-500">No data found</div>}
+      {children}
+      {data.length === 0 && <div className="text-center py-12 text-gray-400 dark:text-gray-500">No data found</div>}
     </div>
   );
 }

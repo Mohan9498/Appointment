@@ -12,14 +12,34 @@ export default {
 
       colors: {
         background: "#0B1120",
+        foreground: "#F9FAFB",
         surface: "#111827",
-        primary: "#6366F1",
-        secondary: "#22D3EE",
-        accent: "#A78BFA",
+        primary: {
+          DEFAULT: "#6366F1",
+          foreground: "#FFFFFF",
+        },
+        secondary: {
+          DEFAULT: "#22D3EE",
+          foreground: "#0B1120",
+        },
+        destructive: {
+          DEFAULT: "#EF4444",
+          foreground: "#FFFFFF",
+        },
+        muted: {
+          DEFAULT: "#1F2937",
+          foreground: "#9CA3AF",
+        },
+        accent: {
+          DEFAULT: "#A78BFA",
+          foreground: "#FFFFFF",
+        },
         border: "#1F2937",
+        input: "#374151",
+        ring: "#6366F1",
         text: {
           main: "#F9FAFB",
-          secondary: "#9CA3AF"
+          secondary: "#9CA3AF",
         },
       },
 
@@ -53,6 +73,10 @@ export default {
           '0%': { opacity: '0', transform: 'scale(0.9)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
+        'bounce-gentle': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
       },
       animation: {
         'fade-in-up': 'fade-in-up 0.7s ease-out both',
@@ -64,6 +88,7 @@ export default {
         'glow-pulse': 'glow-pulse 4s ease-in-out infinite',
         'slide-in-right': 'slide-in-right 0.6s ease-out both',
         'scale-in': 'scale-in 0.5s ease-out both',
+        'bounce-gentle': 'bounce-gentle 2s ease-in-out infinite',
       },
 
       // ✅ PREMIUM BOX SHADOWS
