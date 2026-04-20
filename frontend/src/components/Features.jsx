@@ -1,5 +1,5 @@
 import { ShieldCheck, Heart, Brain, Clock, Users, Star } from "lucide-react";
-import useCMS from "../hooks/useCms";
+import useCMS from "../hooks/useCMS";
 
 function Features() {
 

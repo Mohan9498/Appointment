@@ -1,4 +1,4 @@
-import useCMS from "../hooks/useCms";
+import useCMS from "../hooks/useCMS";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 

@@ -1,4 +1,4 @@
-import useCMS from "../hooks/useCms";
+import useCMS from "../hooks/useCMS";
 import ProgramCard from "./ProgramCard";
 
 function Services() {
