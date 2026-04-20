@@ -59,7 +59,7 @@ export default function Chatbot() {
     }
     else if (text.includes("branch") || text.includes("location")) {
       reply =
-        "We have branches across Chennai including WestMambalam, Anna Nagar, Tambaram, Porur, and more.";
+        "We have branches across Chennai including WestMambalam, Anna Nagar,Choolaimedu, Tambaram, Porur, and more.";
     }
     else if (text.includes("age")) {
       reply =
