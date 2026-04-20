@@ -19,6 +19,7 @@ const AdminAppointments = lazy(() => import("./components/AdminAppointments"));
 
 import Footer from "./components/Footer";
 import Chatbot from "./components/Chatbot";
+import CursorEffect from "./components/CursorEffect";
 import ContactModal from "./components/ContactModal";
 
 function NotFound() {
@@ -134,6 +135,7 @@ function App() {
       {!isAdminRoute && (
         <>
           {/* <Footer onOpenModal={() => handleOpenModal()} /> */}
+          <CursorEffect />
           <Chatbot onOpenModal={handleOpenModal} />
         </>
       )}
