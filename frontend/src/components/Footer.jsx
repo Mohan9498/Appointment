@@ -43,7 +43,7 @@ function Footer({ onOpenModal }) {
         <div>
           <h3 className="font-bold mb-4 text-gray-900 dark:text-white text-sm uppercase tracking-wider">Explore</h3>
 
-          <div className="flex flex-col gap-3 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex flex-col justify-center items-start gap-3 text-sm text-gray-500 dark:text-gray-400">
             <Link to="/about" className="hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
               About
             </Link>
