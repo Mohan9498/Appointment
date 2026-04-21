@@ -6,10 +6,10 @@ export default function useCMS(page) {
   const [content, setContent] = useState([]);
 
   useEffect(() => {
-    API.get("content/")
+    API.get(`content/?page=${page}`)
       .then(res => setContent(res.data))
       .catch(() => setContent([]));
-  }, []);
+  }, [page]);
 
   const getSection = (section) => {
     return content.find(

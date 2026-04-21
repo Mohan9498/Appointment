@@ -1,13 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import useCMS from "../hooks/useCMS";
-
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import j3 from "../assets/j3.webp";
 import j5 from "../assets/j5.webp";
 import j4 from "../assets/j4.webp";
 
-function Programs({ onOpenModal }) {
+function Programs() {
   const navigate = useNavigate();
 
   // ✅ CMS HOOK
@@ -38,8 +35,6 @@ function Programs({ onOpenModal }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
-
-      <Navbar onOpenModal={onOpenModal} />
 
       <section className="py-28 relative overflow-hidden">
 
@@ -105,9 +100,6 @@ function Programs({ onOpenModal }) {
         </div>
 
       </section>
-
-      <Footer onOpenModal={onOpenModal} />
-
     </div>
   );
 }

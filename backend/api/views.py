@@ -15,8 +15,14 @@ from appointments.models import Content
 from .serializers import ContentSerializer
 
 
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+from django.shortcuts import get_object_or_404
+
+try:
+    from asgiref.sync import async_to_sync
+    from channels.layers import get_channel_layer
+    HAS_CHANNELS = True
+except ImportError:
+    HAS_CHANNELS = False
 
 
 # ✅ ADMIN PERMISSION
@@ -233,17 +239,18 @@ class AppointmentView(APIView):
                 appointment = serializer.save()
 
                 # ✅ optional websocket notification
-                try:
-                    channel_layer = get_channel_layer()
-                    async_to_sync(channel_layer.group_send)(
-                        "appointments",
-                        {
-                            "type": "send_appointment_notification",
-                            "message": f"New appointment from {request.user.username}"
-                        }
-                    )
-                except Exception as ws_error:
-                    print("WEBSOCKET ERROR:", str(ws_error))
+                if HAS_CHANNELS:
+                    try:
+                        channel_layer = get_channel_layer()
+                        async_to_sync(channel_layer.group_send)(
+                            "appointments",
+                            {
+                                "type": "send_appointment_notification",
+                                "message": f"New appointment from {request.user.username}"
+                            }
+                        )
+                    except Exception as ws_error:
+                        print("WEBSOCKET ERROR:", str(ws_error))
 
                 return Response(
                     {
@@ -292,3 +299,40 @@ class ContentViewSet(ModelViewSet):
             queryset = queryset.filter(section=section)
 
         return queryset
+
+
+# ✅ APPROVE / REJECT APPOINTMENT
+class ApproveAppointment(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUserCustom]
+
+    def post(self, request, id):
+        try:
+            action = request.data.get("action")
+
+            if action not in ["approve", "reject"]:
+                return Response(
+                    {"error": "Action must be 'approve' or 'reject'"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            appointment = get_object_or_404(Appointment, id=id)
+
+            appointment.status = "approved" if action == "approve" else "rejected"
+            appointment.save()
+
+            return Response(
+                {
+                    "message": f"Appointment {appointment.status} successfully",
+                    "id": appointment.id,
+                    "status": appointment.status
+                },
+                status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            print("APPROVE ERROR:", str(e))
+            return Response(
+                {"error": "Internal server error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

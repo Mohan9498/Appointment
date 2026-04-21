@@ -610,7 +610,7 @@ function AdminDashboard() {
                     </a>
 
                     <a
-                      href={`https://wa.me/91${item.phone}`}
+                      href={`https://wa.me/${(item.phone || "").replace(/[^0-9]/g, "")}`}
                       target="_blank"
                       rel="noreferrer"
                       className="flex-auto text-center bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-xl text-sm font-medium transition-colors"

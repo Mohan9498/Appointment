@@ -16,6 +16,7 @@ const ProgramDetails = lazy(() => import("./pages/ProgramDetails"));
 const Contact = lazy(() => import("./pages/Contact"));
 const AdminDashboard = lazy(() => import("./dashboards/AdminDashboard"));
 const AdminAppointments = lazy(() => import("./components/AdminAppointments"));
+const Register = lazy(() => import("./pages/Register"));
 
 import Footer from "./components/Footer";
 import Chatbot from "./components/Chatbot";
@@ -108,6 +109,7 @@ function App() {
             <Route path="/programs" element={<Programs />} />
             <Route path="/programs/:name" element={<ProgramDetails onOpenModal={() => handleOpenModal()} />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/register" element={<Register />} />
 
             <Route
               path="/admin"
@@ -134,7 +136,7 @@ function App() {
 
       {!isAdminRoute && (
         <>
-          {/* <Footer onOpenModal={() => handleOpenModal()} /> */}
+          <Footer onOpenModal={() => handleOpenModal()} />
           <CursorEffect />
           <Chatbot onOpenModal={handleOpenModal} />
         </>

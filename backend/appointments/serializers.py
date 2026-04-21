@@ -8,7 +8,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
         extra_kwargs = {
             "user": {"required": False},
-            "name": {"required": False},
-            "gmail": {"required": False},
             "status": {"required": False},
+            "date": {"required": False},
+            "time": {"required": False},
         }

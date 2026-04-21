@@ -16,6 +16,9 @@ class Appointment(models.Model):
     branch = models.CharField(max_length=100)
     program = models.CharField(max_length=100)
 
+    date = models.CharField(max_length=20, blank=True, null=True)
+    time = models.CharField(max_length=50, blank=True, null=True)
+
     status = models.CharField(max_length=20, default="pending")
     created_at = models.DateTimeField(default=now)
 

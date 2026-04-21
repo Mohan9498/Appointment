@@ -1,8 +1,6 @@
 import useCMS from "../hooks/useCMS";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
-function About({ onOpenModal }) {
+function About() {
 
   // ✅ CMS HOOK
   const { getSection } = useCMS("about");
@@ -12,8 +10,6 @@ function About({ onOpenModal }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
-
-      <Navbar onOpenModal={onOpenModal} />
 
       {/* HERO SECTION */}
       <section className="relative py-32 px-6 overflow-hidden">
@@ -106,8 +102,6 @@ function About({ onOpenModal }) {
 
         </div>
       </section>
-
-      <Footer onOpenModal={onOpenModal} />
     </div>
   );
 }

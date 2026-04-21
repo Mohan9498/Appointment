@@ -6,7 +6,7 @@ from .views import (
     LoginView,
     LogoutView,
     AppointmentView,
-    
+    ApproveAppointment,
     ContentViewSet
 )
 
@@ -18,7 +18,7 @@ urlpatterns = [
     path("login/", LoginView.as_view()),
     path("logout/", LogoutView.as_view()),
     path("appointments/", AppointmentView.as_view()),
-    # path("appointments/<int:id>/", ApproveAppointment.as_view()),
+    path("approve/<int:id>/", ApproveAppointment.as_view()),
 
     # ✅ contact inside api
     path("contact/", include("contact.urls")),

@@ -30,7 +30,7 @@ function Login() {
         controllerRef.current.abort();
       }
     };
-  }, []);
+  }, [navigate]);
 
   // ✅ Handle input
   const handleChange = (e) => {

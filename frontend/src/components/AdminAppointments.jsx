@@ -24,20 +24,30 @@ function AdminAppointments() {
   useEffect(() => {
     fetchAppointments();
 
-    const socket = new WebSocket("ws://127.0.0.1:8000/ws/appointments/");
+    // ✅ Build WebSocket URL from current host (works in dev + production)
+    let socket = null;
+    try {
+      const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsHost = window.location.hostname === "localhost" ? "127.0.0.1:8000" : window.location.host;
+      socket = new WebSocket(`${wsProtocol}//${wsHost}/ws/appointments/`);
 
-    socket.onopen = () => console.log("WebSocket connected");
+      socket.onopen = () => console.log("WebSocket connected");
 
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.message) toast.success(data.message);
-      fetchAppointments();
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.message) toast.success(data.message);
+        fetchAppointments();
+      };
+
+      socket.onerror = () => console.log("WebSocket unavailable (this is OK if channels is disabled)");
+      socket.onclose = () => console.log("WebSocket disconnected");
+    } catch (err) {
+      console.log("WebSocket not available:", err);
+    }
+
+    return () => {
+      if (socket) socket.close();
     };
-
-    socket.onerror = (err) => console.log("WebSocket error:", err);
-    socket.onclose = () => console.log("WebSocket disconnected");
-
-    return () => socket.close();
   }, []);
 
   // Approve / Reject

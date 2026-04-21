@@ -18,7 +18,7 @@ const INITIAL_MESSAGES = [
   { role: "bot", text: "You can ask me about our therapy programs, timings, or locations. How can I help you today?" },
 ];
 
-export default function Chatbot() {
+export default function Chatbot({ onOpenModal }) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState(INITIAL_MESSAGES);

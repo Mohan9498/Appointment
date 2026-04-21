@@ -1,6 +1,4 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import {
@@ -12,7 +10,7 @@ import {
   MessageSquareText,
 } from "lucide-react";
 
-function Contact({ onOpenModal }) {
+function Contact() {
 
   const [formData, setFormData] = useState({
     name: "",
@@ -54,8 +52,6 @@ function Contact({ onOpenModal }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
-
-      <Navbar onOpenModal={onOpenModal} />
 
       <section className="relative overflow-hidden pt-28 pb-20">
 
@@ -144,8 +140,6 @@ function Contact({ onOpenModal }) {
           </div>
         </div>
       </section>
-
-      <Footer onOpenModal={onOpenModal} />
     </div>
   );
 }

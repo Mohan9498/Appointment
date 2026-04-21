@@ -1,6 +1,4 @@
 import { useParams, Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { Clock, Users, CheckCircle2, ArrowLeft } from "lucide-react";
 
 const programDetails = {
@@ -55,8 +53,6 @@ function ProgramDetails({ onOpenModal }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
-
-      <Navbar onOpenModal={onOpenModal} />
 
       <div className="max-w-4xl mx-auto px-6 py-28 relative">
 
@@ -151,8 +147,6 @@ function ProgramDetails({ onOpenModal }) {
         )}
 
       </div>
-
-      <Footer onOpenModal={onOpenModal} />
     </div>
   );
 }

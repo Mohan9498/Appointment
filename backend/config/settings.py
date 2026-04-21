@@ -16,13 +16,15 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-_itzq-kzxx!je@cl@pit=(njvjl1+ph)t)r-7=bzk2jou-lc-3'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-_itzq-kzxx!je@cl@pit=(njvjl1+ph)t)r-7=bzk2jou-lc-3')
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# ✅ IMPORTANT (Render domain)
+# ✅ IMPORTANT (Render domain + local dev)
 ALLOWED_HOSTS = [
     "appointment-83q0.onrender.com",
+    "localhost",
+    "127.0.0.1",
 ]
 
 # ======================
@@ -55,7 +57,6 @@ INSTALLED_APPS = [
 # MIDDLEWARE (CORS FIRST)
 # ======================
 MIDDLEWARE = [
-    'api.middleware.HandleOptionsMiddleware',   
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -90,8 +91,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # DATABASE (Render)
 # ======================
 DATABASES = {
-    'default': dj_database_url.parse(
-        "postgresql://postgres_cerv_user:0eAxTz6lbu8afm0vz2EXFGaaUi2drsPf@dpg-d754rdh4tr6s73d3m0t0-a.oregon-postgres.render.com/postgres_cerv"
+    'default': dj_database_url.config(
+        default="postgresql://postgres_cerv_user:0eAxTz6lbu8afm0vz2EXFGaaUi2drsPf@dpg-d754rdh4tr6s73d3m0t0-a.oregon-postgres.render.com/postgres_cerv"
     )
 }
 
@@ -157,9 +158,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # }
 
 # ======================
-# ✅ CORS FIX (CRITICAL)
+# ✅ CORS (FIXED)
 # ======================
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://appointment-tttc.vercel.app",
+]
 CORS_ALLOW_HEADERS = ["*"]
 CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
@@ -168,8 +173,6 @@ CORS_ALLOW_CREDENTIALS = True
 # ======================
 # ✅ CSRF FIX (VERCEL)
 # ======================
-CSRF_ALLOW_ALL_ORIGINS = True
-
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://appointment-tttc.vercel.app",
