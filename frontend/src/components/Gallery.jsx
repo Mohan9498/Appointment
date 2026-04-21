@@ -22,7 +22,7 @@ function Gallery() {
   const images = cms?.data?.length ? cms.data : staticImages;
 
   return (
-    <section className="py-24 bg-white dark:bg-slate-950 text-black dark:text-white relative overflow-hidden">
+    <section className="py-24 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white relative overflow-hidden">
 
       {/* Background */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-t from-blue-100/30 dark:from-blue-900/10 to-transparent rounded-full blur-3xl pointer-events-none" />

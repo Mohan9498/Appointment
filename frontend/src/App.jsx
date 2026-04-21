@@ -24,10 +24,10 @@ import ContactModal from "./components/ContactModal";
 
 function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-white dark:bg-slate-950">
+    <div className="min-h-screen flex items-center justify-center px-6 bg-background">
       <div className="text-center animate-fade-in-up">
         <div className="text-8xl font-extrabold text-gradient mb-4">404</div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Page Not Found</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-2">Page Not Found</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
           The page you're looking for doesn't exist or has been moved.
         </p>
@@ -46,7 +46,7 @@ function NotFound() {
 // ✅ Premium loading fallback
 function PageLoader() {
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-950 gap-4">
+    <div className="h-screen flex flex-col items-center justify-center bg-background gap-4">
       <div className="relative">
         <div className="w-12 h-12 border-[3px] border-gray-200 dark:border-white/10 border-t-blue-600 rounded-full animate-spin" />
       </div>
@@ -73,7 +73,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {!isAdminRoute && (
         <Navbar onOpenModal={() => handleOpenModal()} />
       )}

@@ -1,115 +1,161 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: "class", // ✅ ENABLE DARK MODE
-
-  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
-
+  darkMode: ["class"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  prefix: "",
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       fontFamily: {
-        sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ["Plus Jakarta Sans", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
       },
-
       colors: {
-        background: "#0B1120",
-        foreground: "#F9FAFB",
-        surface: "#111827",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#6366F1",
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#22D3EE",
-          foreground: "#0B1120",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "#EF4444",
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "#1F2937",
-          foreground: "#9CA3AF",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#A78BFA",
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
-        border: "#1F2937",
-        input: "#374151",
-        ring: "#6366F1",
-        text: {
-          main: "#F9FAFB",
-          secondary: "#9CA3AF",
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        lavender: {
+          DEFAULT: "hsl(var(--lavender))",
+          foreground: "hsl(var(--lavender-foreground))",
+        },
+        sky: {
+          DEFAULT: "hsl(var(--sky))",
+          foreground: "hsl(var(--sky-foreground))",
+        },
+        peach: {
+          DEFAULT: "hsl(var(--peach))",
+          foreground: "hsl(var(--peach-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
         },
       },
-
-      backdropBlur: {
-        xs: "2px",
+      boxShadow: {
+        glass:
+          "0 8px 32px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.1)",
+        "glass-lg":
+          "0 12px 48px 0 rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.15)",
+        float: "0 20px 40px -10px rgba(0, 0, 0, 0.15)",
       },
-
-      // ✅ CUSTOM ANIMATIONS
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 4px)",
+        "2xl": "calc(var(--radius) + 8px)",
+        "3xl": "calc(var(--radius) + 16px)",
+      },
       keyframes: {
-        'fade-in-up': {
-          '0%': { opacity: '0', transform: 'translateY(30px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
-        'fade-in': {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
-        'float': {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-12px)' },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-8px)" },
         },
-        'glow-pulse': {
-          '0%, 100%': { opacity: '0.4' },
-          '50%': { opacity: '0.8' },
+        "float-slow": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-6px)" },
         },
-        'slide-in-right': {
-          '0%': { opacity: '0', transform: 'translateX(30px)' },
-          '100%': { opacity: '1', transform: 'translateX(0)' },
+        "float-reverse": {
+          "0%, 100%": { transform: "translateY(-4px)" },
+          "50%": { transform: "translateY(4px)" },
         },
-        'scale-in': {
-          '0%': { opacity: '0', transform: 'scale(0.9)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
         },
-        'bounce-gentle': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-6px)' },
+        "spin-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+        "slide-up": {
+          from: { opacity: "0", transform: "translateY(16px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "scale-in": {
+          from: { opacity: "0", transform: "scale(0.96)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
         },
       },
       animation: {
-        'fade-in-up': 'fade-in-up 0.7s ease-out both',
-        'fade-in-up-delay-1': 'fade-in-up 0.7s ease-out 0.15s both',
-        'fade-in-up-delay-2': 'fade-in-up 0.7s ease-out 0.3s both',
-        'fade-in-up-delay-3': 'fade-in-up 0.7s ease-out 0.45s both',
-        'fade-in': 'fade-in 0.5s ease-out both',
-        'float': 'float 6s ease-in-out infinite',
-        'glow-pulse': 'glow-pulse 4s ease-in-out infinite',
-        'slide-in-right': 'slide-in-right 0.6s ease-out both',
-        'scale-in': 'scale-in 0.5s ease-out both',
-        'bounce-gentle': 'bounce-gentle 2s ease-in-out infinite',
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        float: "float 4s ease-in-out infinite",
+        "float-slow": "float-slow 5s ease-in-out infinite",
+        "float-reverse": "float-reverse 4s ease-in-out infinite",
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
+        "spin-slow": "spin-slow 30s linear infinite",
+        "slide-up": "slide-up 0.4s ease-out",
+        "fade-in": "fade-in 0.3s ease-out",
+        "scale-in": "scale-in 0.3s ease-out",
+        shimmer: "shimmer 2s ease-in-out infinite",
       },
-
-      // ✅ PREMIUM BOX SHADOWS
-      boxShadow: {
-        'glow-blue': '0 0 40px -10px rgba(59, 130, 246, 0.4)',
-        'glow-indigo': '0 0 40px -10px rgba(99, 102, 241, 0.4)',
-        'glow-purple': '0 0 40px -10px rgba(139, 92, 246, 0.3)',
-        'premium': '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
-        'premium-dark': '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-      },
-    },
-
-    // RESPONSIVE BREAKPOINTS
-    screens: {
-      xs: "360px",
-      sm: "640px",
-      md: "768px",
-      lg: "1024px",
-      xl: "1280px",
     },
   },
-
   plugins: [],
 };

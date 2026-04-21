@@ -59,7 +59,7 @@ function Features() {
   const data = cms?.data?.length ? cms.data : staticData;
 
   return (
-    <section className="py-24 px-6 bg-white dark:bg-slate-950 relative overflow-hidden">
+    <section className="py-24 px-6 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative overflow-hidden">
 
       {/* Background Decoration */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-blue-100/40 dark:from-blue-900/10 to-transparent rounded-full blur-3xl pointer-events-none" />

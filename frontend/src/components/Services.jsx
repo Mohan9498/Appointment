@@ -29,7 +29,7 @@ function Services() {
   const data = cms?.data?.length ? cms.data : staticData;
 
   return (
-    <section className="relative py-24 overflow-hidden bg-gray-50/50 dark:bg-slate-900/50">
+    <section className="relative py-24 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:bg-slate-900/50">
 
       {/* Background Decoration */}
       <div className="absolute inset-0 pointer-events-none">

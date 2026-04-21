@@ -355,32 +355,32 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 dark:bg-[#0a0e1a]">
+    <div className="min-h-screen flex flex-col md:flex-row bg-muted text-foreground">
       {/* ── MOBILE HEADER ── */}
-      <div className="md:hidden flex justify-between items-center px-5 py-3.5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-200/60 dark:border-white/[0.06] sticky top-0 z-50">
+      <div className="md:hidden flex justify-between items-center px-5 py-3.5 bg-background/80 backdrop-blur-xl border-b border-border sticky top-0 z-50">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">A</div>
-          <h1 className="font-bold text-gray-900 dark:text-white tracking-tight">Admin</h1>
+          <h1 className="font-bold text-foreground tracking-tight">Admin</h1>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setDark(!dark)} className="p-2 rounded-lg bg-gray-100 dark:bg-white/10 transition hover:bg-gray-200 dark:hover:bg-white/20 text-sm">{dark ? "☀️" : "🌙"}</button>
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition text-gray-700 dark:text-white">☰</button>
+          <button onClick={() => setDark(!dark)} className="p-2 rounded-lg bg-muted transition hover:bg-muted/80 text-sm">{dark ? "☀️" : "🌙"}</button>
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg hover:bg-muted transition text-foreground">☰</button>
         </div>
       </div>
 
       {/* ── SIDEBAR ── */}
       <div
-        className={`fixed top-0 left-0 h-screen w-[260px] bg-white dark:bg-[#0f1629] border-r border-gray-200/60 dark:border-white/[0.06] z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-screen w-[260px] bg-background border-r border-border z-50 transform transition-transform duration-300 shadow-lg ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 md:sticky md:top-0 md:w-[260px] md:shrink-0 flex flex-col overflow-y-auto`}
       >
         <button onClick={() => setMobileOpen(false)} className="md:hidden absolute top-4 right-4 text-lg text-gray-400 hover:text-gray-700 dark:hover:text-white transition">✕</button>
 
         {/* Logo */}
-        <div className="hidden md:flex items-center gap-3 px-6 pt-6 pb-5 border-b border-gray-100 dark:border-white/[0.06]">
+        <div className="hidden md:flex items-center gap-3 px-6 pt-6 pb-5 border-b border-border">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-blue-600/20">A</div>
           <div>
-            <h1 className="font-bold text-gray-900 dark:text-white tracking-tight text-[12px]">Admin Panel</h1>
+            <h1 className="font-bold text-foreground tracking-tight text-[12px]">Admin Panel</h1>
             
           </div>
         </div>
@@ -398,8 +398,8 @@ function AdminDashboard() {
         </nav>
 
         {/* Bottom */}
-        <div className="px-4 pb-5 space-y-3 border-t border-gray-100 dark:border-white/[0.06] pt-4">
-          <button onClick={() => setDark(!dark)} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition">
+        <div className="px-4 pb-5 space-y-3 border-t border-border pt-4">
+          <button onClick={() => setDark(!dark)} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-muted transition">
             <span>{dark ? "☀️" : "🌙"}</span>
             <span>{dark ? "Light Mode" : "Dark Mode"}</span>
           </button>
@@ -418,8 +418,8 @@ function AdminDashboard() {
           <div className="p-6 space-y-6">
             {/* Page Header */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Dashboard</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Overview of your  management</p>
+              <h2 className="text-2xl font-bold text-foreground tracking-tight">Dashboard</h2>
+              <p className="text-sm text-muted-foreground mt-1">Overview of your management</p>
             </div>
 
             {/* Stat Cards */}
@@ -431,8 +431,8 @@ function AdminDashboard() {
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Monthly Analytics</h3>
+              <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+                <h3 className="text-sm font-semibold text-foreground mb-1">Monthly Analytics</h3>
                 <p className="text-xs text-gray-400 mb-5">Appointments vs Messages (last 6 months)</p>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={getCombinedMonthlyData()}>
@@ -446,8 +446,8 @@ function AdminDashboard() {
                 </ResponsiveContainer>
               </div>
 
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Distribution</h3>
+              <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+                <h3 className="text-sm font-semibold text-foreground mb-1">Distribution</h3>
                 <p className="text-xs text-gray-400 mb-5">Appointments vs Messages ratio</p>
                 <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
@@ -465,10 +465,10 @@ function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
               {/* Recent Appointments */}
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
+              <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Recent Appointments</h3>
+                    <h3 className="text-sm font-semibold text-foreground">Recent Appointments</h3>
                     <p className="text-xs text-gray-400 mt-0.5">Latest 5 bookings</p>
                   </div>
                   <button onClick={() => setActive("appointments")} className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">View All →</button>
@@ -501,10 +501,10 @@ function AdminDashboard() {
               </div>
 
               {/* Recent Messages */}
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
+              <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Recent Messages</h3>
+                    <h3 className="text-sm font-semibold text-foreground">Recent Messages</h3>
                     <p className="text-xs text-gray-400 mt-0.5">Latest 5 contacts</p>
                   </div>
                   <button onClick={() => setActive("messages")} className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">View All →</button>
@@ -573,7 +573,7 @@ function AdminDashboard() {
               {filteredAppointments.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-5 shadow-sm hover:shadow-lg flex flex-col items-start transition-all duration-300 hover:-translate-y-0.5"
+                  className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-lg flex flex-col items-start transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <div className="flex justify-between items-start gap-14 mb-3 w-full">
                     <h3 className="text-lg font-semibold text-blue-600">{item.parent_name}</h3>
@@ -639,7 +639,7 @@ function AdminDashboard() {
               {filteredMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-5 shadow-sm hover:shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-0.5"
+                  className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-blue-600 font-semibold">{msg.name}</h3>
@@ -734,8 +734,8 @@ function AdminDashboard() {
           <div className="p-6 space-y-6">
 
             {/* Page Tabs */}
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-6 rounded-2xl shadow-sm">
-              <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-1">Edit Page Content</h2>
+            <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+              <h2 className="text-xl font-bold tracking-tight text-foreground mb-1">Edit Page Content</h2>
               <p className="text-sm text-gray-400 dark:text-gray-500 mb-5">Select a page and edit its sections directly. No section keys needed.</p>
 
               <div className="flex flex-wrap gap-2">
@@ -762,12 +762,12 @@ function AdminDashboard() {
               return (
                 <div
                   key={def.section}
-                  className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-2xl shadow-sm overflow-hidden"
+                  className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden"
                 >
                   {/* Section Header */}
-                  <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="px-6 py-4 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                      <h3 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">{def.label}</h3>
+                      <h3 className="text-lg font-bold tracking-tight text-foreground">{def.label}</h3>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{def.description}</p>
                     </div>
 

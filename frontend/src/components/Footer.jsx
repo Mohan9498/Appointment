@@ -3,7 +3,7 @@ import { MessageCircle, Instagram, Mail, Phone, MapPin } from "lucide-react";
 
 function Footer({ onOpenModal }) {
   return (
-    <footer className="bg-gray-50 dark:bg-slate-950 text-black dark:text-white pt-20 pb-8 border-t border-gray-200/50 dark:border-white/[0.06]">
+    <footer className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-black dark:text-white pt-20 pb-8 border-t border-gray-200/50 dark:border-white/[0.06]">
 
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">
 
