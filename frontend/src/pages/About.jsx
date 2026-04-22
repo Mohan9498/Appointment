@@ -1,5 +1,7 @@
 import useCMS from "../hooks/useCMS";
 
+import SEO from "../components/SEO";
+
 function About() {
 
   // ✅ CMS HOOK
@@ -10,6 +12,11 @@ function About() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
+      <SEO 
+        title="About Us" 
+        description="Learn about Tiny Todds Therapy Care's mission and vision to help children grow through specialized therapy programs." 
+        keywords="about us, child therapy, mission, vision" 
+      />
 
       {/* HERO SECTION */}
       <section className="relative py-32 px-6 overflow-hidden">

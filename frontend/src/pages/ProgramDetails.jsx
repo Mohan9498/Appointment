@@ -46,6 +46,8 @@ const programDetails = {
   },
 };
 
+import SEO from "../components/SEO";
+
 function ProgramDetails({ onOpenModal }) {
   const { name } = useParams();
   const displayName = name.replace(/-/g, " ");
@@ -53,6 +55,11 @@ function ProgramDetails({ onOpenModal }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
+      <SEO 
+        title={displayName} 
+        description={details ? details.description : `Learn more about our ${displayName} program.`} 
+        keywords={`${displayName}, therapy, program, child development`} 
+      />
 
       <div className="max-w-4xl mx-auto px-6 py-28 relative">
 

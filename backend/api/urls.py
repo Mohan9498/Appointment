@@ -9,6 +9,7 @@ from .views import (
     ApproveAppointment,
     ContentViewSet
 )
+from rest_framework_simplejwt.views import TokenRefreshView
 
 router = DefaultRouter()
 router.register(r"content", ContentViewSet, basename="content")
@@ -22,6 +23,9 @@ urlpatterns = [
 
     # ✅ contact inside api
     path("contact/", include("contact.urls")),
+    
+    # ✅ Token refresh
+    path("token/refresh/", TokenRefreshView.as_view()),
 ]
 
 urlpatterns += router.urls

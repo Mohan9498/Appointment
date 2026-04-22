@@ -10,6 +10,8 @@ import {
   MessageSquareText,
 } from "lucide-react";
 
+import SEO from "../components/SEO";
+
 function Contact() {
 
   const [formData, setFormData] = useState({
@@ -52,6 +54,11 @@ function Contact() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
+      <SEO 
+        title="Contact Us" 
+        description="Get in touch with Tiny Todds Therapy Care for consultation, program details, and appointment support." 
+        keywords="contact, reach out, therapy consultation, appointment" 
+      />
 
       <section className="relative overflow-hidden pt-28 pb-20">
 

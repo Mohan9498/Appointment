@@ -4,8 +4,9 @@ import API from "../services/api";
 import { Eye, EyeOff, UserPlus, ArrowRight, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 
-function Register() {
+import SEO from "../components/SEO";
 
+function Register() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -49,6 +50,11 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <SEO 
+        title="Create Account" 
+        description="Register for an account to start booking therapy sessions with Tiny Todds Therapy Care." 
+        keywords="register, sign up, therapy account" 
+      />
       <div className="grid min-h-screen lg:grid-cols-2">
 
         {/* LEFT SIDE */}

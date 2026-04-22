@@ -4,6 +4,8 @@ import j3 from "../assets/j3.webp";
 import j5 from "../assets/j5.webp";
 import j4 from "../assets/j4.webp";
 
+import SEO from "../components/SEO";
+
 function Programs() {
   const navigate = useNavigate();
 
@@ -35,6 +37,11 @@ function Programs() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
+      <SEO 
+        title="Our Programs" 
+        description="Carefully designed therapy programs including Speech Therapy, Cognitive Therapy, and Day Care." 
+        keywords="programs, speech therapy, cognitive therapy, day care" 
+      />
 
       <section className="py-28 relative overflow-hidden">
 

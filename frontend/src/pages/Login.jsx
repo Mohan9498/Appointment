@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { Eye, EyeOff, ArrowLeft, Lock } from "lucide-react";
 import toast from "react-hot-toast";
+import SEO from "../components/SEO";
 
 function Login() {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ function Login() {
       toast((t) => (
         <div className="flex flex-col gap-2">
           <span className="text-sm font-medium text-yellow-600">
-            ⚠️ Access denied! Only admins can login.
+            ⚠️ {message}
           </span>
 
           <div className="flex gap-2 mt-2">
@@ -130,6 +131,11 @@ function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-4">
+      <SEO 
+        title="Admin Login" 
+        description="Secure admin login portal for Tiny Todds Therapy Care dashboard." 
+        keywords="admin login, therapy care portal, secure access" 
+      />
 
       {/* Background Decoration */}
       <div className="absolute top-20 left-20 w-72 h-72 bg-blue-300/15 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
