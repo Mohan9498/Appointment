@@ -1,6 +1,6 @@
 import useCMS from "../hooks/useCMS";
 import c1 from "../assets/c1.jpg";
-import c2 from "../assets/c2.jpg";
+import c2 from "../assets/c2-640.webp";
 import j6 from "../assets/j6.webp";
 import j7 from "../assets/j7.webp";
 
@@ -53,6 +53,10 @@ function Gallery() {
             <img
               src={img.src || img.image} // ✅ supports CMS image field
               alt={img.title}
+              width={640}
+              height={480}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700 ease-out"
             />
 

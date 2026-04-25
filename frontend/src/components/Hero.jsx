@@ -112,6 +112,10 @@ function Hero({ onOpenModal }) {
           <img
             src={hero?.image || g1}
             alt="Child Therapy"
+            width={400}
+            height={300}
+            fetchPriority="high"
+            decoding="async"
             className="w-[90%] md:w-full rounded-3xl shadow-premium dark:shadow-premium-dark animate-float ring-1 ring-black/5 dark:ring-white/10"
           />
 

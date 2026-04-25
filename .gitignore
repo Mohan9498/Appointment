@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Generated handoff bundles from local fixes
+appointment-updated-files-*/
+appointment-updated-files-*.zip
+lighthouse-fix-files-*/
+lighthouse-fix-files-*.zip
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

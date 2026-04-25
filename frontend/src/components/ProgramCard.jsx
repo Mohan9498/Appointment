@@ -9,6 +9,10 @@ function ProgramCard({ title, description, image }) {
         <img
           src={image}
           alt={title}
+          width={400}
+          height={250}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover transform group-hover:scale-110 transition duration-700 ease-out"
           onError={(e) => {
             e.target.src = "https://via.placeholder.com/400x250?text=Therapy";

@@ -16,17 +16,56 @@ function Register() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateRegister = (values) => {
+    const nextErrors = {};
+    const username = values.username.trim();
+    const password = values.password;
+
+    if (!username) {
+      nextErrors.username = "Username is required";
+    } else if (username.length < 3) {
+      nextErrors.username = "Username must be at least 3 characters";
+    } else if (!/^[A-Za-z0-9_@.+-]+$/.test(username)) {
+      nextErrors.username = "Use only letters, numbers, and @ . + - _";
+    }
+
+    if (!password) {
+      nextErrors.password = "Password is required";
+    } else if (password.length < 8) {
+      nextErrors.password = "Password must be at least 8 characters";
+    } else if (/^\d+$/.test(password)) {
+      nextErrors.password = "Password cannot be only numbers";
+    }
+
+    return nextErrors;
+  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const nextData = { ...formData, [e.target.name]: e.target.value };
+
+    setFormData(nextData);
+    setErrors(validateRegister(nextData));
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    const nextErrors = validateRegister(formData);
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length) {
+      toast.error("Please fix the highlighted fields");
+      return;
+    }
+
     try {
       setLoading(true);
-      await API.post("/register/", formData);
+      await API.post("/register/", {
+        username: formData.username.trim(),
+        password: formData.password,
+      });
       toast.success("Registration successful!");
       navigate("/login");
     } catch (error) {
@@ -132,9 +171,15 @@ function Register() {
                     value={formData.username}
                     onChange={handleChange}
                     placeholder="Enter username"
+                    aria-invalid={Boolean(errors.username)}
                     className="w-full rounded-xl border border-gray-200 dark:border-white/[0.06] bg-gray-50/50 dark:bg-white/[0.02] px-4 py-3.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-white transition-all duration-300 text-sm"
                     required
                   />
+                  {errors.username && (
+                    <p className="mt-1.5 text-xs font-medium text-red-500">
+                      {errors.username}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password */}
@@ -149,6 +194,7 @@ function Register() {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Enter password"
+                      aria-invalid={Boolean(errors.password)}
                       className="w-full rounded-xl border border-gray-200 dark:border-white/[0.06] bg-gray-50/50 dark:bg-white/[0.02] px-4 py-3.5 pr-12 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-white transition-all duration-300 text-sm"
                       required
                     />
@@ -160,6 +206,11 @@ function Register() {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
+                  {errors.password && (
+                    <p className="mt-1.5 text-xs font-medium text-red-500">
+                      {errors.password}
+                    </p>
+                  )}
                 </div>
 
                 <button

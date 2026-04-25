@@ -16,6 +16,23 @@ function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateLogin = (values) => {
+    const nextErrors = {};
+    const username = values.username.trim();
+    const password = values.password;
+
+    if (!username) {
+      nextErrors.username = "Username is required";
+    }
+
+    if (!password) {
+      nextErrors.password = "Password is required";
+    }
+
+    return nextErrors;
+  };
 
   // ✅ Auto redirect if already logged in
   useEffect(() => {
@@ -35,15 +52,26 @@ function Login() {
 
   // ✅ Handle input
   const handleChange = (e) => {
-    setFormData({
+    const nextData = {
       ...formData,
       [e.target.name]: e.target.value,
-    });
+    };
+
+    setFormData(nextData);
+    setErrors(validateLogin(nextData));
   };
 
   // ✅ Login with popup + retry + cancel
   const handleLogin = async (e, isRetry = false) => {
     if (e) e.preventDefault();
+
+    const nextErrors = validateLogin(formData);
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length) {
+      toast.error("Please enter username and password");
+      return;
+    }
 
     const controller = new AbortController();
     controllerRef.current = controller;
@@ -53,7 +81,12 @@ function Login() {
     try {
       toast.loading("Signing in...", { id: "login" });
 
-      const res = await API.post("login/", formData, {
+      const payload = {
+        username: formData.username.trim(),
+        password: formData.password,
+      };
+
+      const res = await API.post("login/", payload, {
         timeout: 10000,
         signal: controller.signal,
       });
@@ -86,11 +119,11 @@ function Login() {
 
       if (err.response) {
         if (err.response.status === 401) {
-          message = "Invalid username or password";
+          message = err.response.data?.error || "Invalid username or password";
         } else if (err.response.status === 400) {
-          message = "Please fill all fields correctly";
+          message = err.response.data?.error || "Please fill all fields correctly";
         } else {
-          message = err.response.data?.detail || "Login failed";
+          message = err.response.data?.error || err.response.data?.detail || "Login failed";
         }
       }
 
@@ -176,9 +209,15 @@ function Login() {
                 placeholder="Enter username"
                 value={formData.username}
                 onChange={handleChange}
+                aria-invalid={Boolean(errors.username)}
                 className="w-full p-3.5 rounded-xl border border-gray-200 dark:border-white/[0.06] bg-gray-50/50 dark:bg-white/[0.02] text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-sm"
                 required
               />
+              {errors.username && (
+                <p className="mt-1.5 text-xs font-medium text-red-500">
+                  {errors.username}
+                </p>
+              )}
             </div>
 
             <div>
@@ -192,6 +231,7 @@ function Login() {
                   placeholder="Enter password"
                   value={formData.password}
                   onChange={handleChange}
+                  aria-invalid={Boolean(errors.password)}
                   className="w-full p-3.5 rounded-xl border border-gray-200 dark:border-white/[0.06] bg-gray-50/50 dark:bg-white/[0.02] pr-12 text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-sm"
                   required
                 />
@@ -204,6 +244,11 @@ function Login() {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="mt-1.5 text-xs font-medium text-red-500">
+                  {errors.password}
+                </p>
+              )}
             </div>
 
             {/* LOGIN BUTTON */}

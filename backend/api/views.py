@@ -7,6 +7,9 @@ from rest_framework.permissions import IsAdminUser,AllowAny,IsAuthenticated , Ba
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.viewsets import ModelViewSet
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+import re
 
 from appointments.models import Appointment
 from .serializers import AppointmentSerializer
@@ -39,8 +42,8 @@ class IsAdminUserCustom(BasePermission):
 class LoginView(APIView):
     def post(self, request):
         try:
-            username = request.data.get("username")
-            password = request.data.get("password")
+            username = str(request.data.get("username", "")).strip()
+            password = str(request.data.get("password", ""))
 
             if not username or not password:
                 return Response(
@@ -81,8 +84,8 @@ class LoginView(APIView):
 class AdminLoginView(APIView):
     def post(self, request):
         try:
-            username = request.data.get("username")
-            password = request.data.get("password")
+            username = str(request.data.get("username", "")).strip()
+            password = str(request.data.get("password", ""))
 
             if not username or not password:
                 return Response(
@@ -129,8 +132,8 @@ class AdminLoginView(APIView):
 class RegisterView(APIView):
     def post(self, request):
         try:
-            username = request.data.get("username")
-            password = request.data.get("password")
+            username = str(request.data.get("username", "")).strip()
+            password = str(request.data.get("password", ""))
 
             if not username or not password:
                 return Response(
@@ -138,15 +141,29 @@ class RegisterView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            if len(password) < 4:
+            if len(username) < 3:
                 return Response(
-                    {"error": "Password must be at least 4 characters"},
+                    {"error": "Username must be at least 3 characters"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if not re.fullmatch(r"[A-Za-z0-9_@.+-]+", username):
+                return Response(
+                    {"error": "Username can contain only letters, numbers, and @ . + - _"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
             if User.objects.filter(username=username).exists():
                 return Response(
                     {"error": "Username already exists"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            try:
+                validate_password(password, user=User(username=username))
+            except DjangoValidationError as e:
+                return Response(
+                    {"error": e.messages[0]},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 

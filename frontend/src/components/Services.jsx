@@ -1,5 +1,8 @@
 import useCMS from "../hooks/useCMS";
 import ProgramCard from "./ProgramCard";
+import j3 from "../assets/j3.webp";
+import j4 from "../assets/j4.webp";
+import j5 from "../assets/j5.webp";
 
 function Services() {
 
@@ -11,17 +14,17 @@ function Services() {
     {
       title: "Speech Therapy",
       description: "Improve communication, language, and social skills through evidence-based speech development techniques tailored to each child.",
-      image: "https://autism.jeevaniyam.in/wp-content/themes/jeevaniyam-landing/images/j3.webp"
+      image: j3
     },
     {
       title: "Cognitive Therapy",
       description: "Enhance memory, attention, and problem-solving abilities with structured cognitive training programs.",
-      image: "https://autism.jeevaniyam.in/wp-content/themes/jeevaniyam-landing/images/j5.webp"
+      image: j5
     },
     {
       title: "Day Care",
       description: "A safe, nurturing, and engaging environment for learning, play, and social growth throughout the day.",
-      image: "https://autism.jeevaniyam.in/wp-content/themes/jeevaniyam-landing/images/j4.webp"
+      image: j4
     }
   ];
 

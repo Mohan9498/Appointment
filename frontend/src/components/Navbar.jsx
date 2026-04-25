@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import logo from "../assets/navbar_logo_tiny_todds.png";
+import logo from "../assets/navbar_logo_tiny_todds.webp";
 
 function Navbar({ onOpenModal = () => {} }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -38,8 +38,9 @@ function Navbar({ onOpenModal = () => {} }) {
           <img
             src={logo}
             alt="Tiny Todds Therapy Care logo"
-            width={56}
-            height={56}
+            width={72}
+            height={48}
+            decoding="async"
             className="h-12 w-auto object-contain mix-blend-multiply dark:mix-blend-screen group-hover:scale-105 transition-transform duration-300"
           />
           <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">

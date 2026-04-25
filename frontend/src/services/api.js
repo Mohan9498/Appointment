@@ -46,6 +46,15 @@ API.interceptors.response.use(
     // ❌ If no config → reject
     if (!original) return Promise.reject(err);
 
+    const publicRoutes = ["login", "register", "contact", "token/refresh"];
+    const isPublicRoute = publicRoutes.some((route) =>
+      original.url?.includes(route)
+    );
+
+    if (isPublicRoute) {
+      return Promise.reject(err);
+    }
+
     if (err.response?.status === 401 && !original._retry) {
       original._retry = true;
 

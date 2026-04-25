@@ -20,17 +20,17 @@ function Footer({ onOpenModal }) {
           {/* SOCIAL */}
           <div className="flex gap-3 mt-6">
             {[
-              { href: "https://wa.me/919941350646", icon: <MessageCircle size={18} />, hoverColor: "hover:bg-green-500 hover:border-green-500" },
+              { href: "https://wa.me/919941350646", icon: <MessageCircle size={18} />, hoverColor: "hover:bg-green-500 hover:border-green-500", label: "Chat with us on WhatsApp" },
               { href: "https://www.instagram.com/tinytoddstherapycentre", icon: <Instagram size={18} />, hoverColor: "hover:bg-pink-500 hover:border-pink-500", label: "Follow us on Instagram" },
-              { href: "mailto:tinytoddstherapycare@gmail.com", icon: <Mail size={18} />, hoverColor: "hover:bg-red-500 hover:border-red-500" },
-              { href: "https://www.google.com/maps/search/?api=1&query=26Q9%2B8W%20Chennai%2C%20Tamil%20Nadu", icon: <MapPin size={18} />, hoverColor: "hover:bg-blue-600 hover:border-blue-600" },
+              { href: "mailto:tinytoddstherapycare@gmail.com", icon: <Mail size={18} />, hoverColor: "hover:bg-red-500 hover:border-red-500", label: "Email Tiny Todds Therapy Care" },
+              { href: "https://www.google.com/maps/search/?api=1&query=26Q9%2B8W%20Chennai%2C%20Tamil%20Nadu", icon: <MapPin size={18} />, hoverColor: "hover:bg-blue-600 hover:border-blue-600", label: "View Tiny Todds Therapy Care location" },
             ].map((social, i) => (
               <a
                 key={i}
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={social.label || ""}
+                aria-label={social.label}
                 className={`w-10 h-10 rounded-xl border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-white transition-all duration-300 ${social.hoverColor}`}
               >
                 {social.icon}
