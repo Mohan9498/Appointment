@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useState, lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { Home as HomeIcon } from "lucide-react";
@@ -99,7 +99,7 @@ function App() {
       )}
 
       {/* ✅ <main> landmark fixes accessibility audit */}
-      <main>
+      <main className="pt-2">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home onOpenModal={() => handleOpenModal()} />} />

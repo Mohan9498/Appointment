@@ -249,7 +249,7 @@ function ContactModal({ onClose, prefill = null }) {
 
               {/* PHONE — with per-country hint and live error */}
               <div className="mb-3">
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <label className="block text-xs font-medium text-gray-600 dark:text-white-400 mb-1">
                   Phone Number *
                 </label>
 
@@ -263,7 +263,7 @@ function ContactModal({ onClose, prefill = null }) {
                   }`}
                 >
                   <select
-                    className="bg-transparent outline-none text-sm py-1 pr-2 text-gray-700 dark:text-gray-200"
+                    className="bg-transparent outline-none text-sm py-1 pr-2 text-gray-700 dark:text-gray-700"
                     value={form.countryCode}
                     onChange={(e) =>
                       setForm({ ...form, countryCode: e.target.value, phone: "" })
@@ -389,7 +389,7 @@ function ContactModal({ onClose, prefill = null }) {
 }
 
 const inputCls =
-  "w-full mt-1 px-4 py-1 border border-gray-300 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-600 outline-none transition";
+  "w-full mt-1 px-4 py-1 border border-gray-300 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-blue-600 outline-none transition";
 
 function Field({ label, children }) {
   return (

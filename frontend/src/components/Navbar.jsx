@@ -25,23 +25,24 @@ function Navbar({ onOpenModal = () => {} }) {
   ];
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+    <nav className={`fixed  top-0 w-full  z-50 transition-all duration-500  
+      ${
       scrolled
-        ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-lg shadow-black/[0.03] dark:shadow-black/20 border-b border-gray-200/50 dark:border-white/[0.06]'
-        : 'bg-transparent border-b border-transparent'
-    }`}>
+        ? 'bg-white/80 dark:bg-black/60 backdrop-blur-lg border-b shadow-sm'
+        : 'bg-white/70 dark:bg-black/50 backdrop-blur-md border-b'
+      }` 
+    }>
 
-      <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+      <div className="max-w-full mx-auto px-4 h-20 flex justify-between items-center">
 
-        <Link to="/" className="flex items-center gap-2.5 group">
-          {/* ✅ Explicit width/height prevents layout shift (CLS fix) */}
+        <Link to="/" className="flex  items-center gap-2.5 group">     
           <img
             src={logo}
             alt="Tiny Todds Therapy Care logo"
             width={72}
             height={48}
             decoding="async"
-            className="h-12 w-auto object-contain mix-blend-multiply dark:mix-blend-screen group-hover:scale-105 transition-transform duration-300"
+            className="h-18  w-auto object-contain mix-blend-multiply dark:mix-blend-screen group-hover:scale-105 transition-transform duration-300"
           />
           <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
             Tiny Todds
@@ -56,7 +57,7 @@ function Navbar({ onOpenModal = () => {} }) {
             <Link
               key={i}
               to={item.path}
-              className={`relative px-4 py-2 rounded-xl text-sm transition-all duration-300 ${
+              className={`relative ml-3 px-5 py-2 rounded-xl text-sm transition-all duration-300 ${
                 location.pathname === item.path
                   ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 font-semibold"
                   : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/60 dark:hover:bg-white/5"
@@ -108,7 +109,7 @@ function Navbar({ onOpenModal = () => {} }) {
       <div
         className={`md:hidden transition-all duration-300 ${
           menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"
-        } bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl px-6 py-4 space-y-2 border-t border-gray-100 dark:border-white/5`}
+        } bg-transparent dark:bg-slate-900/95 backdrop-blur-xl px-6 py-4 space-y-2 border-t border-gray-100 dark:border-white/5`}
       >
         {navItems.map((item, i) => (
           <Link

@@ -10,11 +10,11 @@ const API = axios.create({
 // 🔥 REQUEST INTERCEPTOR (YOUR LOGIC PRESERVED)
 API.interceptors.request.use((config) => {
   const access = localStorage.getItem("access");
-
-  const publicRoutes = ["login", "register"];
-
-  const isPublicRoute = publicRoutes.some((route) =>
-    config.url?.includes(route)
+  
+  const publicRoutes = ["login/", "register/", "contact/", "appointments/"]
+  
+  const isPublic = publicRoutes.some(route =>
+    config.url?.includes(route)    
   );
 
   const isPublicContact =

@@ -223,7 +223,7 @@ class AppointmentView(APIView):
     def get_permissions(self):
         if self.request.method == "POST":
             return [AllowAny()]   # ✅ public booking
-        return [IsAdminUser()]    # ✅ admin only view
+        return [IsAdminUserCustom()]    # ✅ admin only view
 
     def get(self, request):
         try:

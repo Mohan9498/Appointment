@@ -13,7 +13,7 @@ const programDetails = {
       "Increased confidence in self-expression",
     ],
     duration: "45–60 minutes per session",
-    ageRange: "1–15 years",
+    ageRange: "1–10 years",
     color: "blue",
   },
   "cognitive-therapy": {

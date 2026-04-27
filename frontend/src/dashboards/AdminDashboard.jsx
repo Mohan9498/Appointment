@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
+import ModernFileUpload from "../components/ui/ModernFileUpload";
 import toast from "react-hot-toast";
 import {
   Users,
@@ -110,12 +111,17 @@ function AdminDashboard() {
   const fetchMessages = async () => {
     try {
       const res = await API.get("contact/");
-      const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
+
+      let data = res.data;
+
+      if (data?.results) data = data.results;
+      if (!Array.isArray(data)) data = [];
+
       setMessages(data);
     } catch (err) {
-      console.log("ERROR:", err.response?.data || err.message);
-      toast.error("Failed to load messages");
+      console.log(err);
       setMessages([]);
+      toast.error("Failed to load messages");
     } finally {
       setLoading(false);
     }
@@ -157,18 +163,27 @@ function AdminDashboard() {
   };
 
   const createContent = async () => {
+    const exists = content.find(
+      (c) => c.page === cmsPage && c.section === "new-section"
+    );
+    
+    if (exists) {
+      toast.error("Section already exists");
+      return;
+    }
+
     try {
       await API.post("content/", {
         page: cmsPage,
-        section: `new-section-${Date.now()}`,
+        section: "new-section",
         title: "New Section",
         description: "",
         data: [],
       });
+
       await fetchContent();
       toast.success("Section added");
     } catch (err) {
-      console.log(err.response?.data || err.message);
       toast.error("Create failed");
     }
   };
@@ -237,17 +252,30 @@ function AdminDashboard() {
   const uploadImage = async (id, file) => {
     if (!file) return;
 
+    // Find the existing item to keep its other fields
+    const item = content.find((c) => c.id === id);
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append('image', file);
+
+    // Append all other fields (except image) to the form data
+    if (item) {
+      Object.entries(item).forEach(([key, value]) => {
+        if (key !== 'image') {
+          formData.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
+        }
+      });
+    }
 
     try {
       setSaving(id, true);
       await API.patch(`content/${id}/`, formData);
-      await fetchContent();
-      toast.success("Image uploaded");
+      // Update local state directly without wiping other fields
+      const updatedItem = { ...item, image: file };
+      setContent((prev) => prev.map((c) => (c.id === id ? updatedItem : c)));
+      toast.success('Image uploaded');
     } catch (err) {
       console.log(err.response?.data || err.message);
-      toast.error("Image upload failed");
+      toast.error('Image upload failed');
     } finally {
       setSaving(id, false);
     }
@@ -423,7 +451,7 @@ function AdminDashboard() {
             </div>
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="glass-card-hover p-5 rounded-2xl flex items-center justify-between">
               <StatCard icon={<Users size={22} />} label="Appointments" value={appointments.length} color="blue" />
               <StatCard icon={<MessageSquare size={22} />} label="Messages" value={messages.length} color="emerald" />
               <StatCard icon={<FileText size={22} />} label="CMS Sections" value={content.length} color="violet" />
@@ -573,7 +601,7 @@ function AdminDashboard() {
               {filteredAppointments.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-lg flex flex-col items-start transition-all duration-300 hover:-translate-y-0.5"
+                  className="glass-card-hover p-5 rounded-2xl space-y-3 hover:shadow-lg flex flex-col items-start transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <div className="flex justify-between items-start gap-14 mb-3 w-full">
                     <h3 className="text-lg font-semibold text-blue-600">{item.parent_name}</h3>
@@ -639,7 +667,7 @@ function AdminDashboard() {
               {filteredMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-0.5"
+                  className="glass-card-hover p-5 rounded-2xl space-y-3 hover:shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-blue-600 font-semibold">{msg.name}</h3>
@@ -1070,7 +1098,7 @@ function AdminDashboard() {
                           </div>
                         )}
 
-                        <input type="file" accept="image/*" onChange={(e) => uploadImage(item.id, e.target.files?.[0])} />
+                        <ModernFileUpload onChange={(file) => uploadImage(item.id, file)} />
                       </div>
 
                       <div className="space-y-3">
@@ -1165,7 +1193,7 @@ function StatCard({ icon, label, value, color = "blue" }) {
   };
   const c = colors[color] || colors.blue;
   return (
-    <div className={`bg-white dark:bg-white/[0.03] border border-gray-200/60 dark:border-white/[0.06] border-l-4 ${c.border} p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group`}>
+    <div className={`bg-white dark:bg-white/5 border border-gray-200/60 dark:border-white/[0.06] border-l-4 ${c.border} p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group`}>
       <div className="flex items-center gap-4">
         <div className={`w-12 h-12 rounded-xl ${c.bg} flex items-center justify-center ${c.text} group-hover:scale-105 transition-transform duration-300`}>
           {icon}

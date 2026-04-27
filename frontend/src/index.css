@@ -4,6 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-xl font-semibold shadow-md hover:scale-[1.02] transition;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 transition;
+}
+
+.btn-secondary {
+  @apply border px-4 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition;
+}
+
 /* Premium Professional Glass Effects */
 @layer components {
   .glass-card {
