@@ -42,7 +42,7 @@ function Navbar({ onOpenModal = () => {} }) {
             width={72}
             height={48}
             decoding="async"
-            className="h-18  w-auto object-contain mix-blend-multiply dark:mix-blend-screen group-hover:scale-105 transition-transform duration-300"
+            className="h-20  w-auto object-contain mix-blend-multiply dark:mix-blend-screen group-hover:scale-105 transition-transform duration-300"
           />
           <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
             Tiny Todds
