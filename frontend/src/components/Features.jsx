@@ -1,113 +1,179 @@
-import { ShieldCheck, Heart, Brain, Clock, Users, Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  ShieldCheck,
+  Heart,
+  Brain,
+  Clock,
+  Users,
+  Star,
+} from "lucide-react";
 import useCMS from "../hooks/useCMS";
 
-function Features() {
+// ✅ IMPORT LOCAL IMAGES
+import therapy from "../assets/features/therapy.jpeg";
+import safe from "../assets/features/safe-env.jpeg";
+import play from "../assets/features/play-learning.jpeg";
+import schedule from "../assets/features/schedule.png";   
+import family from "../assets/features/parent.jpeg";     
+import progress from "../assets/features/progress.jpeg";
 
+function Features() {
   const { getSection } = useCMS("home");
   const cms = getSection("features");
 
-  // ✅ KEEP YOUR ORIGINAL DATA
+  // ✅ STATIC DATA WITH LOCAL IMAGES
   const staticData = [
     {
-      icon: <Brain size={16} />,
+      icon: <Brain size={18} />,
       title: "Expert Therapists",
-      description: "Our certified specialists bring years of experience in pediatric speech, cognitive, and behavioral therapy.",
-      color: "blue",
+      description:
+        "Our certified specialists bring years of experience in pediatric speech, cognitive, and behavioral therapy.",
+      image: therapy,
     },
     {
-      icon: <ShieldCheck size={16} />,
+      icon: <ShieldCheck size={18} />,
       title: "Safe Environment",
-      description: "A fully child-proofed, nurturing space designed to make every child feel comfortable and secure.",
-      color: "emerald",
+      description:
+        "A fully child-proofed, nurturing space designed to make every child feel comfortable and secure.",
+      image: safe,
     },
     {
-      icon: <Heart size={16} />,
+      icon: <Heart size={18} />,
       title: "Child Friendly",
-      description: "Programs are built around play-based learning so children enjoy every session and thrive.",
-      color: "pink",
+      description:
+        "Programs are built around play-based learning so children enjoy every session and thrive.",
+      image: play,
     },
     {
-      icon: <Clock size={16} />,
+      icon: <Clock size={18} />,
       title: "Flexible Scheduling",
-      description: "Morning, afternoon, and weekend slots available to fit your family's routine.",
-      color: "amber",
+      description:
+        "Morning, afternoon, and weekend slots available to fit your family's routine.",
+      image: schedule,
     },
     {
-      icon: <Users size={16} />,
+      icon: <Users size={18} />,
       title: "Family Involvement",
-      description: "We keep parents engaged with regular progress updates and at-home activity guides.",
-      color: "indigo",
+      description:
+        "We keep parents engaged with regular progress updates and at-home activity guides.",
+      image: family,
     },
     {
-      icon: <Star size={16} />,
+      icon: <Star size={18} />,
       title: "Proven Results",
-      description: "Over 500 children have made meaningful developmental progress across our 15 branches.",
-      color: "orange",
+      description:
+        "Over 2850 children have made meaningful developmental progress across our 35 branches.",
+      image: progress,
     },
   ];
 
-  const colorMap = {
-    blue: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', border: 'group-hover:border-blue-200 dark:group-hover:border-blue-800/50' },
-    emerald: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', border: 'group-hover:border-emerald-200 dark:group-hover:border-emerald-800/50' },
-    pink: { bg: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', border: 'group-hover:border-pink-200 dark:group-hover:border-pink-800/50' },
-    amber: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-400', border: 'group-hover:border-amber-200 dark:group-hover:border-amber-800/50' },
-    indigo: { bg: 'bg-indigo-100 dark:bg-indigo-900/30', text: 'text-indigo-600 dark:text-indigo-400', border: 'group-hover:border-indigo-200 dark:group-hover:border-indigo-800/50' },
-    orange: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', border: 'group-hover:border-orange-200 dark:group-hover:border-orange-800/50' },
-  };
-
-  // ✅ CMS override logic
   const data = cms?.data?.length ? cms.data : staticData;
 
+  // 🔥 BANNER STATES
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [nextSlide, setNextSlide] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // 🔄 AUTO LOOP
+  useEffect(() => {
+    const timer = setInterval(() => {
+      handleSlideChange((currentSlide + 1) % data.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [currentSlide, data.length]);
+
+  // 🔁 TRANSITION CONTROL
+  const handleSlideChange = (newIndex) => {
+    if (newIndex === currentSlide || isTransitioning) return;
+
+    setNextSlide(newIndex);
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentSlide(newIndex);
+      setIsTransitioning(false);
+    }, 700);
+  };
+
   return (
-    <section className="py-24 px-6 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative overflow-hidden">
+    <section className="relative w-full min-h-[520px] overflow-hidden">
 
-      {/* Background Decoration */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-blue-100/40 dark:from-blue-900/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+      {/* 🔥 BACKGROUND IMAGES */}
+      <div className="absolute inset-0">
 
-      <div className="max-w-7xl mx-auto relative">
+        {/* CURRENT */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-700 ${
+            isTransitioning ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <div
+            className="w-full h-full bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${data[currentSlide].image})`,
+            }}
+          />
+        </div>
 
-        <div className="text-center mb-16 animate-fade-in-up">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
-            Why Us
-          </span>
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-            Why Choose <span className="text-gradient">Tiny Todds?</span>
+        {/* NEXT */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-700 ${
+            isTransitioning ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <div
+            className="w-full h-full bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${data[nextSlide].image})`,
+            }}
+          />
+        </div>
+
+        {/* OVERLAY */}
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+
+      {/* CONTENT */}
+      <div className="relative z-10 flex items-center justify-center text-center px-6 min-h-[520px]">
+        <div className="max-w-2xl">
+
+          <div className="mb-5 flex justify-center">
+            <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white">
+              {data[currentSlide].icon}
+            </div>
+          </div>
+
+          <h2 className="text-white text-2xl md:text-4xl font-bold mb-4">
+            {data[currentSlide].title}
           </h2>
-          <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-base leading-relaxed">
-            We combine clinical expertise with compassion to give every child the best possible start.
+
+          <p className="text-white/85 text-sm md:text-base leading-relaxed">
+            {data[currentSlide].description}
           </p>
         </div>
+      </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data.map((item, i) => {
-            const colors = colorMap[item.color] || colorMap.blue;
-            return (
-              <div
-                key={i}
-                className={`group relative bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-7 transition-all duration-500 hover:shadow-xl dark:hover:shadow-2xl hover:-translate-y-1 ${colors.border}`}
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                {/* ✅ ICON only for static fallback */}
-                {item.icon && (
-                  <div className={`w-14 h-14 rounded-2xl ${colors.bg} flex items-center justify-center mb-5 group-hover:scale-110 transition duration-500`}>
-                    <span className={colors.text}>
-                      {item.icon}
-                    </span>
-                  </div>
-                )}
-
-                <h3 className="text-gray-900 dark:text-white text-lg font-bold mb-2 tracking-tight">
-                  {item.title}
-                </h3>
-
-                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
+      {/* 🔘 DOTS — accessible: aria-label + p-2 wrapper for 26px tap target */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+        {data.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => handleSlideChange(index)}
+            aria-label={`Go to slide ${index + 1}`}
+            className="p-2 flex items-center justify-center"
+          >
+            <span
+              className={`h-2.5 rounded-full transition-all duration-300 block ${
+                currentSlide === index && !isTransitioning
+                  ? "w-8 bg-white"
+                  : nextSlide === index && isTransitioning
+                  ? "w-8 bg-white"
+                  : "w-2.5 bg-white/50 hover:bg-white"
+              }`}
+            />
+          </button>
+        ))}
       </div>
     </section>
   );

@@ -7,24 +7,25 @@ const API = axios.create({
   baseURL: BASE_URL,
 });
 
-// 🔥 REQUEST INTERCEPTOR (YOUR LOGIC PRESERVED)
+// ✅ GLOBAL PUBLIC ROUTES
+const publicRoutes = ["login", "register", "token/refresh"];
+
+// 🔥 REQUEST INTERCEPTOR
 API.interceptors.request.use((config) => {
   const access = localStorage.getItem("access");
-  
-  const publicRoutes = ["login/", "register/", "contact/", "appointments/"]
-  
+
   const isPublic = publicRoutes.some(route =>
-    config.url?.includes(route)    
+    config.url?.includes(route)
   );
 
   const isPublicContact =
     config.method === "post" &&
     config.url?.includes("contact");
 
-  // ✅ Ensure headers exist
   config.headers = config.headers || {};
 
-  if (access && !isPublicRoute && !isPublicContact) {
+  // ✅ Attach token only for protected routes
+  if (access && !isPublic && !isPublicContact) {
     config.headers.Authorization = `Bearer ${access}`;
   }
 
@@ -37,23 +38,20 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// 🔥 RESPONSE INTERCEPTOR (AUTO REFRESH — IMPROVED)
+// 🔥 RESPONSE INTERCEPTOR
 API.interceptors.response.use(
   (res) => res,
   async (err) => {
     const original = err.config;
 
-    // ❌ If no config → reject
     if (!original) return Promise.reject(err);
 
-    const publicRoutes = ["login", "register", "contact", "token/refresh"];
-    const isPublicRoute = publicRoutes.some((route) =>
+    const isPublic = publicRoutes.some(route =>
       original.url?.includes(route)
     );
 
-    if (isPublicRoute) {
-      return Promise.reject(err);
-    }
+    // ✅ Do nothing for public routes
+    if (isPublic) return Promise.reject(err);
 
     if (err.response?.status === 401 && !original._retry) {
       original._retry = true;
@@ -61,7 +59,6 @@ API.interceptors.response.use(
       try {
         const refresh = localStorage.getItem("refresh");
 
-        // ❌ No refresh token → logout
         if (!refresh) {
           localStorage.clear();
           window.location.href = "/login";
@@ -75,22 +72,17 @@ API.interceptors.response.use(
 
         const newAccess = res.data.access;
 
-        // ✅ Save token
         localStorage.setItem("access", newAccess);
 
-        // ✅ Update global header
         API.defaults.headers.common[
           "Authorization"
         ] = `Bearer ${newAccess}`;
 
-        // ✅ Retry original request
         original.headers.Authorization = `Bearer ${newAccess}`;
 
         return API(original);
       } catch (e) {
-        // 🔥 Clean logout
         localStorage.clear();
-
         toast.error("Session expired. Please login again");
 
         setTimeout(() => {

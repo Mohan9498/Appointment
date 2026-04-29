@@ -28,12 +28,12 @@ function Navbar({ onOpenModal = () => {} }) {
     <nav className={`fixed  top-0 w-full  z-50 transition-all duration-500  
       ${
       scrolled
-        ? 'bg-white/80 dark:bg-black/60 backdrop-blur-lg border-b shadow-sm'
-        : 'bg-white/70 dark:bg-black/50 backdrop-blur-md border-b'
+        ? 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950  backdrop-blur-lg border-b shadow-sm'
+        : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950  backdrop-blur-md border-b'
       }` 
     }>
 
-      <div className="max-w-full mx-auto px-4 h-20 flex justify-between items-center">
+      <div className="max-w-full mx-auto px-4 h-16 flex justify-between items-center">
 
         <Link to="/" className="flex  items-center gap-2.5 group">     
           <img

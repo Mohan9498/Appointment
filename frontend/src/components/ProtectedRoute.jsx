@@ -3,9 +3,8 @@ import { jwtDecode } from "jwt-decode";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("access");
-  const isAdmin = localStorage.getItem("is_admin") === "true";
 
-  // ❌ No token → block access
+  // ❌ No token
   if (!token) {
     return <Navigate to="/login" replace />;
   }
@@ -13,18 +12,22 @@ const ProtectedRoute = ({ children }) => {
   try {
     const decoded = jwtDecode(token);
 
-    // ❌ Token expired → clear + redirect
+    // ❌ Token expired
     if (decoded.exp * 1000 < Date.now()) {
       localStorage.clear();
       return <Navigate to="/login" replace />;
     }
 
-    // ❌ Not admin → block admin routes
+    // 🔐 SECURE ADMIN CHECK (from token if available)
+    const isAdmin =
+      decoded.is_staff || localStorage.getItem("is_admin") === "true";
+
+    // ❌ Not admin → go HOME (not login)
     if (!isAdmin) {
-      return <Navigate to="/login" replace />;
+      return <Navigate to="/" replace />;
     }
 
-    // ✅ All good
+    // ✅ Access granted
     return children;
 
   } catch (error) {

@@ -92,9 +92,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ======================
 DATABASES = {
     'default': dj_database_url.config(
-        default="postgresql://postgres_cerv_user:0eAxTz6lbu8afm0vz2EXFGaaUi2drsPf@dpg-d754rdh4tr6s73d3m0t0-a.oregon-postgres.render.com/postgres_cerv"
+        default="postgresql://postgres_7eg7_user:ik2sCuVMPH72oxzXdHGj8CHly7vnTXss@dpg-d7ouscu7r5hc73dn3hp0-a.oregon-postgres.render.com/postgres_7eg7"
     )
 }
+
 
 # ======================
 # REST FRAMEWORK (JWT)

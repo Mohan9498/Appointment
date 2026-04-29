@@ -28,6 +28,8 @@ import {
   Legend,
 } from "recharts";
 import useAuthStore from "../store/useAuthStore";
+import { Upload } from "lucide-react";
+
 
 const CMS_PAGES = ["home", "about", "programs"];
 
@@ -63,6 +65,7 @@ function AdminDashboard() {
   const [cmsPage, setCmsPage] = useState("home");
   const [savingIds, setSavingIds] = useState([]);
   const [pagesTab, setPagesTab] = useState("home");
+  const [previewMode, setPreviewMode] = useState(true);
 
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
@@ -102,8 +105,23 @@ function AdminDashboard() {
   const fetchAppointments = async () => {
     try {
       const res = await API.get("appointments/");
-      setAppointments(Array.isArray(res.data) ? res.data : res.data?.data || []);
-    } catch {
+
+      let data = res.data;
+      console.log("APPOINTMENTS RAW:", data);
+
+      if (Array.isArray(data)) {
+        setAppointments(data);
+      } else if (data?.results) {
+        setAppointments(data.results);
+      } else if (data?.data) {
+        setAppointments(data.data);
+      } else {
+        setAppointments([]);
+      }
+
+    } catch (err) {
+      console.log("APPOINTMENTS ERROR:", err.response?.data || err.message);
+      setAppointments([]);
       toast.error("Failed to load appointments");
     }
   };
@@ -113,17 +131,29 @@ function AdminDashboard() {
       const res = await API.get("contact/");
 
       let data = res.data;
+      console.log("CONTACT RAW:", data);
 
-      if (data?.results) data = data.results;
-      if (!Array.isArray(data)) data = [];
+      if (Array.isArray(data)) {
+        setMessages(data);
+      } else if (data?.results) {
+        setMessages(data.results);
+      } else if (data?.data) {
+        setMessages(data.data);
+      } else {
+        setMessages([]);
+      }
 
-      setMessages(data);
     } catch (err) {
-      console.log(err);
+      console.log("CONTACT ERROR:", err.response?.data || err.message);
+
+      if (err.response?.status === 401) {
+        localStorage.clear();
+        navigate("/login");
+        return;
+      }
+
       setMessages([]);
       toast.error("Failed to load messages");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -140,9 +170,19 @@ function AdminDashboard() {
   };
 
   useEffect(() => {
-    fetchAppointments();
-    fetchMessages();
-    fetchContent();
+    const loadAll = async () => {
+      setLoading(true);
+
+      await Promise.all([
+        fetchAppointments(),
+        fetchMessages(),
+        fetchContent(),
+      ]);
+
+      setLoading(false);
+    };
+
+    loadAll();
   }, []);
 
   useEffect(() => {
@@ -385,7 +425,7 @@ function AdminDashboard() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-muted text-foreground">
       {/* ── MOBILE HEADER ── */}
-      <div className="md:hidden flex justify-between items-center px-5 py-3.5 bg-background/80 backdrop-blur-xl border-b border-border sticky top-0 z-50">
+      <div className="md:hidden flex justify-between items-center px-5 py-3.5 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl  border-b border-border sticky top-0 z-50">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">A</div>
           <h1 className="font-bold text-foreground tracking-tight">Admin</h1>
@@ -398,7 +438,7 @@ function AdminDashboard() {
 
       {/* ── SIDEBAR ── */}
       <div
-        className={`fixed top-0 left-0 h-screen w-[260px] bg-background border-r border-border z-50 transform transition-transform duration-300 shadow-lg ${
+        className={`fixed top-0 left-0 h-screen w-[260px] bg-white/70 dark:bg-white/[0.02] backdrop-blur-xl border-r border-white/10 z-50 transform transition-transform duration-300 shadow-lg ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 md:sticky md:top-0 md:w-[260px] md:shrink-0 flex flex-col overflow-y-auto`}
       >
@@ -441,7 +481,8 @@ function AdminDashboard() {
       {mobileOpen && <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden" onClick={() => setMobileOpen(false)} />}
 
       {/* ── MAIN CONTENT ── */}
-      <div className="flex-1 min-h-screen">
+      <div className="flex-1 min-h-screen bg-background">
+       <div className="max-w-7xl mx-auto w-full">
         {active === "dashboard" && (
           <div className="p-6 space-y-6">
             {/* Page Header */}
@@ -451,7 +492,7 @@ function AdminDashboard() {
             </div>
 
             {/* Stat Cards */}
-            <div className="glass-card-hover p-5 rounded-2xl flex items-center justify-between">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <StatCard icon={<Users size={22} />} label="Appointments" value={appointments.length} color="blue" />
               <StatCard icon={<MessageSquare size={22} />} label="Messages" value={messages.length} color="emerald" />
               <StatCard icon={<FileText size={22} />} label="CMS Sections" value={content.length} color="violet" />
@@ -459,7 +500,7 @@ function AdminDashboard() {
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+              <div className="glass-card-hover rounded-2xl p-6  shadow-sm">
                 <h3 className="text-sm font-semibold text-foreground mb-1">Monthly Analytics</h3>
                 <p className="text-xs text-gray-400 mb-5">Appointments vs Messages (last 6 months)</p>
                 <ResponsiveContainer width="100%" height={280}>
@@ -474,7 +515,7 @@ function AdminDashboard() {
                 </ResponsiveContainer>
               </div>
 
-              <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+              <div className="glass-card-hover rounded-2xl p-6  shadow-sm">
                 <h3 className="text-sm font-semibold text-foreground mb-1">Distribution</h3>
                 <p className="text-xs text-gray-400 mb-5">Appointments vs Messages ratio</p>
                 <ResponsiveContainer width="100%" height={280}>
@@ -493,7 +534,7 @@ function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
               {/* Recent Appointments */}
-              <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+              <div className="glass-card-hover rounded-2xl  shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-semibold text-foreground">Recent Appointments</h3>
@@ -529,7 +570,7 @@ function AdminDashboard() {
               </div>
 
               {/* Recent Messages */}
-              <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+              <div className="glass-card-hover rounded-2xl  shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-semibold text-foreground">Recent Messages</h3>
@@ -565,7 +606,7 @@ function AdminDashboard() {
         )}
 
         {active === "appointments" && (
-          <div className="p-6">
+        <div className="p-6 max-w-7xl mx-auto">
           <Section title="Appointment Leads" data={filteredAppointments}>
             <input
               type="text"
@@ -578,7 +619,7 @@ function AdminDashboard() {
               <select
                 value={branchFilter}
                 onChange={(e) => setBranchFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+                className="px-3 py-2 rounded-xl bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-gray-500 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
               >
                 <option value="all">All Branches</option>
                 <option value="Chennai">Chennai</option>
@@ -590,7 +631,7 @@ function AdminDashboard() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+                className="px-3 py-2 rounded-xl bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-gray-500 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
               >
                 <option value="latest">Latest</option>
                 <option value="oldest">Oldest</option>
@@ -654,7 +695,7 @@ function AdminDashboard() {
         )}
 
         {active === "messages" && (
-          <div className="p-6">
+        <div className="p-6 max-w-7xl mx-auto">
           <Section title="Contact Messages" data={filteredMessages}>
             <input
               type="text"
@@ -701,7 +742,7 @@ function AdminDashboard() {
             <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 dark:border-white/10">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-100 dark:bg-white/10 text-sm">
+                  <tr className="bg-white/60 dark:bg-white/[0.04] text-sm">
                     <th className="p-3">Name</th>
                     <th className="p-3">Email</th>
                     <th className="p-3">Message</th>
@@ -762,7 +803,7 @@ function AdminDashboard() {
           <div className="p-6 space-y-6">
 
             {/* Page Tabs */}
-            <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+            <div className="glass-card-hover rounded-2xl p-6  shadow-sm">
               <h2 className="text-xl font-bold tracking-tight text-foreground mb-1">Edit Page Content</h2>
               <p className="text-sm text-gray-400 dark:text-gray-500 mb-5">Select a page and edit its sections directly. No section keys needed.</p>
 
@@ -790,8 +831,32 @@ function AdminDashboard() {
               return (
                 <div
                   key={def.section}
-                  className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden"
+                  className="glass-card-hover rounded-2xl  shadow-sm overflow-hidden"
                 >
+                  <div className="flex gap-2">
+                      <button
+                      onClick={() => setPreviewMode(true)}
+                      className={`px-4 py-2 rounded-xl text-sm ${
+                          previewMode
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-100 dark:bg-white/10"
+
+                      }`}
+                    >
+                        Preview
+                    </button>
+                    
+                    {previewMode && <ContentPreview item={item} />}
+                    
+                    <button
+                      onClick={() => setPreviewMode(false)} 
+                      className={`px-4 py-2 rounded-xl text-sm ${      !previewMode 
+                        ? "bg-blue-600 text-white"   
+                        : "bg-gray-100 dark:bg-white/10" 
+                      }`}  >    Edit
+                    </button>
+                  </div>
+                  
                   {/* Section Header */}
                   <div className="px-6 py-4 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -821,120 +886,127 @@ function AdminDashboard() {
 
                   {/* Section Body */}
                   {item ? (
-                    <div className="p-6 space-y-4">
-                      {/* Title */}
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Title</label>
-                        <input
-                          value={item.title || ""}
-                          onChange={(e) => updateLocalContent(item.id, { title: e.target.value })}
-                          className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-gray-50/50 dark:bg-white/[0.02] text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-sm"
-                          placeholder="Section title"
-                        />
-                      </div>
-
-                      {/* Description */}
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Description</label>
-                        <textarea
-                          value={item.description || ""}
-                          onChange={(e) => updateLocalContent(item.id, { description: e.target.value })}
-                          className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl min-h-[100px] bg-gray-50/50 dark:bg-white/[0.02] text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-sm"
-                          placeholder="Section description"
-                        />
-                      </div>
-
-                      {/* Image Upload */}
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Section Image</label>
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt={item.title || "section"}
-                            className="w-full max-w-xs h-40 object-cover rounded-xl border border-gray-200 dark:border-white/[0.06] mb-2"
-                          />
-                        ) : (
-                          <div className="w-full max-w-xs h-32 rounded-xl border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center text-gray-400 mb-2">
-                            <div className="flex flex-col items-center gap-1 text-xs">
-                              <ImageIcon size={20} />
-                              No image
-                            </div>
-                          </div>
-                        )}
-                        <input type="file" accept="image/*" onChange={(e) => uploadImage(item.id, e.target.files?.[0])} className="text-sm text-gray-500" />
-                      </div>
-
-                      {/* Cards (for sections that support it) */}
-                      {def.hasCards && (
-                        <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-white/[0.06]">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-bold text-sm text-gray-900 dark:text-white">Cards / Items</h4>
-                            <button
-                              onClick={() => addCard(item.id)}
-                              className="inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                            >
-                              <Plus size={12} />
-                              Add Card
-                            </button>
+                    <div className="p-6 space-y-6">
+                      {/* 🔥 PREVIEW */}
+                        {previewMode && <ContentPreview item={item} />}
+                      {/* EDIT MODE */}
+                      {!previewMode && (
+                        <>
+                          {/* Title */}
+                          <div>
+                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Title</label>
+                            <input
+                              value={item.title || ""}
+                              onChange={(e) => updateLocalContent(item.id, { title: e.target.value })}
+                              className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-gray-50/50 dark:bg-white/[0.02] text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-sm"
+                              placeholder="Section title"
+                            />
                           </div>
 
-                          {(item.data || []).length === 0 ? (
-                            <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-xl p-6 text-sm text-gray-400 text-center">
-                              No cards added yet. Click "Add Card" to start.
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {(item.data || []).map((card, index) => (
-                                <div
-                                  key={`${item.id}-${index}`}
-                                  className="border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 bg-gray-50/50 dark:bg-white/[0.02] space-y-3"
-                                >
-                                  <div className="flex items-center justify-between">
-                                    <h5 className="font-medium text-sm text-gray-700 dark:text-gray-300">Card {index + 1}</h5>
-                                    <button
-                                      onClick={() => removeCard(item.id, index)}
-                                      className="text-red-500 text-xs hover:underline font-medium"
-                                    >
-                                      Remove
-                                    </button>
-                                  </div>
+                          {/* Description */}
+                          <div>
+                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Description</label>
+                            <textarea
+                              value={item.description || ""}
+                              onChange={(e) => updateLocalContent(item.id, { description: e.target.value })}
+                              className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl min-h-[100px] bg-gray-50/50 dark:bg-white/[0.02] text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-sm"
+                              placeholder="Section description"
+                            />
+                          </div>
 
-                                  <input
-                                    value={card.title || ""}
-                                    onChange={(e) => updateCard(item.id, index, "title", e.target.value)}
-                                    className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
-                                    placeholder="Card title"
-                                  />
-
-                                  <textarea
-                                    value={card.description || ""}
-                                    onChange={(e) => updateCard(item.id, index, "description", e.target.value)}
-                                    className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl min-h-[80px] bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
-                                    placeholder="Card description"
-                                  />
-
-                                  {/* Image URL for card */}
-                                  <div>
-                                    <input
-                                      value={card.image || card.src || ""}
-                                      onChange={(e) => updateCard(item.id, index, "image", e.target.value)}
-                                      className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
-                                      placeholder="Image URL (paste image link here)"
-                                    />
-                                    {(card.image || card.src) && (
-                                      <img
-                                        src={card.image || card.src}
-                                        alt={card.title || "card"}
-                                        className="mt-2 w-24 h-16 object-cover rounded-lg border border-gray-200 dark:border-white/[0.06]"
-                                        onError={(e) => { e.target.style.display = 'none'; }}
-                                      />
-                                    )}
-                                  </div>
+                          {/* Image Upload */}
+                          <div>
+                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Section Image</label>
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.title || "section"}
+                                className="w-full max-w-xs h-40 object-cover rounded-xl border border-gray-200 dark:border-white/[0.06] mb-2"
+                              />
+                            ) : (
+                              <div className="w-full max-w-xs h-32 rounded-xl border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center text-gray-400 mb-2">
+                                <div className="flex flex-col items-center gap-1 text-xs">
+                                  <ImageIcon size={20} />
+                                  No image
                                 </div>
-                              ))}
+                              </div>
+                            )}
+                            <input type="file" accept="image/*" onChange={(e) => uploadImage(item.id, e.target.files?.[0])} className="text-sm text-gray-500" />
+                          </div>
+
+                          {/* Cards (for sections that support it) */}
+                          {def.hasCards && (
+                            <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-white/[0.06]">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-bold text-sm text-gray-900 dark:text-white">Cards / Items</h4>
+                                <button
+                                  onClick={() => addCard(item.id)}
+                                  className="inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                                >
+                                  <Plus size={12} />
+                                  Add Card
+                                </button>
+                              </div>
+                          
+                              {(item.data || []).length === 0 ? (
+                                <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-xl p-6 text-sm text-gray-400 text-center">
+                                  No cards added yet. Click "Add Card" to start.
+                                </div>
+                              ) : (
+                                <div className="space-y-3">
+                                  {(item.data || []).map((card, index) => (
+                                    <div
+                                      key={`${item.id}-${index}`}
+                                      className="border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 bg-gray-50/50 dark:bg-white/[0.02] space-y-3"
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <h5 className="font-medium text-sm text-gray-700 dark:text-gray-300">Card {index + 1}</h5>
+                                        <button
+                                          onClick={() => removeCard(item.id, index)}
+                                          className="text-red-500 text-xs hover:underline font-medium"
+                                        >
+                                          Remove
+                                        </button>
+                                      </div>
+                                  
+                                      <input
+                                        value={card.title || ""}
+                                        onChange={(e) => updateCard(item.id, index, "title", e.target.value)}
+                                        className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                        placeholder="Card title"
+                                      />
+
+                                      <textarea
+                                        value={card.description || ""}
+                                        onChange={(e) => updateCard(item.id, index, "description", e.target.value)}
+                                        className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl min-h-[80px] bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                        placeholder="Card description"
+                                      />
+
+                                      {/* Image URL for card */}
+                                      <div>
+                                        <input
+                                          value={card.image || card.src || ""}
+                                          onChange={(e) => updateCard(item.id, index, "image", e.target.value)}
+                                          className="border border-gray-200 dark:border-white/[0.06] p-3 w-full rounded-xl bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                          placeholder="Image URL (paste image link here)"
+                                        />
+                                        {(card.image || card.src) && (
+                                          <img
+                                            src={card.image || card.src}
+                                            alt={card.title || "card"}
+                                            className="mt-2 w-24 h-16 object-cover rounded-lg border border-gray-200 dark:border-white/[0.06]"
+                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                          />
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           )}
-                        </div>
+                        </>
                       )}
                     </div>
                   ) : (
@@ -951,7 +1023,7 @@ function AdminDashboard() {
 
         {/* ===== ADVANCED CMS ===== */}
         {active === "content" && (
-          <div className="p-6">
+          <div className="p-6 max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               {/* <div>
                 <h2 className="text-xl font-semibold text-black dark:text-white">Multi-page CMS</h2>
@@ -984,7 +1056,7 @@ function AdminDashboard() {
 
               <button
                 onClick={createContent}
-                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-glow text-white px-4 py-2 rounded-xl"
               >
                 <Plus size={16} />
                 Add Section
@@ -1016,7 +1088,7 @@ function AdminDashboard() {
                         <button
                           onClick={() => saveContent(item)}
                           disabled={savingIds.includes(item.id)}
-                          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-70 text-white px-4 py-2 rounded-xl"
+                          className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-glow disabled:opacity-70 text-white px-4 py-2 rounded-xl"
                         >
                           <Save size={16} />
                           {savingIds.includes(item.id) ? "Saving..." : "Save Section"}
@@ -1080,25 +1152,50 @@ function AdminDashboard() {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-[220px,1fr] gap-4">
-                      <div className="space-y-3">
-                        <label className="block text-sm font-medium text-black dark:text-white">Section Image</label>
-
+                      {/* Image Upload */}
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                          Section Image
+                        </label>
+                                              
+                        {/* Preview */}
                         {item.image ? (
                           <img
                             src={item.image}
-                            alt={item.title || item.section || "section-image"}
-                            className="w-full h-40 object-cover rounded-2xl border border-gray-200 dark:border-white/10"
+                            alt={item.title || "section"}
+                            className="w-full max-w-xs h-40 object-cover rounded-xl border border-gray-200 dark:border-white/[0.06] mb-3"
                           />
                         ) : (
-                          <div className="w-full h-40 rounded-2xl border border-dashed border-gray-300 dark:border-white/15 flex items-center justify-center text-gray-400">
-                            <div className="flex flex-col items-center gap-2 text-sm">
-                              <ImageIcon size={24} />
-                              No image
-                            </div>
+                          <div className="w-full max-w-xs h-32 rounded-xl border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center text-gray-400 mb-3">
+                            No image
                           </div>
                         )}
-
-                        <ModernFileUpload onChange={(file) => uploadImage(item.id, file)} />
+                      
+                        {/* 🔥 PROFESSIONAL BUTTON */}
+                        <div className="flex items-center gap-3">
+                          
+                          <label className="inline-flex items-center gap-2 px-2 py-1 
+                          rounded-xl text-sm font-semibold cursor-pointer
+                          bg-gradient-to-r from-blue-600 to-indigo-600 text-white
+                          hover:shadow-lg hover:scale-[1.02] active:scale-95
+                          transition-all duration-300">
+                          
+                            📁 Upload Image
+                      
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => uploadImage(item.id, e.target.files?.[0])}
+                              className="hidden"
+                            />
+                          </label>
+                      
+                          {/* Status */}
+                          <span className="text-xs text-gray-500">
+                            {savingIds.includes(item.id) ? "Uploading..." : "Choose a file"}
+                          </span>
+                      
+                        </div>
                       </div>
 
                       <div className="space-y-3">
@@ -1159,10 +1256,64 @@ function AdminDashboard() {
             )}
           </div>
         )}
+       </div>
       </div>
     </div>
   );
 }
+
+
+function ContentPreview({ item }) {
+  return (
+    <div className="glass-card-hover p-5 rounded-2xl space-y-4">
+
+      {/* Title */}
+      {item.title && (
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+          {item.title}
+        </h3>
+      )}
+
+      {/* Description */}
+      {item.description && (
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          {item.description}
+        </p>
+      )}
+
+      {/* Image */}
+      {item.image && (
+        <img
+          src={item.image}
+          alt="preview"
+          className="w-full max-w-md h-48 object-cover rounded-xl"
+        />
+      )}
+
+      {/* Cards */}
+      {Array.isArray(item.data) && item.data.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {item.data.map((card, i) => (
+            <div
+              key={i}
+              className="bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/10"
+            >
+              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
+                {card.title}
+              </h4>
+              <p className="text-xs text-gray-500 mt-1">
+                {card.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  );
+}
+
+
 
 function SidebarItem({ icon, label, active, setActive, value, collapsed, setMobileOpen, count }) {
   return (

@@ -36,7 +36,7 @@ function ProgramCard({ title, description, image }) {
 
         <Link
           to={`/programs/${title.toLowerCase().replace(/\s+/g, "-")}`}
-          className="mt-5 inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 font-semibold group-hover:gap-2 transition-all duration-300"
+          className="mt-5 inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-300 font-semibold group-hover:gap-2 transition-all duration-300"
         >
           Learn More
           <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>

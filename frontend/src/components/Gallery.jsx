@@ -1,16 +1,15 @@
+import { useEffect, useState } from "react";
 import useCMS from "../hooks/useCMS";
+
 import c1 from "../assets/c1.jpg";
 import c2 from "../assets/c2-640.webp";
 import j6 from "../assets/j6.webp";
 import j7 from "../assets/j7.webp";
 
 function Gallery() {
-
-  // ✅ CMS HOOK
   const { getSection } = useCMS("home");
   const cms = getSection("gallery");
 
-  // ✅ STATIC FALLBACK (your existing data)
   const staticImages = [
     { src: c1, title: "Speech Activities" },
     { src: c2, title: "Learning Sessions" },
@@ -18,58 +17,111 @@ function Gallery() {
     { src: j7, title: "Play & Growth" },
   ];
 
-  // ✅ CMS + FALLBACK LOGIC (your requirement)
-  const images = cms?.data?.length ? cms.data : staticImages;
+  const images =
+    cms && cms.data && cms.data.length ? cms.data : staticImages;
+
+  // 🔥 BANNER STYLE STATES
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [nextSlide, setNextSlide] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // 🔄 AUTO LOOP
+  useEffect(() => {
+    const timer = setInterval(() => {
+      handleSlideChange((currentSlide + 1) % images.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [currentSlide, images.length]);
+
+  // 🔁 TRANSITION CONTROL (same as banner)
+  const handleSlideChange = (newIndex) => {
+    if (newIndex === currentSlide || isTransitioning) return;
+
+    setNextSlide(newIndex);
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentSlide(newIndex);
+      setIsTransitioning(false);
+    }, 700);
+  };
 
   return (
     <section className="py-24 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white relative overflow-hidden">
 
-      {/* Background */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-t from-blue-100/30 dark:from-blue-900/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-
       {/* HEADER */}
-      <div className="text-center mb-16 px-4 relative">
-        <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mb-4">
-          Gallery
-        </span>
-        <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+      <div className="text-center mb-16 px-4">
+        <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
           Our <span className="text-gradient-warm">Activities</span>
         </h2>
-        <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-base leading-relaxed">
+
+        <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
           A glimpse into our engaging sessions that help children grow, learn, and thrive.
         </p>
       </div>
 
-      {/* GRID */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5 px-6 max-w-7xl mx-auto relative">
+      {/* 🔥 SLIDER AREA */}
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="relative h-[350px] md:h-[450px] overflow-hidden rounded-2xl">
 
-        {images.map((img, i) => (
+          {/* CURRENT IMAGE */}
           <div
-            key={i}
-            className="relative overflow-hidden rounded-2xl group shadow-sm hover:shadow-xl transition-all duration-500 ease-out aspect-[4/3]"
+            className={`absolute inset-0 transition-opacity duration-700 ${
+              isTransitioning ? "opacity-0" : "opacity-100"
+            }`}
           >
-
-            {/* IMAGE */}
-            <img
-              src={img.src || img.image} // ✅ supports CMS image field
-              alt={img.title}
-              width={640}
-              height={480}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700 ease-out"
+            <div
+              className="w-full h-full bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${images[currentSlide].src || images[currentSlide].image})`,
+              }}
             />
-
-            {/* OVERLAY */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-5">
-              <h3 className="text-white font-semibold text-sm md:text-base transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                {img.title}
-              </h3>
-            </div>
-
           </div>
-        ))}
 
+          {/* NEXT IMAGE */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-700 ${
+              isTransitioning ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <div
+              className="w-full h-full bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${images[nextSlide].src || images[nextSlide].image})`,
+              }}
+            />
+          </div>
+
+          {/* OVERLAY */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-6">
+            <h3 className="text-white text-lg md:text-xl font-semibold">
+              {images[currentSlide].title}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      {/* 🔘 DOTS — accessible: aria-label + p-2 wrapper for 26px tap target */}
+      <div className="flex justify-center mt-10 gap-1">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => handleSlideChange(index)}
+            aria-label={`Go to slide ${index + 1}`}
+            className="p-2 flex items-center justify-center"
+          >
+            <span
+              className={`h-2.5 rounded-full transition-all duration-300 block ${
+                currentSlide === index && !isTransitioning
+                  ? "w-8 bg-blue-500"
+                  : nextSlide === index && isTransitioning
+                  ? "w-8 bg-blue-500"
+                  : "w-2.5 bg-gray-400 hover:bg-gray-600"
+              }`}
+            />
+          </button>
+        ))}
       </div>
     </section>
   );

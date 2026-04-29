@@ -51,7 +51,7 @@ function Programs() {
 
         {/* HEADER */}
         <div className="text-center mb-16 px-4 relative">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-6 animate-fade-in-up">
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 mb-6 animate-fade-in-up">
             Programs
           </span>
           <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white animate-fade-in-up-delay-1">

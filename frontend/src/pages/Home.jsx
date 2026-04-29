@@ -9,17 +9,31 @@ import SEO from "../components/SEO";
 
 function Home({ onOpenModal }) {
   return (
-    <div className="text-black dark:text-white transition duration-300">
+    <div className="bg-hero-gradient min-h-screen text-black dark:text-white transition duration-300">
+
       <SEO 
         title="Home" 
-        description="Welcome to Tiny Todds Therapy Care. We offer specialized therapy programs for your child's development." 
-        keywords="therapy, child development, speech therapy, cognitive therapy" 
+        description="Welcome to Tiny Todds Therapy Care." 
       />
-      <div className="pt-0 md:pt-10">
-        <Hero onOpenModal={onOpenModal} />
-        <Features />
-        <Services />
-        <Gallery />
+
+      <div className="max-w-full mx-auto px-10 sm:px-6 lg:px-10 space-y-10 py-10">
+
+        <div className="glass-card-hover rounded-3xl overflow-hidden">
+          <Hero onOpenModal={onOpenModal} />
+        </div>
+
+        <div className="glass-card-hover rounded-3xl p-6">
+          <Features />
+        </div>
+
+        <div className="glass-card-hover rounded-3xl p-6">
+          <Services />
+        </div>
+
+        <div className="glass-card-hover rounded-3xl p-6">
+          <Gallery />
+        </div>
+
       </div>
     </div>
   );
