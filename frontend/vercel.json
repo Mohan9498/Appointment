@@ -5,6 +5,7 @@
       "destination": "/index.html"
     }
   ],
+  
   "headers": [
     {
       "source": "/(.*)",
@@ -13,6 +14,11 @@
           "key": "Content-Security-Policy",
           "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://vercel.live data:; img-src 'self' data: blob: https:; connect-src 'self' https://appointment-83q0.onrender.com https://*.onrender.com https://vercel.live wss://*.vercel.live; frame-src 'self' https://vercel.live; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         },
+        
+        {
+          "devCommand": "vite --host"
+        },
+
         {
           "key": "Cross-Origin-Opener-Policy",
           "value": "same-origin"
