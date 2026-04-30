@@ -10,17 +10,28 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+"""
+Django settings for config project.
+"""
+
 import os
 from pathlib import Path
+from datetime import timedelta
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-_itzq-kzxx!je@cl@pit=(njvjl1+ph)t)r-7=bzk2jou-lc-3')
+# ✅ Never hardcode — always use env var
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable is not set")
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# ✅ Default to False in production
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# ✅ IMPORTANT (Render domain + local dev)
 ALLOWED_HOSTS = [
     "appointment-83q0.onrender.com",
     "localhost",
@@ -40,7 +51,6 @@ INSTALLED_APPS = [
 
     # external
     'corsheaders',
-    # 'channels',
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
@@ -88,14 +98,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # ======================
-# DATABASE (Render)
+# DATABASE
+# ✅ Set DATABASE_URL in Render environment variables
+# Never hardcode credentials here
 # ======================
 DATABASES = {
     'default': dj_database_url.config(
-        default="postgresql://postgres_7eg7_user:ik2sCuVMPH72oxzXdHGj8CHly7vnTXss@dpg-d7ouscu7r5hc73dn3hp0-a.oregon-postgres.render.com/postgres_7eg7"
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=not DEBUG,  # SSL in production, off for local
     )
 }
 
+if not os.environ.get('DATABASE_URL'):
+    raise ValueError("DATABASE_URL environment variable is not set")
 
 # ======================
 # REST FRAMEWORK (JWT)
@@ -135,31 +151,14 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-
 # ======================
-# MEDIA FILES (UPLOADS)
+# MEDIA FILES
 # ======================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-
-
 # ======================
-# CHANNELS (optional)
-# ======================
-# ASGI_APPLICATION = "config.asgi.application"
-
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
-
-# ======================
-# ✅ CORS (FIXED)
+# CORS
 # ======================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -171,9 +170,8 @@ CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-
 # ======================
-# ✅ CSRF FIX (VERCEL)
+# CSRF
 # ======================
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
