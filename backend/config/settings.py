@@ -13,24 +13,27 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 Django settings for config project.
 """
-
 import os
 from pathlib import Path
 from datetime import timedelta
 import dj_database_url
-from dotenv import load_dotenv
 
-load_dotenv()
+# ✅ LOAD .env FIRST
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except:
+    pass
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ✅ Never hardcode — always use env var
-SECRET_KEY = os.environ.get('SECRET_KEY')
-if not SECRET_KEY:
-    raise ValueError("SECRET_KEY environment variable is not set")
+# ======================
+# ENV VARIABLES
+# ======================
 
-# ✅ Default to False in production
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
+
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "appointment-83q0.onrender.com",
@@ -110,8 +113,8 @@ DATABASES = {
     )
 }
 
-if not os.environ.get('DATABASE_URL'):
-    raise ValueError("DATABASE_URL environment variable is not set")
+# if not os.environ.get('DATABASE_URL'):
+    # raise ValueError("DATABASE_URL environment variable is not set")
 
 # ======================
 # REST FRAMEWORK (JWT)
@@ -167,7 +170,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_HEADERS = ["*"]
 CORS_ALLOW_METHODS = ["*"]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 
 # ======================
