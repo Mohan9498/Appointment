@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import useCMS from "../hooks/useCMS";
+
 
 // Phone rules per country code: { min, max, label }
 const phoneRules = {
@@ -51,37 +53,66 @@ function ContactModal({ onClose, prefill = null }) {
     program: prefill?.program || "",
   });
 
-  const countries = [
-    { code: "+91",  label: "🇮🇳" },
-    { code: "+1",   label: "🇺🇸" },
-    { code: "+44",  label: "🇬🇧" },
-    { code: "+61",  label: "🇦🇺" },
+  const { getSection } = useCMS("settings");
+  const branchesCMS = getSection("branches"); 
+  const programsCMS = getSection("program-options"); 
+  const countryCMS = getSection("country-codes");
+
+  const defaultCountries = [
+    { code: "+91", label: "🇮🇳" },
+    { code: "+1", label: "🇺🇸" },
+    { code: "+44", label: "🇬🇧" },
+    { code: "+61", label: "🇦🇺" },
     { code: "+971", label: "🇦🇪" },
-    { code: "+81",  label: "🇯🇵" },
-    { code: "+49",  label: "🇩🇪" },
-    { code: "+33",  label: "🇫🇷" },
-    { code: "+39",  label: "🇮🇹" },
-    { code: "+34",  label: "🇪🇸" },
-    { code: "+86",  label: "🇨🇳" },
-    { code: "+7",   label: "🇷🇺" },
-    { code: "+55",  label: "🇧🇷" },
-    { code: "+27",  label: "🇿🇦" },
-    { code: "+65",  label: "🇸🇬" },
-    { code: "+82",  label: "🇰🇷" },
+    { code: "+81", label: "🇯🇵" },
+    { code: "+49", label: "🇩🇪" },
+    { code: "+33", label: "🇫🇷" },
+    { code: "+39", label: "🇮🇹" },
+    { code: "+34", label: "🇪🇸" },
+    { code: "+86", label: "🇨🇳" },
+    { code: "+7", label: "🇷🇺" },
+    { code: "+55", label: "🇧🇷" },
+    { code: "+27", label: "🇿🇦" },
+    { code: "+65", label: "🇸🇬" },
+    { code: "+82", label: "🇰🇷" },
     { code: "+966", label: "🇸🇦" },
-    { code: "+93",  label: "🇦🇫" },
+    { code: "+93", label: "🇦🇫" },
     { code: "+213", label: "🇩🇿" },
   ];
 
-  const programs = [
-    { value: "Speech Therapy",   label: "Speech Therapy" },
-    { value: "Cognitive Therapy", label: "Cognitive Therapy" },
-    { value: "Day Care",          label: "Day Care" },
-  ];
+  const countries = countryCMS?.data?.length
+    ? countryCMS.data
+    : defaultCountries;
+
+  const programs = programsCMS?.data?.length
+    ? programsCMS.data
+    : [
+        { value: "Speech Therapy",   label: "Speech Therapy" },
+        { value: "Cognitive Therapy", label: "Cognitive Therapy" },
+        { value: "Day Care",          label: "Day Care" },
+      ];
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const inputRef = useRef();
+
+  const branches = branchesCMS?.data?.length
+  ? branchesCMS.data
+  : [
+      { title: "WestMambalam" },
+      { title: "Choolaimedu" },
+      { title: "Anna Nagar" },
+      { title: "Adambakkam" },
+      { title: "Egmore" },
+      { title: "Tambaram" },
+      { title: "Porur" },
+      { title: "Thiruvanmiyur" },
+      { title: "Mylapore" },
+      { title: "K.K. Nagar" },
+    ];
+
+
+  
 
   // Derived phone error — recalculates whenever phone or countryCode changes
   const phoneError = getPhoneError(form.countryCode, form.phone);
@@ -336,16 +367,12 @@ function ContactModal({ onClose, prefill = null }) {
                   className={inputCls}
                 >
                   <option value="">Choose your nearest branch</option>
-                  <option value="WestMambalam">WestMambalam</option>
-                  <option value="Choolaimedu">Choolaimedu</option>
-                  <option value="Anna Nagar">Anna Nagar</option>
-                  <option value="Adambakkam">Adambakkam</option>
-                  <option value="Egmore">Egmore</option>
-                  <option value="Tambaram">Tambaram</option>
-                  <option value="Porur">Porur</option>
-                  <option value="Thiruvanmiyur">Thiruvanmiyur</option>
-                  <option value="Mylapore">Mylapore</option>
-                  <option value="K.K. Nagar">K.K. Nagar</option>
+                  {branches.map((b, i) => (
+                    <option key={i} value={b.title}>
+                      {b.title}
+                    </option>
+                    
+                  ))}
                 </select>
               </Field>
 
