@@ -157,14 +157,18 @@ function AdminDashboard() {
     }
   };
 
-  const fetchContent = async () => {
-    try {
-      const res = await API.get("content/");
-      const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
+  const fetchContent = async (page = null) => {
+   try {
+      const url = page ? `content/?page=${page}` : "content/";
+      const res = await API.get(url);
+
+      const data = Array.isArray(res.data)
+        ? res.data
+        : res.data?.results || [];
+
       setContent(data);
     } catch (err) {
       console.log("CMS ERROR:", err.response?.data || err.message);
-      toast.error("Failed to load CMS content");
       setContent([]);
     }
   };
@@ -221,7 +225,7 @@ function AdminDashboard() {
         data: [],
       });
 
-      await fetchContent();
+      await fetchContent(cmsPage);;
       toast.success("Section added");
     } catch (err) {
       toast.error("Create failed");
@@ -242,7 +246,7 @@ function AdminDashboard() {
         description: "",
         data: [],
       });
-      await fetchContent();
+      await fetchContent(cmsPage);;
       toast.success(`"${section}" section created`);
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -266,7 +270,7 @@ function AdminDashboard() {
         description: item.description || "",
         data: Array.isArray(item.data) ? item.data : [],
       });
-      await fetchContent();
+      await fetchContent(cmsPage);;
       toast.success("Section saved");
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -826,7 +830,9 @@ function AdminDashboard() {
 
             {/* Sections for selected page */}
             {PAGE_SECTIONS[pagesTab]?.map((def) => {
-              const item = content.find((c) => c.page === pagesTab && c.section === def.section);
+              const item = content.find(
+                (c) => c.page === pagesTab && c.section === def.section
+              ) || null;
 
               return (
                 <div
@@ -846,7 +852,6 @@ function AdminDashboard() {
                         Preview
                     </button>
                     
-                    {previewMode && <ContentPreview item={item} />}
                     
                     <button
                       onClick={() => setPreviewMode(false)} 
@@ -888,7 +893,7 @@ function AdminDashboard() {
                   {item ? (
                     <div className="p-6 space-y-6">
                       {/* 🔥 PREVIEW */}
-                        {previewMode && <ContentPreview item={item} />}
+                        {previewMode && item && <ContentPreview item={item} />}
                       {/* EDIT MODE */}
                       {!previewMode && (
                         <>
@@ -1264,6 +1269,14 @@ function AdminDashboard() {
 
 
 function ContentPreview({ item }) {
+  if (!item) {
+    return (
+      <div className="p-4 text-sm text-gray-400">
+        No content available
+      </div>
+    );
+  }
+
   return (
     <div className="glass-card-hover p-5 rounded-2xl space-y-4">
 
@@ -1294,21 +1307,13 @@ function ContentPreview({ item }) {
       {Array.isArray(item.data) && item.data.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {item.data.map((card, i) => (
-            <div
-              key={i}
-              className="bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/10"
-            >
-              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
-                {card.title}
-              </h4>
-              <p className="text-xs text-gray-500 mt-1">
-                {card.description}
-              </p>
+            <div key={i} className="p-4 border rounded-xl">
+              <h4 className="font-semibold">{card.title}</h4>
+              <p className="text-sm text-gray-500">{card.description}</p>
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
 }

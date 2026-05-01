@@ -177,7 +177,8 @@ function ContactModal({ onClose, prefill = null }) {
         >
           <button
             onClick={onClose}
-            className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-white text-xl leading-none"
+            aria-label="Close modal"
+            className="absolute top-2 p-2 right-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white text-xl leading-none"
             type="button"
           >
             ✕
@@ -189,7 +190,7 @@ function ContactModal({ onClose, prefill = null }) {
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                 Appointment Requested!
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+              <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">
                 Thank you,{" "}
                 <span className="font-medium text-blue-600">{form.parentName}</span>! We'll call
                 you shortly to confirm{" "}
@@ -209,7 +210,7 @@ function ContactModal({ onClose, prefill = null }) {
               <h2 className="text-xl text-gray-900 dark:text-white font-bold mb-1">
                 Book an Appointment
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">
+              <p className="text-gray-500 dark:text-gray-500 text-sm mb-3">
                 Fill in the details and we'll call you to confirm.
               </p>
 
@@ -263,6 +264,7 @@ function ContactModal({ onClose, prefill = null }) {
                   }`}
                 >
                   <select
+                  aria-label="Select Country Code"
                     className="bg-transparent outline-none text-sm py-1 pr-2 text-gray-700 dark:text-gray-700"
                     value={form.countryCode}
                     onChange={(e) =>
@@ -305,7 +307,7 @@ function ContactModal({ onClose, prefill = null }) {
 
                 {/* Hint line — shows expected format when no input yet */}
                 {!form.phone && phoneHint && (
-                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
                     {phoneHint}
                   </p>
                 )}
@@ -328,6 +330,7 @@ function ContactModal({ onClose, prefill = null }) {
               <Field label="Select Branch">
                 <select
                   name="branch"
+                  aria-label="Select Branch"
                   value={form.branch}
                   onChange={handleChange}
                   className={inputCls}
@@ -374,7 +377,7 @@ function ContactModal({ onClose, prefill = null }) {
                 className={`w-full py-2 rounded-xl font-semibold transition ${
                   isValid
                     ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-100 dark:bg-white/5 text-gray-500 cursor-not-allowed"
                 }`}
                 type="button"
               >
@@ -394,7 +397,7 @@ const inputCls =
 function Field({ label, children }) {
   return (
     <div className="mb-3">
-      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+      <label className="block text-xs font-medium text-gray-600 dark:text-gray-500 mb-1">
         {label} *
       </label>
       {children}

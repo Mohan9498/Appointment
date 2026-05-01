@@ -192,7 +192,7 @@ function Login() {
             <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               Admin Login
             </h2>
-            <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
+            <p className="text-gray-400 dark:text-gray-600 text-sm mt-1">
               Sign in to access the dashboard
             </p>
           </div>
@@ -238,6 +238,7 @@ function Login() {
 
                 <button
                   type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 >
