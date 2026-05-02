@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import useCMS from "../hooks/useCMS";
 
 
@@ -81,11 +82,11 @@ function ContactModal({ onClose, prefill = null }) {
   ];
 
   const countries = countryCMS?.data?.length
-    ? countryCMS.data
+    ? countryCMS.data.map(c => ({ code: c.title, label: c.title }))
     : defaultCountries;
 
   const programs = programsCMS?.data?.length
-    ? programsCMS.data
+    ? programsCMS.data.map(p => ({ value: p.title, label: p.title }))
     : [
         { value: "Speech Therapy",   label: "Speech Therapy" },
         { value: "Cognitive Therapy", label: "Cognitive Therapy" },
@@ -97,7 +98,7 @@ function ContactModal({ onClose, prefill = null }) {
   const inputRef = useRef();
 
   const branches = branchesCMS?.data?.length
-  ? branchesCMS.data
+  ? [...branchesCMS.data].sort((a, b) => a.title.localeCompare(b.title))
   : [
       { title: "WestMambalam" },
       { title: "Choolaimedu" },
@@ -294,20 +295,17 @@ function ContactModal({ onClose, prefill = null }) {
                       : "border-gray-300 dark:border-white/10 focus-within:ring-blue-600"
                   }`}
                 >
-                  <select
-                  aria-label="Select Country Code"
-                    className="bg-transparent outline-none text-sm py-1 pr-2 text-gray-700 dark:text-gray-700"
+                  <CustomDropdown
                     value={form.countryCode}
-                    onChange={(e) =>
-                      setForm({ ...form, countryCode: e.target.value, phone: "" })
-                    }
-                  >
-                    {countries.map((c, i) => (
-                      <option key={i} value={c.code}>
-                        {c.label} {c.code}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => setForm({ ...form, countryCode: val, phone: "" })}
+                    options={countries.map((c) => ({
+                      value: c.code,
+                      label: `${c.label} ${c.code !== c.label ? c.code : ""}`
+                    }))}
+                    className="mr-3"
+                    buttonClassName="pr-3 py-0 border-r border-gray-200 dark:border-white/10 w-max"
+                    dropdownClassName="left-0 w-36 min-w-max"
+                  />
 
                   <input
                     type="tel"
@@ -330,7 +328,7 @@ function ContactModal({ onClose, prefill = null }) {
 
                   {/* Live status icon */}
                   {form.phone.length > 0 && (
-                    <span className="ml-2 text-sm flex-shrink-0">
+                    <span className="ml-1 text-sm flex-shrink-0">
                       {phoneError ? "❌" : "✅"}
                     </span>
                   )}
@@ -359,21 +357,16 @@ function ContactModal({ onClose, prefill = null }) {
               </div>
 
               <Field label="Select Branch">
-                <select
-                  name="branch"
-                  aria-label="Select Branch"
+                <CustomDropdown
                   value={form.branch}
-                  onChange={handleChange}
-                  className={inputCls}
-                >
-                  <option value="">Choose your nearest branch</option>
-                  {branches.map((b, i) => (
-                    <option key={i} value={b.title}>
-                      {b.title}
-                    </option>
-                    
-                  ))}
-                </select>
+                  onChange={(val) => setForm({ ...form, branch: val })}
+                  options={[
+                    { value: "", label: "Choose your nearest branch" },
+                    ...branches.map((b) => ({ value: b.title, label: b.title }))
+                  ]}
+                  buttonClassName="w-full px-4 py-3 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 transition"
+                  dropdownClassName="left-0 w-36 min-w-max"
+                />
               </Field>
 
               <div className="mb-5">
@@ -428,6 +421,42 @@ function Field({ label, children }) {
         {label} *
       </label>
       {children}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════
+//  CUSTOM DROPDOWN COMPONENT
+// ════════════════════════════════════════════════════
+function CustomDropdown({ value, onChange, options, className = "", buttonClassName = "", dropdownClassName = "" }) {
+  const [open, setOpen] = useState(false);
+  const selectedOption = options.find(o => o.value === value) || options[0];
+
+  return (
+    <div className={`relative ${className}`}>
+      <button 
+        type="button"
+        onClick={() => setOpen(!open)}
+        onBlur={() => setTimeout(() => setOpen(false), 200)}
+        className={`flex items-center justify-between gap-3 text-sm outline-none transition-all ${buttonClassName}`}
+      >
+        <span className="truncate text-gray-700 dark:text-gray-300 font-medium">{selectedOption?.label}</span>
+        <ChevronDown size={14} className="text-gray-400 shrink-0" />
+      </button>
+      {open && (
+        <div className={`absolute z-[9999] mt-1 min-w-full w-max max-w-[200px] bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-60 overflow-y-auto py-1 ${dropdownClassName}`}>
+          {options.map((opt, i) => (
+            <button
+              type="button"
+              key={i}
+              onMouseDown={(e) => { e.preventDefault(); onChange(opt.value); setOpen(false); }}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-all truncate ${value === opt.value ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold' : 'hover:bg-gray-50 dark:hover:bg-white/[0.02] text-gray-700 dark:text-gray-300'}`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

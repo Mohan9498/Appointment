@@ -17,6 +17,10 @@ import schedule from "../assets/features/schedule.png";
 import family from "../assets/features/parent.jpeg";     
 import progress from "../assets/features/progress.jpeg";
 
+const ICON_MAP = {
+  Brain, ShieldCheck, Heart, Clock, Users, Star
+};
+
 function Features() {
   const { getSection } = useCMS("home");
   const cms = getSection("features");
@@ -140,7 +144,9 @@ function Features() {
 
           <div className="mb-5 flex justify-center">
             <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white">
-              {data[currentSlide].icon}
+              {typeof data[currentSlide].icon === "string" && ICON_MAP[data[currentSlide].icon] 
+                ? (() => { const IC = ICON_MAP[data[currentSlide].icon]; return <IC size={24} />; })()
+                : data[currentSlide].icon}
             </div>
           </div>
 

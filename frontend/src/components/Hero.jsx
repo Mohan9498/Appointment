@@ -7,6 +7,13 @@ function Hero({ onOpenModal }) {
   // ✅ CMS HOOK
   const { getSection } = useCMS("home");
   const hero = getSection("hero");
+  const heroStats = getSection("hero-stats");
+
+  const stats = heroStats?.data?.length ? heroStats.data : [
+    { title: "Children Helped", description: "700+" },
+    { title: "Branches", description: "35+" },
+    { title: "Parent Satisfaction", description: "98%" },
+  ];
 
   return (
     <section className="relative pt-20 min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -86,18 +93,12 @@ function Hero({ onOpenModal }) {
 
           {/* Stats Row */}
           <div className="flex flex-wrap justify-center md:justify-start gap-8 mt-10 pt-8 border-t border-gray-200/50 dark:border-white/10 animate-fade-in-up-delay-3">
-            <div>
-              <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">700+</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Children Helped</p>
-            </div>
-            <div>
-              <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">35+</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Branches</p>
-            </div>
-            <div>
-              <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">98%</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Parent Satisfaction</p>
-            </div>
+            {stats.map((stat, i) => (
+              <div key={i}>
+                <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{stat.description}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.title}</p>
+              </div>
+            ))}
           </div>
 
         </div>
