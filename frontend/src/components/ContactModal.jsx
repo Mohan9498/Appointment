@@ -364,8 +364,8 @@ function ContactModal({ onClose, prefill = null }) {
                     { value: "", label: "Choose your nearest branch" },
                     ...branches.map((b) => ({ value: b.title, label: b.title }))
                   ]}
-                  buttonClassName="w-full px-4 py-3 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 transition"
-                  dropdownClassName="left-0 w-36 min-w-max"
+                  buttonClassName="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 transition"
+                  dropdownClassName="left-0 "
                 />
               </Field>
 
