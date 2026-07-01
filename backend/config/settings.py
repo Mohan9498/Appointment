@@ -105,11 +105,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ✅ Set DATABASE_URL in Render environment variables
 # Never hardcode credentials here
 # ======================
+DATABASE_URL = os.environ.get(
+    'DATABASE_URL',
+    'postgresql://postgres_5wdj_user:flTdBymynKgSZ1akeraQgRNqfuvWU9E4@dpg-d92aq1a8qa3s73d3ksog-a.oregon-postgres.render.com/postgres_5wdj?sslmode=require'
+)
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=DATABASE_URL,
         conn_max_age=600,
-        ssl_require=not DEBUG,  # SSL in production, off for local
+        ssl_require=True,
     )
 }
 
