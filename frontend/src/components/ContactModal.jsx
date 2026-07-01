@@ -421,7 +421,7 @@ const inputCls =
 
 function Field({ label, children }) {
   return (
-    <div className="mb-4">
+    <div className="mb-3">
       <label className="block text-sm font-medium text-gray-600 dark:text-gray-500 mb-1.5">
         {label} *
       </label>
