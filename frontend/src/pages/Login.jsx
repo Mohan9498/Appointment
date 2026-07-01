@@ -180,12 +180,12 @@ function Login() {
         <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] p-8 md:p-10 rounded-2xl shadow-premium dark:shadow-premium-dark">
 
           <div className="mb-8 text-center">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors group">
+            <Link to="/" className="flex items-center justify-start w-fit gap-1.5 text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors group">
               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-              Back to Home
+              Home
             </Link>
 
-            <div className="w-16 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center mx-auto mt-6 mb-4 shadow-glow-blue">
+            <div className="w-14 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center mx-auto mt-6 mb-4 shadow-glow-blue">
               <Lock size={24} className="text-white" />
             </div>
 

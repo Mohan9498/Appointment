@@ -193,7 +193,7 @@ function ContactModal({ onClose, prefill = null }) {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex py-1 items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+        className="fixed inset-0 z-50 flex py-1 items-center justify-center bg-black/70 backdrop-blur-md px-2 sm:px-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -205,24 +205,26 @@ function ContactModal({ onClose, prefill = null }) {
           exit={{ y: 80, opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-4 overflow-y-auto max-h-[95vh]"
+          className="relative w-full max-w-[calc(100vw-1rem)] sm:max-w-[calc(100vw-2rem)] min-[1200px]:max-w-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/10 rounded-3xl shadow-2xl shadow-black/20 dark:shadow-black/50 p-3 sm:p-6 overflow-y-auto max-h-[95vh]"
         >
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="absolute top-2 p-2 right-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white text-xl leading-none"
+            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 text-lg leading-none transition-colors"
             type="button"
           >
             ✕
           </button>
 
           {submitted ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="text-5xl mb-4">🎉</div>
+            <div className="flex flex-col items-center justify-center py-10 sm:py-12 text-center">
+              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                <span className="text-4xl">🎉</span>
+              </div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                 Appointment Requested!
               </h2>
-              <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">
+              <p className="text-gray-500 dark:text-gray-500 text-sm mb-6 max-w-sm">
                 Thank you,{" "}
                 <span className="font-medium text-blue-600">{form.parentName}</span>! We'll call
                 you shortly to confirm{" "}
@@ -231,7 +233,7 @@ function ContactModal({ onClose, prefill = null }) {
               </p>
               <button
                 onClick={onClose}
-                className="px-6 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold hover:shadow-lg hover:shadow-blue-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                 type="button"
               >
                 Close
@@ -239,10 +241,10 @@ function ContactModal({ onClose, prefill = null }) {
             </div>
           ) : (
             <>
-              <h2 className="text-xl text-gray-900 dark:text-white font-bold mb-1">
+              <h2 className="text-xl text-gray-900 dark:text-white font-bold tracking-tight mb-1 pr-8">
                 Book an Appointment
               </h2>
-              <p className="text-gray-500 dark:text-gray-500 text-sm mb-3">
+              <p className="text-gray-500 dark:text-gray-500 text-sm mb-4">
                 Fill in the details and we'll call you to confirm.
               </p>
 
@@ -281,18 +283,18 @@ function ContactModal({ onClose, prefill = null }) {
               </Field>
 
               {/* PHONE — with per-country hint and live error */}
-              <div className="mb-3">
-                <label className="block text-xs font-medium text-gray-600 dark:text-white-400 mb-1">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-600 dark:text-white-400 mb-1.5">
                   Phone Number *
                 </label>
 
                 <div
-                  className={`flex items-center border rounded-xl px-3 bg-white dark:bg-white/5 focus-within:ring-2 transition ${
+                  className={`flex items-center border rounded-xl px-3 py-0.5 bg-white dark:bg-white/5 focus-within:ring-2 transition-all duration-200 ${
                     phoneError
                       ? "border-red-400 dark:border-red-500 focus-within:ring-red-400"
                       : phoneValid
                       ? "border-green-400 dark:border-green-500 focus-within:ring-green-400"
-                      : "border-gray-300 dark:border-white/10 focus-within:ring-blue-600"
+                      : "border-gray-300 dark:border-white/10 focus-within:ring-blue-600 focus-within:border-blue-500"
                   }`}
                 >
                   <CustomDropdown
@@ -364,12 +366,12 @@ function ContactModal({ onClose, prefill = null }) {
                     { value: "", label: "Choose your nearest branch" },
                     ...branches.map((b) => ({ value: b.title, label: b.title }))
                   ]}
-                  buttonClassName="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 transition"
+                  buttonClassName="w-full px-4 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-500 transition-all duration-200"
                   dropdownClassName="left-0 "
                 />
               </Field>
 
-              <div className="mb-5">
+              <div className="mb-6">
                 <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">
                   Select Program *
                 </p>
@@ -379,10 +381,10 @@ function ContactModal({ onClose, prefill = null }) {
                       key={p.value}
                       type="button"
                       onClick={() => setForm({ ...form, program: p.value })}
-                      className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-sm font-medium transition ${
+                      className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border text-sm font-medium transition-all duration-200 ${
                         form.program === p.value
-                          ? "border-blue-600 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
-                          : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-blue-300"
+                          ? "border-blue-600 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 shadow-sm scale-[1.02]"
+                          : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-blue-300 hover:bg-gray-50 dark:hover:bg-white/[0.03]"
                       }`}
                     >
                       <span className="text-xs text-center leading-tight">{p.label}</span>
@@ -394,13 +396,16 @@ function ContactModal({ onClose, prefill = null }) {
               <button
                 onClick={handleSubmit}
                 disabled={!isValid || loading}
-                className={`w-full py-2 rounded-xl font-semibold transition ${
+                className={`w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
                   isValid
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:shadow-blue-600/30 hover:scale-[1.01] active:scale-[0.98]"
                     : "bg-gray-100 dark:bg-white/5 text-gray-500 cursor-not-allowed"
                 }`}
                 type="button"
               >
+                {loading && (
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                )}
                 {loading ? "Submitting..." : "Submit Appointment"}
               </button>
             </>
@@ -412,12 +417,12 @@ function ContactModal({ onClose, prefill = null }) {
 }
 
 const inputCls =
-  "w-full mt-1 px-4 py-1 border border-gray-300 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-blue-600 outline-none transition";
+  "w-full mt-1 px-3 py-1 border border-gray-300 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-blue-600 focus:border-blue-500 outline-none transition-all duration-200";
 
 function Field({ label, children }) {
   return (
-    <div className="mb-3">
-      <label className="block text-xs font-medium text-gray-600 dark:text-gray-500 mb-1">
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-gray-600 dark:text-gray-500 mb-1.5">
         {label} *
       </label>
       {children}
@@ -444,7 +449,7 @@ function CustomDropdown({ value, onChange, options, className = "", buttonClassN
         <ChevronDown size={14} className="text-gray-400 shrink-0" />
       </button>
       {open && (
-        <div className={`absolute z-[9999] mt-1 min-w-full w-max max-w-[200px] bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-60 overflow-y-auto py-1 ${dropdownClassName}`}>
+        <div className={`absolute z-[9999] mt-1.5 min-w-full w-max max-w-[200px] bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl shadow-black/10 dark:shadow-black/40 max-h-60 overflow-y-auto py-1 ${dropdownClassName}`}>
           {options.map((opt, i) => (
             <button
               type="button"
