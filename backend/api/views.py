@@ -19,12 +19,21 @@ from .serializers import ContentSerializer
 
 
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 try:
     from asgiref.sync import async_to_sync
-    from channels.layers import get_channel_layer
-    HAS_CHANNELS = True
 except ImportError:
+    async_to_sync = None
+
+try:
+    from importlib import import_module
+
+    channels_layers = import_module("channels.layers")
+    get_channel_layer = channels_layers.get_channel_layer
+    HAS_CHANNELS = True
+except Exception:
+    get_channel_layer = None
     HAS_CHANNELS = False
 
 
@@ -40,6 +49,28 @@ class IsAdminUserCustom(BasePermission):
 
 # ✅ USER LOGIN
 class LoginView(APIView):
+    def _ensure_admin_user(self, username, password):
+        admin_username = str(getattr(settings, "ADMIN_USERNAME", "")).strip()
+        admin_password = str(getattr(settings, "ADMIN_PASSWORD", ""))
+
+        if not admin_username or not admin_password:
+            return None
+
+        if username != admin_username or password != admin_password:
+            return None
+
+        user, created = User.objects.get_or_create(
+            username=admin_username,
+            defaults={"is_staff": True, "is_superuser": True}
+        )
+
+        user.is_staff = True
+        user.is_superuser = True
+        user.set_password(admin_password)
+        user.save(update_fields=["is_staff", "is_superuser", "password"])
+
+        return user
+
     def post(self, request):
         try:
             username = str(request.data.get("username", "")).strip()
@@ -52,6 +83,9 @@ class LoginView(APIView):
                 )
 
             user = authenticate(username=username, password=password)
+
+            if user is None:
+                user = self._ensure_admin_user(username, password)
 
             if user is None:
                 return Response(
@@ -67,7 +101,7 @@ class LoginView(APIView):
                     "access": str(refresh.access_token),
                     "refresh": str(refresh),
                     "username": user.username,
-                    "is_admin": user.is_staff
+                    "is_admin": bool(user.is_staff or user.is_superuser)
                 },
                 status=status.HTTP_200_OK
             )
