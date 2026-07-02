@@ -167,6 +167,74 @@ function CustomDropdown({ value, onChange, options, className = "" }) {
   );
 }
 
+function buildSectionPayload(page, section, order) {
+  const base = {
+    page: String(page).toLowerCase(),
+    section: String(section).toLowerCase(),
+    title: "",
+    description: "",
+    data: [],
+    order,
+  };
+
+  if (section === "hero") {
+    return {
+      ...base,
+      title: "Compassionate care for every child",
+      description: "We support children and families with personalized therapy, learning, and growth plans.",
+    };
+  }
+
+  if (section === "hero-stats") {
+    return { ...base, title: "Our impact", description: "Trusted by families across the region.", data: HERO_STAT_DEFAULTS };
+  }
+
+  if (section === "services") {
+    return { ...base, title: "Our Services", description: "Flexible programs tailored to each child’s needs." };
+  }
+
+  if (section === "features") {
+    return { ...base, title: "Why families choose us", description: "Support that combines expertise, warmth, and measurable progress." };
+  }
+
+  if (section === "gallery") {
+    return { ...base, title: "Moments from our center", description: "A glimpse into learning, play, and growth." };
+  }
+
+  if (section === "about-main") {
+    return { ...base, title: "About our center", description: "We bring compassionate, child-focused care and personalized support to families." };
+  }
+
+  if (section === "branches") {
+    return {
+      ...base,
+      title: "Branches",
+      description: "Locations where families can access our support.",
+      data: ["WestMambalam", "Choolaimedu", "Anna Nagar", "Adambakkam", "Egmore", "Tambaram", "Porur", "Thiruvanmiyur", "Mylapore", "K.K. Nagar"].map((t) => ({ title: t, description: "" })),
+    };
+  }
+
+  if (section === "program-options") {
+    return {
+      ...base,
+      title: "Program options",
+      description: "Appointment program choices shown to families.",
+      data: ["Speech Therapy", "Cognitive Therapy", "Day Care"].map((t) => ({ title: t, description: "" })),
+    };
+  }
+
+  if (section === "country-codes") {
+    return {
+      ...base,
+      title: "Country codes",
+      description: "Phone country code options for appointments.",
+      data: ["+91", "+1", "+44", "+61", "+971", "+81", "+49", "+33", "+39", "+34", "+86", "+7", "+55", "+27", "+65", "+82", "+966", "+93", "+213"].map((t) => ({ title: t, description: "" })),
+    };
+  }
+
+  return base;
+}
+
 // ════════════════════════════════════════════════════
 //  MAIN COMPONENT
 // ════════════════════════════════════════════════════
@@ -185,6 +253,7 @@ function AdminDashboard() {
   const [savingIds,    setSavingIds]    = useState([]);
   const [pagesTab,     setPagesTab]     = useState("home");
   const [editModeIds,  setEditModeIds]  = useState([]);
+  const [drafts,       setDrafts]       = useState({});
   const [dark,         setDark]         = useState(localStorage.getItem("theme") === "dark");
 
   const logout   = useAuthStore((s) => s.logout);
@@ -266,34 +335,41 @@ function AdminDashboard() {
   const setSaving = (id, val) =>
     setSavingIds((prev) => val ? [...prev.filter(i=>i!==id), id] : prev.filter(i=>i!==id));
 
-  const toggleEdit = (k) =>
+  const toggleEdit = (k) => {
+    const existingItem = content.find((c) => c.section === k);
     setEditModeIds((prev) => prev.includes(k) ? prev.filter(i=>i!==k) : [...prev, k]);
+    if (existingItem) {
+      setDrafts((prev) => ({
+        ...prev,
+        [existingItem.id]: prev[existingItem.id] || { ...existingItem },
+      }));
+    }
+  };
 
-  const updateLocal = (id, updates) =>
-    setContent((prev) => prev.map((c) => c.id === id ? { ...c, ...updates } : c));
+  const updateLocal = (id, updates) => {
+    const currentItem = content.find((c) => c.id === id);
+    setDrafts((prev) => ({
+      ...prev,
+      [id]: {
+        ...(prev[id] || currentItem || {}),
+        ...updates,
+      },
+    }));
+  };
 
   const autoCreate = async (page, section) => {
     if (content.find((c) => c.page === page && c.section === section)) return;
     try {
-      let initialData = [];
-      if (section === "hero-stats")  initialData = HERO_STAT_DEFAULTS;
-      if (section === "about-stats") initialData = ABOUT_STAT_DEFAULTS;
-      
-      if (section === "branches") {
-        initialData = ["WestMambalam", "Choolaimedu", "Anna Nagar", "Adambakkam", "Egmore", "Tambaram", "Porur", "Thiruvanmiyur", "Mylapore", "K.K. Nagar"].map(t => ({ title: t, description: "" }));
-      }
-      if (section === "program-options") {
-        initialData = ["Speech Therapy", "Cognitive Therapy", "Day Care"].map(t => ({ title: t, description: "" }));
-      }
-      if (section === "country-codes") {
-        initialData = ["+91", "+1", "+44", "+61", "+971", "+81", "+49", "+33", "+39", "+34", "+86", "+7", "+55", "+27", "+65", "+82", "+966", "+93", "+213"].map(t => ({ title: t, description: "" }));
+      const payload = buildSectionPayload(page, section, content.length + 1);
+      const res = await API.post("content/", payload);
+      const createdItem = res?.data;
+
+      if (createdItem) {
+        setContent((prev) => [...prev, createdItem]);
+      } else {
+        await fetchContent();
       }
 
-      await API.post("content/", {
-        page: page.toLowerCase(), section: section.toLowerCase(),
-        title: "", description: "", data: initialData, order: content.length + 1,
-      });
-      await fetchContent();
       toast.success("Section enabled");
       setEditModeIds((prev) => [...prev, section]);
     } catch (err) {
@@ -302,15 +378,21 @@ function AdminDashboard() {
   };
 
   const saveContent = async (item) => {
+    const draftItem = drafts[item.id] || item;
     try {
       setSaving(item.id, true);
       await API.patch(`content/${item.id}/`, {
         page: item.page, section: item.section,
-        title: item.title || "", description: item.description || "",
-        data: Array.isArray(item.data) ? item.data : [],
-        order: item.order || 0,
+        title: draftItem.title || "", description: draftItem.description || "",
+        data: Array.isArray(draftItem.data) ? draftItem.data : [],
+        order: draftItem.order || 0,
       });
       await fetchContent();
+      setDrafts((prev) => {
+        const next = { ...prev };
+        delete next[item.id];
+        return next;
+      });
       toast.success("Section saved!");
       setEditModeIds((prev) => prev.filter((i) => i !== item.section));
     } catch { toast.error("Save failed"); }
@@ -318,13 +400,19 @@ function AdminDashboard() {
   };
 
   const quickSave = async (updatedItem) => {
+    const draftItem = drafts[updatedItem.id] || updatedItem;
     try {
       setSaving(updatedItem.id, true);
       await API.patch(`content/${updatedItem.id}/`, {
         page: updatedItem.page, section: updatedItem.section,
-        title: updatedItem.title || "", description: updatedItem.description || "",
-        data: Array.isArray(updatedItem.data) ? updatedItem.data : [],
-        order: updatedItem.order || 0,
+        title: draftItem.title || "", description: draftItem.description || "",
+        data: Array.isArray(draftItem.data) ? draftItem.data : [],
+        order: draftItem.order || 0,
+      });
+      setDrafts((prev) => {
+        const next = { ...prev };
+        delete next[updatedItem.id];
+        return next;
       });
       toast.success("Saved dynamically");
     } catch { toast.error("Dynamic save failed"); }
@@ -747,11 +835,11 @@ function AdminDashboard() {
               {/* Page Tabs */}
               <div className="bg-white dark:bg-[#16191f] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] shadow-sm">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Select Page</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
                   {Object.keys(PAGE_SECTIONS).map((page) => (
                     <button key={page}
                       onClick={() => setPagesTab(page)}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-medium capitalize transition-all duration-200 ${
+                      className={`flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2.5 rounded-xl border text-sm font-medium capitalize transition-all duration-200 ${
                         pagesTab === page
                           ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-transparent shadow-md shadow-blue-600/20"
                           : "bg-gray-50 dark:bg-white/[0.02] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-700"
@@ -769,14 +857,15 @@ function AdminDashboard() {
                 const item    = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
                 const isEdit  = editModeIds.includes(def.section);
                 const meta    = SECTION_TYPE_META[def.type] || SECTION_TYPE_META.cards;
+                const draftItem = item ? (drafts[item.id] || item) : null;
 
                 return (
-                  <div key={def.section} className="bg-white dark:bg-[#16191f] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm overflow-hidden">
+                  <div key={def.section} className="bg-white/95 dark:bg-[#16191f]/95 rounded-[1.5rem] border border-slate-200/80 dark:border-white/[0.08] shadow-[0_20px_55px_-30px_rgba(15,23,42,0.45)] backdrop-blur-sm overflow-hidden isolate">
 
                     {/* Section Header */}
-                    <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold ${
+                    <div className="px-4 py-4 sm:px-6 border-b border-gray-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#16191f]/95 backdrop-blur-sm flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0 ${
                           meta.color === "blue"   ? "bg-blue-500"   :
                           meta.color === "amber"  ? "bg-amber-500"  :
                           meta.color === "violet" ? "bg-violet-500" : "bg-emerald-500"
@@ -784,7 +873,7 @@ function AdminDashboard() {
                           {meta.icon}
                         </div>
                         <div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <h3 className="font-bold text-gray-900 dark:text-white">{def.label}</h3>
                             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${
                               meta.color === "blue"   ? "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400"   :
@@ -797,12 +886,12 @@ function AdminDashboard() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:items-center sm:gap-2 flex-shrink-0">
                         {item && (
-                          <div className="flex bg-gray-100 dark:bg-white/[0.05] p-1 rounded-xl">
+                          <div className="flex bg-gray-100 dark:bg-white/[0.05] p-1 rounded-xl w-full sm:w-auto">
                             {["Preview","Edit"].map((label, i) => (
                               <button key={label} onClick={() => toggleEdit(def.section)}
-                                className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
                                   (i===0 ? !isEdit : isEdit)
                                     ? "bg-white dark:bg-gray-800 shadow text-gray-900 dark:text-white"
                                     : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -811,18 +900,18 @@ function AdminDashboard() {
                           </div>
                         )}
                         {item ? (
-                          <>
-                            <button onClick={() => deleteSection(item.id)} className="px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
+                          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                            <button onClick={() => deleteSection(item.id)} className="flex-1 sm:flex-none px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
                               Delete
                             </button>
                             <button onClick={() => saveContent(item)} disabled={savingIds.includes(item.id)}
-                              className="flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-60">
+                              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-60">
                               <Save size={13}/> {savingIds.includes(item.id) ? "Saving…" : "Save"}
                             </button>
-                          </>
+                          </div>
                         ) : (
                           <button onClick={() => autoCreate(pagesTab, def.section)}
-                            className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm">
+                            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm w-full sm:w-auto">
                             <Plus size={13}/> Enable Section
                           </button>
                         )}
@@ -830,15 +919,38 @@ function AdminDashboard() {
                     </div>
 
                     {/* Section Body */}
-                    <div className="p-6">
-                      {!isEdit && <ContentPreview item={item} type={def.type} />}
+                    <div className="relative isolate overflow-x-hidden overflow-y-visible p-3 sm:p-6 max-[320px]:p-2 bg-[linear-gradient(135deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] dark:bg-[linear-gradient(135deg,rgba(15,17,23,0.96),rgba(22,25,31,0.96))]">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.08),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(129,140,248,0.08),transparent_40%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.14),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(129,140,248,0.14),transparent_40%)] pointer-events-none" />
+                      {item ? (
+                        <div className="relative z-10 w-full min-w-0 space-y-3 sm:space-y-4">
+                          <div className="relative isolate w-full min-w-0 overflow-hidden rounded-[1.25rem] border border-slate-200/90 dark:border-white/[0.10] bg-white/95 dark:bg-[#1a1f2a]/95 shadow-[0_16px_38px_-24px_rgba(15,23,42,0.45)] p-2.5 sm:p-4 max-[320px]:p-2 backdrop-blur-sm">
+                            <div className="mb-3 flex items-center justify-between gap-2">
+                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Live preview</h4>
+                              <span className="text-[11px] uppercase tracking-wide text-gray-400">Preview</span>
+                            </div>
+                            <ContentPreview item={item} type={def.type} />
+                          </div>
 
-                      {isEdit && item && (
-                        <SectionEditor
-                          item={item} type={def.type}
-                          updateLocal={updateLocal} uploadImage={uploadImage}
-                          quickSave={quickSave} savingIds={savingIds}
-                        />
+                          {isEdit && (
+                            <div className="relative isolate w-full min-w-0 overflow-hidden rounded-[1.25rem] border border-blue-200/90 dark:border-blue-500/25 bg-gradient-to-br from-blue-50/95 via-white/90 to-slate-50/95 dark:from-blue-500/10 dark:via-[#171b24]/90 dark:to-[#10141b]/95 shadow-[0_16px_38px_-24px_rgba(59,130,246,0.35)] p-2.5 sm:p-4 max-[320px]:p-2 backdrop-blur-sm">
+                              <div className="mb-3 flex items-center justify-between gap-2">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Edit content</h4>
+                                <span className="text-[11px] uppercase tracking-wide text-blue-500">Editor</span>
+                              </div>
+                              <SectionEditor
+                                item={draftItem || item}
+                                savedItem={item}
+                                type={def.type}
+                                updateLocal={updateLocal} uploadImage={uploadImage}
+                                quickSave={quickSave} savingIds={savingIds}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="relative z-10 w-full min-w-0 rounded-2xl border border-dashed border-gray-200 dark:border-white/[0.08] bg-gray-50/80 dark:bg-white/[0.02] p-4 sm:p-6 max-[320px]:p-3 text-center text-sm text-gray-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
+                          Enable this section to start editing and previewing the content live.
+                        </div>
                       )}
                     </div>
                   </div>
@@ -856,21 +968,32 @@ function AdminDashboard() {
 // ════════════════════════════════════════════════════
 //  SECTION EDITOR — routes to specialized sub-editors
 // ════════════════════════════════════════════════════
-function SectionEditor({ item, type, updateLocal, uploadImage, quickSave, savingIds }) {
+function SectionEditor({ item, savedItem, type, updateLocal, uploadImage, quickSave, savingIds }) {
   switch (type) {
-    case "hero":     return <HeroEditor     item={item} updateLocal={updateLocal} uploadImage={uploadImage} savingIds={savingIds}/>;
-    case "text":     return <TextEditor     item={item} updateLocal={updateLocal} quickSave={quickSave} />;
-    case "stats":    return <StatsEditor    item={item} updateLocal={updateLocal} quickSave={quickSave} />;
-    case "features": return <FeaturesEditor item={item} updateLocal={updateLocal} quickSave={quickSave} />;
-    case "simple":   return <SimpleEditor   item={item} updateLocal={updateLocal} quickSave={quickSave} />;
-    default:         return <CardsEditor    item={item} updateLocal={updateLocal} quickSave={quickSave} />;
+    case "hero":     return <HeroEditor     item={item} savedItem={savedItem} updateLocal={updateLocal} uploadImage={uploadImage} savingIds={savingIds}/>;
+    case "text":     return <TextEditor     item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
+    case "stats":    return <StatsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
+    case "features": return <FeaturesEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
+    case "simple":   return <SimpleEditor   item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
+    default:         return <CardsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
   }
 }
 
 // ── Hero Editor ──
-function HeroEditor({ item, updateLocal, uploadImage, savingIds }) {
+function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds }) {
   return (
     <div className="space-y-5">
+      <div className="w-full min-w-0 rounded-xl border border-blue-200/70 dark:border-blue-500/15 bg-white/80 dark:bg-[#171b24]/80 p-3 sm:p-4 shadow-sm">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-400">Current section content</h4>
+          <span className="text-[11px] uppercase tracking-wide text-blue-600 dark:text-blue-300">Hero</span>
+        </div>
+        <div className="rounded-lg border border-blue-100 dark:border-blue-500/10 bg-blue-50/70 dark:bg-blue-500/5 px-3 py-2">
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{savedItem?.title || item.title || "Untitled hero section"}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{savedItem?.description || item.description || "No subtitle yet"}</p>
+        </div>
+      </div>
+
       <FieldGroup label="Title">
         <input value={item.title||""} onChange={(e) => updateLocal(item.id,{title:e.target.value})}
           className={inputCls} placeholder="Hero heading text" />
@@ -894,9 +1017,20 @@ function HeroEditor({ item, updateLocal, uploadImage, savingIds }) {
 }
 
 // ── Text Editor ──
-function TextEditor({ item, updateLocal, quickSave }) {
+function TextEditor({ item, savedItem, updateLocal, quickSave }) {
   return (
     <div className="space-y-5">
+      <div className="w-full min-w-0 rounded-[1rem] border border-slate-200/70 dark:border-slate-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(15,23,42,0.35)]">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-400">Current section content</h4>
+          <span className="text-[11px] uppercase tracking-wide text-slate-600 dark:text-slate-300">Text</span>
+        </div>
+        <div className="rounded-lg border border-slate-100 dark:border-slate-500/10 bg-slate-50/70 dark:bg-slate-500/5 px-3 py-2">
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{savedItem?.title || item.title || "Untitled content block"}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{savedItem?.description || item.description || "No description yet"}</p>
+        </div>
+      </div>
+
       <FieldGroup label="Section Title (Optional)">
         <input value={item.title||""} onChange={(e) => updateLocal(item.id,{title:e.target.value})} onBlur={() => quickSave(item)}
           className={inputCls} placeholder="Heading text" />
@@ -910,7 +1044,7 @@ function TextEditor({ item, updateLocal, quickSave }) {
 }
 
 // ── Stats Editor (like TTTC Home/About stats) ──
-function StatsEditor({ item, updateLocal, quickSave }) {
+function StatsEditor({ item, savedItem, updateLocal, quickSave }) {
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -922,6 +1056,7 @@ function StatsEditor({ item, updateLocal, quickSave }) {
   : [];
   const [form, setForm] = useState({ title: "", description: "" });
   const [editingIdx, setEditingIdx] = useState(null);
+  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -973,6 +1108,26 @@ function StatsEditor({ item, updateLocal, quickSave }) {
         </div>
       </div>
 
+      {/* Existing content summary */}
+      <div className="w-full min-w-0 rounded-[1rem] border border-amber-200/70 dark:border-amber-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(245,158,11,0.35)]">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h4 className="text-sm font-semibold text-amber-800 dark:text-amber-400">Current values</h4>
+          <span className="text-[11px] uppercase tracking-wide text-amber-600 dark:text-amber-300">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+        </div>
+        {savedData.length === 0 ? (
+          <p className="text-sm text-gray-500">No stats have been added yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {savedData.map((d, i) => (
+              <div key={i} className="rounded-lg border border-amber-100 dark:border-amber-500/10 bg-amber-50/70 dark:bg-amber-500/5 px-3 py-2">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{d.description || "No value yet"}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Form */}
       <div className="bg-amber-50/50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10 rounded-xl p-5 shadow-sm">
         <h3 className="text-sm font-bold text-amber-800 dark:text-amber-500 mb-4">{editingIdx !== null ? "Edit Stat" : "Add Stat"}</h3>
@@ -1000,7 +1155,7 @@ function StatsEditor({ item, updateLocal, quickSave }) {
 }
 
 // ── Features Editor (Icon + Image background) ──
-function FeaturesEditor({ item, updateLocal, quickSave }) {
+function FeaturesEditor({ item, savedItem, updateLocal, quickSave }) {
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1013,6 +1168,7 @@ function FeaturesEditor({ item, updateLocal, quickSave }) {
   const [form, setForm] = useState({ title: "", description: "", icon: "", image: "" });
   const [editingIdx, setEditingIdx] = useState(null);
   const [iconDropdown, setIconDropdown] = useState(false);
+  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -1073,6 +1229,26 @@ function FeaturesEditor({ item, updateLocal, quickSave }) {
         </div>
       </div>
 
+      {/* Existing content summary */}
+      <div className="w-full min-w-0 rounded-[1rem] border border-fuchsia-200/70 dark:border-fuchsia-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(217,70,239,0.35)]">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h4 className="text-sm font-semibold text-fuchsia-800 dark:text-fuchsia-400">Current features</h4>
+          <span className="text-[11px] uppercase tracking-wide text-fuchsia-600 dark:text-fuchsia-300">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+        </div>
+        {savedData.length === 0 ? (
+          <p className="text-sm text-gray-500">No features have been added yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {savedData.map((d, i) => (
+              <div key={i} className="rounded-lg border border-fuchsia-100 dark:border-fuchsia-500/10 bg-fuchsia-50/70 dark:bg-fuchsia-500/5 px-3 py-2">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{d.description || "No description yet"}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Form */}
       <div className="bg-fuchsia-50/50 dark:bg-fuchsia-500/5 border border-fuchsia-100 dark:border-fuchsia-500/10 rounded-xl p-5 shadow-sm">
         <h3 className="text-sm font-bold text-fuchsia-800 dark:text-fuchsia-500 mb-4">{editingIdx !== null ? "Edit Feature" : "Add Feature"}</h3>
@@ -1124,7 +1300,7 @@ function FeaturesEditor({ item, updateLocal, quickSave }) {
 }
 
 // ── Generic Cards Editor ──
-function CardsEditor({ item, updateLocal, quickSave }) {
+function CardsEditor({ item, savedItem, updateLocal, quickSave }) {
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1136,6 +1312,7 @@ function CardsEditor({ item, updateLocal, quickSave }) {
   : [];
   const [form, setForm] = useState({ title: "", description: "", image: "" });
   const [editingIdx, setEditingIdx] = useState(null);
+  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -1202,6 +1379,26 @@ function CardsEditor({ item, updateLocal, quickSave }) {
           </div>
         </div>
 
+        {/* Existing content summary */}
+        <div className="w-full min-w-0 rounded-[1rem] border border-emerald-200/70 dark:border-emerald-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(16,185,129,0.35)]">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <h4 className="text-sm font-semibold text-emerald-800 dark:text-emerald-400">Current cards</h4>
+            <span className="text-[11px] uppercase tracking-wide text-emerald-600 dark:text-emerald-300">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+          </div>
+          {savedData.length === 0 ? (
+            <p className="text-sm text-gray-500">No cards have been added yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {savedData.map((d, i) => (
+                <div key={i} className="rounded-lg border border-emerald-100 dark:border-emerald-500/10 bg-emerald-50/70 dark:bg-emerald-500/5 px-3 py-2">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{d.description || "No description yet"}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Form */}
         <div className="bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10 rounded-xl p-5 shadow-sm">
           <h3 className="text-sm font-bold text-emerald-800 dark:text-emerald-500 mb-4">{editingIdx !== null ? "Edit Card" : "Add Card"}</h3>
@@ -1234,7 +1431,7 @@ function CardsEditor({ item, updateLocal, quickSave }) {
 }
 
 // ── Simple List Editor (Branches, Programs, Country Codes) ──
-function SimpleEditor({ item, updateLocal, quickSave }) {
+function SimpleEditor({ item, savedItem, updateLocal, quickSave }) {
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1246,6 +1443,7 @@ function SimpleEditor({ item, updateLocal, quickSave }) {
   : [];
   const [form, setForm] = useState("");
   const [editingIdx, setEditingIdx] = useState(null);
+  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
 
   const handleSubmit = () => {
     if(!form.trim()) return;
@@ -1290,6 +1488,24 @@ function SimpleEditor({ item, updateLocal, quickSave }) {
             {data.length === 0 && <tr><td colSpan="2" className="px-4 py-8 text-center text-gray-400 text-sm">No items added yet.</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      <div className="w-full min-w-0 rounded-[1rem] border border-gray-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(15,23,42,0.3)]">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Current items</h4>
+          <span className="text-[11px] uppercase tracking-wide text-gray-500">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+        </div>
+        {savedData.length === 0 ? (
+          <p className="text-sm text-gray-500">No items have been added yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {savedData.map((d, i) => (
+              <div key={i} className="rounded-lg border border-gray-200 dark:border-white/[0.08] bg-gray-50/80 dark:bg-white/[0.03] px-3 py-2">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5 shadow-sm">
@@ -1381,7 +1597,7 @@ function ContentPreview({ item, type }) {
 
   // Default (hero / cards)
   return (
-    <div className="bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] p-5 rounded-xl space-y-3">
+    <div className="relative isolate w-full min-w-0 overflow-hidden bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] p-3 sm:p-5 max-[320px]:p-2 rounded-xl space-y-3">
       {item.title       && <h3 className="text-lg font-bold">{item.title}</h3>}
       {item.description && <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{item.description}</p>}
       {item.image       && <img src={item.image} alt="preview" className="w-full max-w-xs h-36 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-white/10"/>}

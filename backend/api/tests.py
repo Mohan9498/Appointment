@@ -22,3 +22,16 @@ class LoginViewTests(TestCase):
             User.objects.filter(username="envadmin", is_staff=True, is_superuser=True).exists()
         )
         self.assertTrue(response.data["is_admin"])
+
+    def test_existing_staff_user_can_login(self):
+        user = User.objects.create_user(username="staffuser", password="StaffPass123!", is_staff=True)
+
+        response = self.client.post(
+            "/api/login/",
+            {"username": "staffuser", "password": "StaffPass123!"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["is_admin"])
+        self.assertEqual(response.data["username"], user.username)

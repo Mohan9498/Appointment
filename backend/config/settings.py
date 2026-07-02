@@ -185,3 +185,20 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://appointment-tttc.vercel.app",
 ]
+
+# ======================
+# SIMPLE JWT
+# ======================
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+# ======================
+# ADMIN CREDENTIALS (set in Render env vars)
+# ======================
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Admin@1234!")
