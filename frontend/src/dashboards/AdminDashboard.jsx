@@ -349,19 +349,25 @@ function AdminDashboard() {
     const draftItem = drafts[updatedItem.id] || updatedItem;
     try {
       setSaving(updatedItem.id, true);
-      await API.patch(`content/${updatedItem.id}/`, {
+      const res = await API.patch(`content/${updatedItem.id}/`, {
         page: updatedItem.page, section: updatedItem.section,
         title: draftItem.title || "", description: draftItem.description || "",
         data: Array.isArray(draftItem.data) ? draftItem.data : [],
         order: draftItem.order || 0,
       });
+      const savedItem = res?.data || { ...updatedItem, ...draftItem };
+
+      // Sync the saved values into `content` BEFORE dropping the draft,
+      // otherwise the next render falls back to the pre-edit item and
+      // whatever was just typed appears to vanish.
+      setContent((prev) => prev.map((c) => (c.id === updatedItem.id ? savedItem : c)));
       setDrafts((prev) => {
         const next = { ...prev };
         delete next[updatedItem.id];
         return next;
       });
-      toast.success("Saved dynamically");
-    } catch { toast.error("Dynamic save failed"); }
+      toast.success("Saved");
+    } catch { toast.error("Save failed"); }
     finally { setSaving(updatedItem.id, false); }
   };
 
@@ -857,32 +863,31 @@ function AdminDashboard() {
                     </div>
 
                     {/* Section Body */}
-                    <div className="relative isolate overflow-x-hidden overflow-y-visible p-3 sm:p-6 max-[320px]:p-2 bg-[linear-gradient(135deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] dark:bg-[linear-gradient(135deg,rgba(15,17,23,0.96),rgba(22,25,31,0.96))]">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.08),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(129,140,248,0.08),transparent_40%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.14),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(129,140,248,0.14),transparent_40%)] pointer-events-none" />
-                      
+                    <div className="overflow-x-hidden overflow-y-visible p-3 sm:p-6 max-[320px]:p-2 bg-gray-50/60 dark:bg-white/[0.015]">
+
                       {item ? (
-                        <div className="relative z-10 w-full min-w-0 space-y-3 sm:space-y-4">
+                        <div className="w-full min-w-0 space-y-3 sm:space-y-4">
                           {/* Status Badge */}
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-500/10 dark:to-green-500/10 border border-emerald-200/50 dark:border-emerald-500/30 w-fit">
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 w-fit">
                             <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                               Enabled (Live)
                             </span>
                           </div>
 
-                          <div className="relative isolate w-full min-w-0 overflow-hidden rounded-[1.25rem] border border-slate-200/90 dark:border-white/[0.10] bg-white/95 dark:bg-[#1a1f2a]/95 shadow-[0_16px_38px_-24px_rgba(15,23,42,0.45)] p-2.5 sm:p-4 max-[320px]:p-2 backdrop-blur-sm">
+                          <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1f2a] shadow-sm p-3 sm:p-4">
                             <div className="mb-3 flex items-center justify-between gap-2">
-                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Live preview</h4>
-                              <span className="text-[11px] uppercase tracking-wide text-gray-400">Preview</span>
+                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Current content</h4>
+                              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Live preview</span>
                             </div>
                             <ContentPreview item={item} type={def.type} />
                           </div>
 
                           {isEdit && (
-                            <div className="relative isolate w-full min-w-0 overflow-hidden rounded-[1.25rem] border border-blue-200/90 dark:border-blue-500/25 bg-gradient-to-br from-blue-50/95 via-white/90 to-slate-50/95 dark:from-blue-500/10 dark:via-[#171b24]/90 dark:to-[#10141b]/95 shadow-[0_16px_38px_-24px_rgba(59,130,246,0.35)] p-2.5 sm:p-4 max-[320px]:p-2 backdrop-blur-sm">
+                            <div className="w-full min-w-0 rounded-xl border border-blue-200 dark:border-blue-500/20 bg-blue-50/40 dark:bg-blue-500/[0.04] shadow-sm p-3 sm:p-4">
                               <div className="mb-3 flex items-center justify-between gap-2">
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Edit content</h4>
-                                <span className="text-[11px] uppercase tracking-wide text-blue-500">Editor</span>
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Edit fields</h4>
+                                <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Editing</span>
                               </div>
                               <SectionEditor
                                 item={draftItem || item}
@@ -896,23 +901,21 @@ function AdminDashboard() {
                           )}
                         </div>
                       ) : (
-                        <div className="relative z-10 w-full min-w-0 space-y-3 sm:space-y-4">
+                        <div className="w-full min-w-0 space-y-3 sm:space-y-4">
                           {/* Status Badge - Disabled */}
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-500/10 dark:to-slate-500/10 border border-gray-200/50 dark:border-gray-500/30 w-fit">
-                            <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-400">
-                              <span className="w-2 h-2 rounded-full bg-gray-400" />
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.08] w-fit">
+                            <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                              <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                               Disabled (Draft)
                             </span>
                           </div>
 
-                          <div className="relative isolate w-full min-w-0 overflow-hidden rounded-[1.25rem] border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gradient-to-br from-gray-50/95 to-slate-50/95 dark:from-gray-900/30 dark:to-slate-900/30 shadow-[0_16px_38px_-24px_rgba(15,23,42,0.25)] p-2.5 sm:p-4 max-[320px]:p-2 backdrop-blur-sm">
-                            <div className="mb-4 flex items-center justify-between gap-2">
-                              <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-400">Preview (Read-Only)</h4>
-                              <span className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-500">Draft</span>
+                          <div className="w-full min-w-0 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-white/[0.02] p-3 sm:p-4">
+                            <div className="mb-3 flex items-center justify-between gap-2">
+                              <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400">Preview (read-only)</h4>
+                              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Draft — not published</span>
                             </div>
-                            <div className="absolute inset-0 rounded-[1.15rem] bg-gradient-to-b from-transparent via-transparent to-gray-100/30 dark:to-gray-800/20 pointer-events-none" />
-                            <div className="relative z-10">
-                              <SectionEditor
+                            <SectionEditor
                                 item={draftItem || { ...def, title: "", description: "", data: [] }}
                                 savedItem={null}
                                 type={def.type}
@@ -922,7 +925,6 @@ function AdminDashboard() {
                                 savingIds={[]}
                                 isEnabled={false}
                               />
-                            </div>
                           </div>
                         </div>
                       )}
@@ -958,17 +960,6 @@ function SectionEditor({ item, savedItem, type, updateLocal, uploadImage, quickS
 function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds, isEnabled = true }) {
   return (
     <div className="space-y-5">
-      <div className="w-full min-w-0 rounded-xl border border-blue-200/70 dark:border-blue-500/15 bg-white/80 dark:bg-[#171b24]/80 p-3 sm:p-4 shadow-sm">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-400">Current section content</h4>
-          <span className="text-[11px] uppercase tracking-wide text-blue-600 dark:text-blue-300">Hero</span>
-        </div>
-        <div className="rounded-lg border border-blue-100 dark:border-blue-500/10 bg-blue-50/70 dark:bg-blue-500/5 px-3 py-2">
-          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{savedItem?.title || item.title || "Untitled hero section"}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{savedItem?.description || item.description || "No subtitle yet"}</p>
-        </div>
-      </div>
-
       <FieldGroup label="Title">
         <input 
           value={item.title||""} 
@@ -1011,17 +1002,6 @@ function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds, isEn
 function TextEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
   return (
     <div className="space-y-5">
-      <div className="w-full min-w-0 rounded-[1rem] border border-slate-200/70 dark:border-slate-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(15,23,42,0.35)]">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-400">Current section content</h4>
-          <span className="text-[11px] uppercase tracking-wide text-slate-600 dark:text-slate-300">Text</span>
-        </div>
-        <div className="rounded-lg border border-slate-100 dark:border-slate-500/10 bg-slate-50/70 dark:bg-slate-500/5 px-3 py-2">
-          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{savedItem?.title || item.title || "Untitled content block"}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{savedItem?.description || item.description || "No description yet"}</p>
-        </div>
-      </div>
-
       <FieldGroup label="Section Title (Optional)">
         <input 
           value={item.title||""} 
