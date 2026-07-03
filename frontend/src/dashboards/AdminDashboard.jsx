@@ -859,8 +859,17 @@ function AdminDashboard() {
                     {/* Section Body */}
                     <div className="relative isolate overflow-x-hidden overflow-y-visible p-3 sm:p-6 max-[320px]:p-2 bg-[linear-gradient(135deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] dark:bg-[linear-gradient(135deg,rgba(15,17,23,0.96),rgba(22,25,31,0.96))]">
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.08),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(129,140,248,0.08),transparent_40%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.14),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(129,140,248,0.14),transparent_40%)] pointer-events-none" />
+                      
                       {item ? (
                         <div className="relative z-10 w-full min-w-0 space-y-3 sm:space-y-4">
+                          {/* Status Badge */}
+                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-500/10 dark:to-green-500/10 border border-emerald-200/50 dark:border-emerald-500/30 w-fit">
+                            <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              Enabled (Live)
+                            </span>
+                          </div>
+
                           <div className="relative isolate w-full min-w-0 overflow-hidden rounded-[1.25rem] border border-slate-200/90 dark:border-white/[0.10] bg-white/95 dark:bg-[#1a1f2a]/95 shadow-[0_16px_38px_-24px_rgba(15,23,42,0.45)] p-2.5 sm:p-4 max-[320px]:p-2 backdrop-blur-sm">
                             <div className="mb-3 flex items-center justify-between gap-2">
                               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Live preview</h4>
@@ -881,13 +890,40 @@ function AdminDashboard() {
                                 type={def.type}
                                 updateLocal={updateLocal} uploadImage={uploadImage}
                                 quickSave={quickSave} savingIds={savingIds}
+                                isEnabled={true}
                               />
                             </div>
                           )}
                         </div>
                       ) : (
-                        <div className="relative z-10 w-full min-w-0 rounded-2xl border border-dashed border-gray-200 dark:border-white/[0.08] bg-gray-50/80 dark:bg-white/[0.02] p-4 sm:p-6 max-[320px]:p-3 text-center text-sm text-gray-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
-                          Enable this section to start editing and previewing the content live.
+                        <div className="relative z-10 w-full min-w-0 space-y-3 sm:space-y-4">
+                          {/* Status Badge - Disabled */}
+                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-500/10 dark:to-slate-500/10 border border-gray-200/50 dark:border-gray-500/30 w-fit">
+                            <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-400">
+                              <span className="w-2 h-2 rounded-full bg-gray-400" />
+                              Disabled (Draft)
+                            </span>
+                          </div>
+
+                          <div className="relative isolate w-full min-w-0 overflow-hidden rounded-[1.25rem] border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gradient-to-br from-gray-50/95 to-slate-50/95 dark:from-gray-900/30 dark:to-slate-900/30 shadow-[0_16px_38px_-24px_rgba(15,23,42,0.25)] p-2.5 sm:p-4 max-[320px]:p-2 backdrop-blur-sm">
+                            <div className="mb-4 flex items-center justify-between gap-2">
+                              <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-400">Preview (Read-Only)</h4>
+                              <span className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-500">Draft</span>
+                            </div>
+                            <div className="absolute inset-0 rounded-[1.15rem] bg-gradient-to-b from-transparent via-transparent to-gray-100/30 dark:to-gray-800/20 pointer-events-none" />
+                            <div className="relative z-10">
+                              <SectionEditor
+                                item={draftItem || { ...def, title: "", description: "", data: [] }}
+                                savedItem={null}
+                                type={def.type}
+                                updateLocal={() => {}}
+                                uploadImage={() => {}}
+                                quickSave={() => {}}
+                                savingIds={[]}
+                                isEnabled={false}
+                              />
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -906,20 +942,20 @@ function AdminDashboard() {
 // ════════════════════════════════════════════════════
 //  SECTION EDITOR — routes to specialized sub-editors
 // ════════════════════════════════════════════════════
-function SectionEditor({ item, savedItem, type, updateLocal, uploadImage, quickSave, savingIds }) {
+function SectionEditor({ item, savedItem, type, updateLocal, uploadImage, quickSave, savingIds, isEnabled = true }) {
   switch (type) {
-    case "hero":     return <HeroEditor     item={item} savedItem={savedItem} updateLocal={updateLocal} uploadImage={uploadImage} savingIds={savingIds}/>;
-    case "text":     return <TextEditor     item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
-    case "stats":    return <StatsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
-    case "features": return <FeaturesEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
-    case "simple":   return <SimpleEditor   item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
-    case "mission-vision": return <MissionVisionEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
-    default:         return <CardsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
+    case "hero":     return <HeroEditor     item={item} savedItem={savedItem} updateLocal={updateLocal} uploadImage={uploadImage} savingIds={savingIds} isEnabled={isEnabled} />;
+    case "text":     return <TextEditor     item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "stats":    return <StatsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "features": return <FeaturesEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "simple":   return <SimpleEditor   item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "mission-vision": return <MissionVisionEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    default:         return <CardsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
   }
 }
 
 // ── Hero Editor ──
-function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds }) {
+function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds, isEnabled = true }) {
   return (
     <div className="space-y-5">
       <div className="w-full min-w-0 rounded-xl border border-blue-200/70 dark:border-blue-500/15 bg-white/80 dark:bg-[#171b24]/80 p-3 sm:p-4 shadow-sm">
@@ -934,12 +970,22 @@ function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds }) {
       </div>
 
       <FieldGroup label="Title">
-        <input value={item.title||""} onChange={(e) => updateLocal(item.id,{title:e.target.value})}
-          className={inputCls} placeholder="Hero heading text" />
+        <input 
+          value={item.title||""} 
+          onChange={(e) => isEnabled && updateLocal(item.id,{title:e.target.value})}
+          disabled={!isEnabled}
+          className={isEnabled ? inputCls : disabledInputCls} 
+          placeholder="Hero heading text" 
+        />
       </FieldGroup>
       <FieldGroup label="Description / Subtitle">
-        <textarea value={item.description||""} onChange={(e) => updateLocal(item.id,{description:e.target.value})}
-          className={`${inputCls} min-h-[100px] resize-y`} placeholder="Subtitle or description" />
+        <textarea 
+          value={item.description||""} 
+          onChange={(e) => isEnabled && updateLocal(item.id,{description:e.target.value})}
+          disabled={!isEnabled}
+          className={`${isEnabled ? inputCls : disabledInputCls} min-h-[100px] resize-y`} 
+          placeholder="Subtitle or description" 
+        />
       </FieldGroup>
       <FieldGroup label="Section Image">
         {item.image
@@ -949,14 +995,20 @@ function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds }) {
               <ImageIcon size={22}/><span className="text-xs">No image yet</span>
             </div>
         }
-        <input type="file" accept="image/*" onChange={(e) => uploadImage(item.id, e.target.files?.[0])} className="text-sm text-gray-500" />
+        <input 
+          type="file" 
+          accept="image/*" 
+          onChange={(e) => isEnabled && uploadImage(item.id, e.target.files?.[0])} 
+          disabled={!isEnabled}
+          className="text-sm text-gray-500" 
+        />
       </FieldGroup>
     </div>
   );
 }
 
 // ── Text Editor ──
-function TextEditor({ item, savedItem, updateLocal, quickSave }) {
+function TextEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
   return (
     <div className="space-y-5">
       <div className="w-full min-w-0 rounded-[1rem] border border-slate-200/70 dark:border-slate-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(15,23,42,0.35)]">
@@ -971,19 +1023,31 @@ function TextEditor({ item, savedItem, updateLocal, quickSave }) {
       </div>
 
       <FieldGroup label="Section Title (Optional)">
-        <input value={item.title||""} onChange={(e) => updateLocal(item.id,{title:e.target.value})} onBlur={() => quickSave(item)}
-          className={inputCls} placeholder="Heading text" />
+        <input 
+          value={item.title||""} 
+          onChange={(e) => isEnabled && updateLocal(item.id,{title:e.target.value})} 
+          onBlur={() => isEnabled && quickSave(item)}
+          disabled={!isEnabled}
+          className={isEnabled ? inputCls : disabledInputCls} 
+          placeholder="Heading text" 
+        />
       </FieldGroup>
       <FieldGroup label="Description Text">
-        <textarea value={item.description||""} onChange={(e) => updateLocal(item.id,{description:e.target.value})} onBlur={() => quickSave(item)}
-          className={`${inputCls} min-h-[200px] resize-y`} placeholder="Main content text" />
+        <textarea 
+          value={item.description||""} 
+          onChange={(e) => isEnabled && updateLocal(item.id,{description:e.target.value})} 
+          onBlur={() => isEnabled && quickSave(item)}
+          disabled={!isEnabled}
+          className={`${isEnabled ? inputCls : disabledInputCls} min-h-[200px] resize-y`} 
+          placeholder="Main content text" 
+        />
       </FieldGroup>
     </div>
   );
 }
 
 // ── Stats Editor (like TTTC Home/About stats) ──
-function StatsEditor({ item, savedItem, updateLocal, quickSave }) {
+function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1018,25 +1082,35 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave }) {
   return (
     <div className="space-y-6">
       {/* Table */}
-      <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm">
+      <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 dark:bg-white/[0.04] border-b border-gray-200 dark:border-white/[0.06]">
+            <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
               <tr>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Label</th>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Value</th>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-32">Actions</th>
+                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Label</th>
+                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Value</th>
+                <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+            <tbody className={`divide-y ${isEnabled ? "divide-gray-100 dark:divide-white/[0.06]" : "divide-gray-200 dark:divide-gray-700"}`}>
               {data.map((d, i) => (
-                <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
-                  <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{d.title}</td>
-                  <td className="px-4 py-3 text-orange-500 font-bold">{d.description}</td>
+                <tr key={i} className={isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02] transition" : ""}>
+                  <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</td>
+                  <td className={`px-4 py-3 font-bold ${isEnabled ? "text-orange-500" : "text-orange-400/60"}`}>{d.description}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      <button onClick={() => { setForm(d); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Edit</button>
-                      <button onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Delete</button>
+                      <button 
+                        onClick={() => { if(isEnabled) { setForm(d); setEditingIdx(i); } }} 
+                        disabled={!isEnabled}
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => { if(isEnabled) handleDelete(i); }} 
+                        disabled={!isEnabled}
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -1048,19 +1122,19 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave }) {
       </div>
 
       {/* Existing content summary */}
-      <div className="w-full min-w-0 rounded-[1rem] border border-amber-200/70 dark:border-amber-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(245,158,11,0.35)]">
+      <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${isEnabled ? "border-amber-200/70 dark:border-amber-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(245,158,11,0.35)]" : "border-amber-300/50 dark:border-amber-600/20 bg-amber-50/60 dark:bg-amber-900/10"}`}>
         <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className="text-sm font-semibold text-amber-800 dark:text-amber-400">Current values</h4>
-          <span className="text-[11px] uppercase tracking-wide text-amber-600 dark:text-amber-300">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+          <h4 className={`text-sm font-semibold ${isEnabled ? "text-amber-800 dark:text-amber-400" : "text-amber-700 dark:text-amber-500"}`}>Current values</h4>
+          <span className={`text-[11px] uppercase tracking-wide ${isEnabled ? "text-amber-600 dark:text-amber-300" : "text-amber-600 dark:text-amber-400"}`}>{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
         </div>
         {savedData.length === 0 ? (
-          <p className="text-sm text-gray-500">No stats have been added yet.</p>
+          <p className={`text-sm ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>No stats have been added yet.</p>
         ) : (
           <div className="space-y-2">
             {savedData.map((d, i) => (
-              <div key={i} className="rounded-lg border border-amber-100 dark:border-amber-500/10 bg-amber-50/70 dark:bg-amber-500/5 px-3 py-2">
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{d.description || "No value yet"}</p>
+              <div key={i} className={`rounded-lg border p-2 ${isEnabled ? "border-amber-100 dark:border-amber-500/10 bg-amber-50/70 dark:bg-amber-500/5" : "border-amber-200 dark:border-amber-600/20 bg-amber-100/40 dark:bg-amber-900/20"}`}>
+                <p className={`text-sm font-semibold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{d.title || "Untitled"}</p>
+                <p className={`text-xs ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{d.description || "No value yet"}</p>
               </div>
             ))}
           </div>
@@ -1068,33 +1142,35 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave }) {
       </div>
 
       {/* Form */}
-      <div className="bg-amber-50/50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10 rounded-xl p-5 shadow-sm">
-        <h3 className="text-sm font-bold text-amber-800 dark:text-amber-500 mb-4">{editingIdx !== null ? "Edit Stat" : "Add Stat"}</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Label</label>
-            <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Happy Students" />
+      {isEnabled && (
+        <div className="bg-amber-50/50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10 rounded-xl p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-amber-800 dark:text-amber-500 mb-4">{editingIdx !== null ? "Edit Stat" : "Add Stat"}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Label</label>
+              <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Happy Students" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Value</label>
+              <input value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={inputCls} placeholder="e.g. 500+" />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Value</label>
-            <input value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={inputCls} placeholder="e.g. 500+" />
+          <div className="flex gap-3">
+            <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+              {editingIdx !== null ? "Update" : "Add"}
+            </button>
+            {editingIdx !== null && (
+              <button onClick={() => { setForm({title:"", description:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
+            )}
           </div>
         </div>
-        <div className="flex gap-3">
-          <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-            {editingIdx !== null ? "Update" : "Add"}
-          </button>
-          {editingIdx !== null && (
-            <button onClick={() => { setForm({title:"", description:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
 // ── Features Editor (Icon + Image background) ──
-function FeaturesEditor({ item, savedItem, updateLocal, quickSave }) {
+function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1132,31 +1208,41 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave }) {
   return (
     <div className="space-y-6">
       {/* Table */}
-      <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm">
+      <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 dark:bg-white/[0.04] border-b border-gray-200 dark:border-white/[0.06]">
+            <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
               <tr>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-16 text-center">Icon</th>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-16 text-center">Bg Image</th>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Title</th>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-32">Actions</th>
+                <th className={`px-4 py-3 font-semibold w-16 text-center ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Icon</th>
+                <th className={`px-4 py-3 font-semibold w-16 text-center ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Bg Image</th>
+                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Title</th>
+                <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+            <tbody className={`divide-y ${isEnabled ? "divide-gray-100 dark:divide-white/[0.06]" : "divide-gray-200 dark:divide-gray-700"}`}>
               {data.map((d, i) => {
                 const IC = ICON_LIST[d.icon] || Briefcase;
                 return (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
-                    <td className="px-4 py-3 text-center"><IC size={18} className="text-fuchsia-600 inline-block"/></td>
+                  <tr key={i} className={isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02] transition" : ""}>
+                    <td className="px-4 py-3 text-center"><IC size={18} className={isEnabled ? "text-fuchsia-600" : "text-fuchsia-500/60"} /></td>
                     <td className="px-4 py-3">
-                      {(d.image || d.src) ? <img src={d.image||d.src} alt="" className="w-8 h-8 object-cover rounded-md" /> : <span className="text-xs text-gray-400">None</span>}
+                      {(d.image || d.src) ? <img src={d.image||d.src} alt="" className="w-8 h-8 object-cover rounded-md" /> : <span className={`text-xs ${isEnabled ? "text-gray-400" : "text-gray-500"}`}>None</span>}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{d.title}</td>
+                    <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <button onClick={() => { setForm({title: d.title||"", description: d.description||"", icon: d.icon||"", image: d.image||""}); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-600 hover:to-pink-600 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Edit</button>
-                        <button onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Delete</button>
+                        <button 
+                          onClick={() => { if(isEnabled) { setForm({title: d.title||"", description: d.description||"", icon: d.icon||"", image: d.image||"",}); setEditingIdx(i); } }} 
+                          disabled={!isEnabled}
+                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-600 hover:to-pink-600 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => { if(isEnabled) handleDelete(i); }} 
+                          disabled={!isEnabled}
+                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1169,19 +1255,19 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave }) {
       </div>
 
       {/* Existing content summary */}
-      <div className="w-full min-w-0 rounded-[1rem] border border-fuchsia-200/70 dark:border-fuchsia-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(217,70,239,0.35)]">
+      <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${isEnabled ? "border-fuchsia-200/70 dark:border-fuchsia-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(217,70,239,0.35)]" : "border-fuchsia-300/50 dark:border-fuchsia-600/20 bg-fuchsia-50/60 dark:bg-fuchsia-900/10"}`}>
         <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className="text-sm font-semibold text-fuchsia-800 dark:text-fuchsia-400">Current features</h4>
-          <span className="text-[11px] uppercase tracking-wide text-fuchsia-600 dark:text-fuchsia-300">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+          <h4 className={`text-sm font-semibold ${isEnabled ? "text-fuchsia-800 dark:text-fuchsia-400" : "text-fuchsia-700 dark:text-fuchsia-500"}`}>Current features</h4>
+          <span className={`text-[11px] uppercase tracking-wide ${isEnabled ? "text-fuchsia-600 dark:text-fuchsia-300" : "text-fuchsia-600 dark:text-fuchsia-400"}`}>{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
         </div>
         {savedData.length === 0 ? (
-          <p className="text-sm text-gray-500">No features have been added yet.</p>
+          <p className={`text-sm ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>No features have been added yet.</p>
         ) : (
           <div className="space-y-2">
             {savedData.map((d, i) => (
-              <div key={i} className="rounded-lg border border-fuchsia-100 dark:border-fuchsia-500/10 bg-fuchsia-50/70 dark:bg-fuchsia-500/5 px-3 py-2">
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{d.description || "No description yet"}</p>
+              <div key={i} className={`rounded-lg border p-2 ${isEnabled ? "border-fuchsia-100 dark:border-fuchsia-500/10 bg-fuchsia-50/70 dark:bg-fuchsia-500/5" : "border-fuchsia-200 dark:border-fuchsia-600/20 bg-fuchsia-100/40 dark:bg-fuchsia-900/20"}`}>
+                <p className={`text-sm font-semibold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{d.title || "Untitled"}</p>
+                <p className={`text-xs ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{d.description || "No description yet"}</p>
               </div>
             ))}
           </div>
@@ -1189,57 +1275,59 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave }) {
       </div>
 
       {/* Form */}
-      <div className="bg-fuchsia-50/50 dark:bg-fuchsia-500/5 border border-fuchsia-100 dark:border-fuchsia-500/10 rounded-xl p-5 shadow-sm">
-        <h3 className="text-sm font-bold text-fuchsia-800 dark:text-fuchsia-500 mb-4">{editingIdx !== null ? "Edit Feature" : "Add Feature"}</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
-            <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="Feature Name" />
+      {isEnabled && (
+        <div className="bg-fuchsia-50/50 dark:bg-fuchsia-500/5 border border-fuchsia-100 dark:border-fuchsia-500/10 rounded-xl p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-fuchsia-800 dark:text-fuchsia-500 mb-4">{editingIdx !== null ? "Edit Feature" : "Add Feature"}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
+              <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="Feature Name" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Background Image URL</label>
+              <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
+            </div>
+            <div className="relative">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
+              <button onClick={() => setIconDropdown(!iconDropdown)} className="w-full flex items-center gap-2 border border-gray-200 dark:border-white/[0.06] rounded-xl px-3.5 py-2.5 bg-white dark:bg-white/[0.02] text-sm text-left hover:border-fuchsia-400 transition">
+                {SelectedIcon ? <SelectedIcon size={16} className="text-fuchsia-600"/> : null}
+                <span className="flex-1 text-gray-700 dark:text-gray-300">{form.icon || "Pick an icon..."}</span>
+                <ChevronDown size={14} className="text-gray-400"/>
+              </button>
+              {iconDropdown && (
+                <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                  {Object.keys(ICON_LIST).map((name) => {
+                    const IC = ICON_LIST[name];
+                    return (
+                      <button key={name} onClick={() => { setForm({...form, icon: name}); setIconDropdown(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-500/10 text-sm transition text-left">
+                        <IC size={16} className="text-fuchsia-600"/> {name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
+              <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="Detailed description" />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Background Image URL</label>
-            <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
-          </div>
-          <div className="relative">
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
-            <button onClick={() => setIconDropdown(!iconDropdown)} className="w-full flex items-center gap-2 border border-gray-200 dark:border-white/[0.06] rounded-xl px-3.5 py-2.5 bg-white dark:bg-white/[0.02] text-sm text-left hover:border-fuchsia-400 transition">
-              {SelectedIcon ? <SelectedIcon size={16} className="text-fuchsia-600"/> : null}
-              <span className="flex-1 text-gray-700 dark:text-gray-300">{form.icon || "Pick an icon..."}</span>
-              <ChevronDown size={14} className="text-gray-400"/>
+          <div className="flex gap-3">
+            <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+              {editingIdx !== null ? "Update" : "Add"}
             </button>
-            {iconDropdown && (
-              <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto">
-                {Object.keys(ICON_LIST).map((name) => {
-                  const IC = ICON_LIST[name];
-                  return (
-                    <button key={name} onClick={() => { setForm({...form, icon: name}); setIconDropdown(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-500/10 text-sm transition text-left">
-                      <IC size={16} className="text-fuchsia-600"/> {name}
-                    </button>
-                  );
-                })}
-              </div>
+            {editingIdx !== null && (
+              <button onClick={() => { setForm({title:"", description:"", icon:"", image:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
             )}
           </div>
-          <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
-            <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="Detailed description" />
-          </div>
         </div>
-        <div className="flex gap-3">
-          <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-            {editingIdx !== null ? "Update" : "Add"}
-          </button>
-          {editingIdx !== null && (
-            <button onClick={() => { setForm({title:"", description:"", icon:"", image:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
 // ── Mission & Vision Editor (icon cards, e.g. About page) ──
-function MissionVisionEditor({ item, savedItem, updateLocal, quickSave }) {
+function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
   const data = Array.isArray(item.data) ? [...item.data] : [];
   const [form, setForm] = useState({ title: "", description: "", icon: "" });
   const [editingIdx, setEditingIdx] = useState(null);
@@ -1269,29 +1357,39 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave }) {
   return (
     <div className="space-y-6">
       {/* Table */}
-      <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm">
+      <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 dark:bg-white/[0.04] border-b border-gray-200 dark:border-white/[0.06]">
+            <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
               <tr>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-16 text-center">Icon</th>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Title</th>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Description</th>
-                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-32">Actions</th>
+                <th className={`px-4 py-3 font-semibold w-16 text-center ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Icon</th>
+                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Title</th>
+                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Description</th>
+                <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+            <tbody className={`divide-y ${isEnabled ? "divide-gray-100 dark:divide-white/[0.06]" : "divide-gray-200 dark:divide-gray-700"}`}>
               {data.map((d, i) => {
                 const IC = ICON_LIST[d.icon] || Target;
                 return (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
-                    <td className="px-4 py-3 text-center"><IC size={18} className="text-rose-600 inline-block"/></td>
-                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{d.title}</td>
-                    <td className="px-4 py-3 text-gray-500 truncate max-w-[220px]">{d.description}</td>
+                  <tr key={i} className={isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02] transition" : ""}>
+                    <td className="px-4 py-3 text-center"><IC size={18} className={isEnabled ? "text-rose-600" : "text-rose-500/60"} /></td>
+                    <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</td>
+                    <td className={`px-4 py-3 truncate max-w-[220px] ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <button onClick={() => { setForm({ title: d.title||"", description: d.description||"", icon: d.icon||"" }); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Edit</button>
-                        <button onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Delete</button>
+                        <button 
+                          onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", icon: d.icon||"" }); setEditingIdx(i); } }} 
+                          disabled={!isEnabled}
+                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => { if(isEnabled) handleDelete(i); }} 
+                          disabled={!isEnabled}
+                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1304,19 +1402,19 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave }) {
       </div>
 
       {/* Existing content summary */}
-      <div className="w-full min-w-0 rounded-[1rem] border border-rose-200/70 dark:border-rose-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(244,63,94,0.35)]">
+      <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${isEnabled ? "border-rose-200/70 dark:border-rose-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(244,63,94,0.35)]" : "border-rose-300/50 dark:border-rose-600/20 bg-rose-50/60 dark:bg-rose-900/10"}`}>
         <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className="text-sm font-semibold text-rose-800 dark:text-rose-400">Current cards</h4>
-          <span className="text-[11px] uppercase tracking-wide text-rose-600 dark:text-rose-300">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+          <h4 className={`text-sm font-semibold ${isEnabled ? "text-rose-800 dark:text-rose-400" : "text-rose-700 dark:text-rose-500"}`}>Current cards</h4>
+          <span className={`text-[11px] uppercase tracking-wide ${isEnabled ? "text-rose-600 dark:text-rose-300" : "text-rose-600 dark:text-rose-400"}`}>{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
         </div>
         {savedData.length === 0 ? (
-          <p className="text-sm text-gray-500">No cards have been added yet.</p>
+          <p className={`text-sm ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>No cards have been added yet.</p>
         ) : (
           <div className="space-y-2">
             {savedData.map((d, i) => (
-              <div key={i} className="rounded-lg border border-rose-100 dark:border-rose-500/10 bg-rose-50/70 dark:bg-rose-500/5 px-3 py-2">
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{d.description || "No description yet"}</p>
+              <div key={i} className={`rounded-lg border p-2 ${isEnabled ? "border-rose-100 dark:border-rose-500/10 bg-rose-50/70 dark:bg-rose-500/5" : "border-rose-200 dark:border-rose-600/20 bg-rose-100/40 dark:bg-rose-900/20"}`}>
+                <p className={`text-sm font-semibold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{d.title || "Untitled"}</p>
+                <p className={`text-xs ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{d.description || "No description yet"}</p>
               </div>
             ))}
           </div>
@@ -1324,53 +1422,55 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave }) {
       </div>
 
       {/* Form */}
-      <div className="bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10 rounded-xl p-5 shadow-sm">
-        <h3 className="text-sm font-bold text-rose-800 dark:text-rose-500 mb-4">{editingIdx !== null ? "Edit Card" : "Add Card"}</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
-            <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Our Mission" />
+      {isEnabled && (
+        <div className="bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10 rounded-xl p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-rose-800 dark:text-rose-500 mb-4">{editingIdx !== null ? "Edit Card" : "Add Card"}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
+              <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Our Mission" />
+            </div>
+            <div className="relative">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
+              <button onClick={() => setIconDropdown(!iconDropdown)} className="w-full flex items-center gap-2 border border-gray-200 dark:border-white/[0.06] rounded-xl px-3.5 py-2.5 bg-white dark:bg-white/[0.02] text-sm text-left hover:border-rose-400 transition">
+                {SelectedIcon ? <SelectedIcon size={16} className="text-rose-600"/> : null}
+                <span className="flex-1 text-gray-700 dark:text-gray-300">{form.icon || "Pick an icon..."}</span>
+                <ChevronDown size={14} className="text-gray-400"/>
+              </button>
+              {iconDropdown && (
+                <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                  {Object.keys(ICON_LIST).map((name) => {
+                    const IC = ICON_LIST[name];
+                    return (
+                      <button key={name} onClick={() => { setForm({...form, icon: name}); setIconDropdown(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-sm transition text-left">
+                        <IC size={16} className="text-rose-600"/> {name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
+              <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="e.g. We focus on speech, cognitive, and behavioral development..." />
+            </div>
           </div>
-          <div className="relative">
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
-            <button onClick={() => setIconDropdown(!iconDropdown)} className="w-full flex items-center gap-2 border border-gray-200 dark:border-white/[0.06] rounded-xl px-3.5 py-2.5 bg-white dark:bg-white/[0.02] text-sm text-left hover:border-rose-400 transition">
-              {SelectedIcon ? <SelectedIcon size={16} className="text-rose-600"/> : null}
-              <span className="flex-1 text-gray-700 dark:text-gray-300">{form.icon || "Pick an icon..."}</span>
-              <ChevronDown size={14} className="text-gray-400"/>
+          <div className="flex gap-3">
+            <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+              {editingIdx !== null ? "Update" : "Add"}
             </button>
-            {iconDropdown && (
-              <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto">
-                {Object.keys(ICON_LIST).map((name) => {
-                  const IC = ICON_LIST[name];
-                  return (
-                    <button key={name} onClick={() => { setForm({...form, icon: name}); setIconDropdown(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-sm transition text-left">
-                      <IC size={16} className="text-rose-600"/> {name}
-                    </button>
-                  );
-                })}
-              </div>
+            {editingIdx !== null && (
+              <button onClick={() => { setForm({title:"", description:"", icon:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
             )}
           </div>
-          <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
-            <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="e.g. We focus on speech, cognitive, and behavioral development..." />
-          </div>
         </div>
-        <div className="flex gap-3">
-          <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-            {editingIdx !== null ? "Update" : "Add"}
-          </button>
-          {editingIdx !== null && (
-            <button onClick={() => { setForm({title:"", description:"", icon:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
 // ── Generic Cards Editor ──
-function CardsEditor({ item, savedItem, updateLocal, quickSave }) {
+function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1406,39 +1506,62 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FieldGroup label="Section Title">
-          <input value={item.title||""} onChange={(e) => updateLocal(item.id,{title:e.target.value})} onBlur={() => quickSave(item)} className={inputCls} placeholder="Section heading" />
+          <input 
+            value={item.title||""} 
+            onChange={(e) => isEnabled && updateLocal(item.id,{title:e.target.value})} 
+            onBlur={() => isEnabled && quickSave(item)} 
+            disabled={!isEnabled}
+            className={isEnabled ? inputCls : disabledInputCls} 
+            placeholder="Section heading" 
+          />
         </FieldGroup>
         <FieldGroup label="Section Description">
-          <textarea value={item.description||""} onChange={(e) => updateLocal(item.id,{description:e.target.value})} onBlur={() => quickSave(item)}
-            className={`${inputCls} min-h-[42px]`} placeholder="Optional description" />
+          <textarea 
+            value={item.description||""} 
+            onChange={(e) => isEnabled && updateLocal(item.id,{description:e.target.value})} 
+            onBlur={() => isEnabled && quickSave(item)}
+            disabled={!isEnabled}
+            className={`${isEnabled ? inputCls : disabledInputCls} min-h-[42px]`} 
+            placeholder="Optional description" 
+          />
         </FieldGroup>
       </div>
 
       <div className="pt-2 border-t border-gray-100 dark:border-white/[0.06] space-y-6">
         {/* Table */}
-        <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm">
+        <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 dark:bg-white/[0.04] border-b border-gray-200 dark:border-white/[0.06]">
+              <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
                 <tr>
-                  <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-16">Image</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Title</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Description</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-32">Actions</th>
+                  <th className={`px-4 py-3 font-semibold w-16 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Image</th>
+                  <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Title</th>
+                  <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Description</th>
+                  <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+              <tbody className={`divide-y ${isEnabled ? "divide-gray-100 dark:divide-white/[0.06]" : "divide-gray-200 dark:divide-gray-700"}`}>
                 {data.map((d, i) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
+                  <tr key={i} className={isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02] transition" : ""}>
                     <td className="px-4 py-3">
-                      {(d.image || d.src) ? <img src={d.image||d.src} alt="" className="w-10 h-10 object-cover rounded-md border border-gray-200 dark:border-white/10" onError={(e)=>e.target.style.display="none"}/> : <span className="text-xs text-gray-400">None</span>}
+                      {(d.image || d.src) ? <img src={d.image||d.src} alt="" className="w-10 h-10 object-cover rounded-md border border-gray-200 dark:border-white/10" onError={(e)=>e.target.style.display="none"}/> : <span className={`text-xs ${isEnabled ? "text-gray-400" : "text-gray-500"}`}>None</span>}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{d.title}</td>
-                    <td className="px-4 py-3 text-gray-500 truncate max-w-[200px]">{d.description}</td>
+                    <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</td>
+                    <td className={`px-4 py-3 truncate max-w-[200px] ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <button onClick={() => { setForm({ title: d.title||"", description: d.description||"", image: d.image||d.src||"" }); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Edit</button>
-                        <button onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Delete</button>
+                        <button 
+                          onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", image: d.image||d.src||"" }); setEditingIdx(i); } }} 
+                          disabled={!isEnabled}
+                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => { if(isEnabled) handleDelete(i); }} 
+                          disabled={!isEnabled}
+                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1450,19 +1573,19 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave }) {
         </div>
 
         {/* Existing content summary */}
-        <div className="w-full min-w-0 rounded-[1rem] border border-emerald-200/70 dark:border-emerald-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(16,185,129,0.35)]">
+        <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${isEnabled ? "border-emerald-200/70 dark:border-emerald-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(16,185,129,0.35)]" : "border-emerald-300/50 dark:border-emerald-600/20 bg-emerald-50/60 dark:bg-emerald-900/10"}`}>
           <div className="flex items-center justify-between gap-2 mb-3">
-            <h4 className="text-sm font-semibold text-emerald-800 dark:text-emerald-400">Current cards</h4>
-            <span className="text-[11px] uppercase tracking-wide text-emerald-600 dark:text-emerald-300">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+            <h4 className={`text-sm font-semibold ${isEnabled ? "text-emerald-800 dark:text-emerald-400" : "text-emerald-700 dark:text-emerald-500"}`}>Current cards</h4>
+            <span className={`text-[11px] uppercase tracking-wide ${isEnabled ? "text-emerald-600 dark:text-emerald-300" : "text-emerald-600 dark:text-emerald-400"}`}>{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
           </div>
           {savedData.length === 0 ? (
-            <p className="text-sm text-gray-500">No cards have been added yet.</p>
+            <p className={`text-sm ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>No cards have been added yet.</p>
           ) : (
             <div className="space-y-2">
               {savedData.map((d, i) => (
-                <div key={i} className="rounded-lg border border-emerald-100 dark:border-emerald-500/10 bg-emerald-50/70 dark:bg-emerald-500/5 px-3 py-2">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{d.description || "No description yet"}</p>
+                <div key={i} className={`rounded-lg border p-2 ${isEnabled ? "border-emerald-100 dark:border-emerald-500/10 bg-emerald-50/70 dark:bg-emerald-500/5" : "border-emerald-200 dark:border-emerald-600/20 bg-emerald-100/40 dark:bg-emerald-900/20"}`}>
+                  <p className={`text-sm font-semibold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{d.title || "Untitled"}</p>
+                  <p className={`text-xs ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{d.description || "No description yet"}</p>
                 </div>
               ))}
             </div>
@@ -1470,31 +1593,33 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave }) {
         </div>
 
         {/* Form */}
-        <div className="bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10 rounded-xl p-5 shadow-sm">
-          <h3 className="text-sm font-bold text-emerald-800 dark:text-emerald-500 mb-4">{editingIdx !== null ? "Edit Card" : "Add Card"}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
-              <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="Card title" />
+        {isEnabled && (
+          <div className="bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10 rounded-xl p-5 shadow-sm">
+            <h3 className="text-sm font-bold text-emerald-800 dark:text-emerald-500 mb-4">{editingIdx !== null ? "Edit Card" : "Add Card"}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
+                <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="Card title" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Image URL</label>
+                <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
+                <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="Card description" />
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Image URL</label>
-              <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
-              <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="Card description" />
+            <div className="flex gap-3">
+              <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+                {editingIdx !== null ? "Update" : "Add"}
+              </button>
+              {editingIdx !== null && (
+                <button onClick={() => { setForm({title:"", description:"", image:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
+              )}
             </div>
           </div>
-          <div className="flex gap-3">
-            <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-              {editingIdx !== null ? "Update" : "Add"}
-            </button>
-            {editingIdx !== null && (
-              <button onClick={() => { setForm({title:"", description:"", image:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -1603,14 +1728,10 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave }) {
 //  CONTENT PREVIEW
 // ════════════════════════════════════════════════════
 function ContentPreview({ item, type }) {
-  if (!item) return (
-    <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 dark:border-white/[0.06] rounded-xl text-center">
-      <FileText size={28} className="text-gray-300 dark:text-gray-600 mb-3"/>
-      <p className="text-sm font-medium text-gray-500">Section not enabled yet</p>
-      <p className="text-xs text-gray-400 mt-1">Click "Enable Section" to activate it</p>
-    </div>
-  );
-
+  // ContentPreview is only ever rendered from inside the `item ? ... : ...`
+  // branch in the sections list, so `item` is always truthy here. Disabled
+  // sections use SectionEditor (with isEnabled={false}) to show the
+  // read-only fields directly, rather than this preview block.
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1722,6 +1843,8 @@ function ContentPreview({ item, type }) {
 //  SMALL SHARED COMPONENTS
 // ════════════════════════════════════════════════════
 const inputCls = "w-full border border-gray-200 dark:border-white/[0.06] rounded-xl px-3.5 py-2.5 bg-white dark:bg-white/[0.02] text-gray-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600";
+
+const disabledInputCls = "w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 text-sm cursor-not-allowed pointer-events-none placeholder:text-gray-400 dark:placeholder:text-gray-600";
 
 function FieldGroup({ label, children }) {
   return (
