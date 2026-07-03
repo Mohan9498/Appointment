@@ -88,7 +88,8 @@ const PAGE_SECTIONS = {
     { section: "gallery",    label: "Gallery / Activities",type: "cards",    description: "Activity photo cards" },
   ],
   about: [
-    { section: "about-main",  label: "About Content",      type: "text",     description: "Main description text" },
+    { section: "about-mission-vision", label: "Mission & Vision", type: "mission-vision", description: "Our Mission and Our Vision icon cards" },
+    { section: "about-story",          label: "Our Story",        type: "text",           description: "Story heading & narrative paragraph" },
   ],
   programs: [
     { section: "programs",    label: "Programs List",       type: "cards",    description: "Program cards shown on the programs page" },
@@ -108,30 +109,28 @@ const PAGE_ICONS = {
 };
 
 const SECTION_TYPE_META = {
-  hero:     { color: "blue",   label: "Hero",     icon: <ImageIcon size={12}/> },
-  stats:    { color: "amber",  label: "Stats",    icon: <BarChart2 size={12}/> },
-  services: { color: "violet", label: "Services", icon: <Briefcase size={12}/> },
-  features: { color: "fuchsia",label: "Features", icon: <Star size={12}/> },
-  cards:    { color: "emerald",label: "Cards",    icon: <ClipboardList size={12}/> },
-  simple:   { color: "gray",   label: "List",     icon: <Type size={12}/> },
-  text:     { color: "slate",  label: "Text",     icon: <Type size={12}/> },
+  hero:           { color: "blue",   label: "Hero",           icon: <ImageIcon size={12}/> },
+  stats:          { color: "amber",  label: "Stats",          icon: <BarChart2 size={12}/> },
+  services:       { color: "violet", label: "Services",       icon: <Briefcase size={12}/> },
+  features:       { color: "fuchsia",label: "Features",       icon: <Star size={12}/> },
+  cards:          { color: "emerald",label: "Cards",          icon: <ClipboardList size={12}/> },
+  simple:         { color: "gray",   label: "List",           icon: <Type size={12}/> },
+  text:           { color: "slate",  label: "Text",           icon: <Type size={12}/> },
+  "mission-vision": { color: "rose", label: "Mission & Vision", icon: <Target size={12}/> },
 };
 
-// ── DEFAULT STAT TEMPLATES ──
-const HERO_STAT_DEFAULTS = [
-  { title: "Children Helped", description: "700+" },
-  { title: "Branches", description: "35+" },
-  { title: "Parent Satisfaction", description: "98%" }
-];
-
-const ABOUT_STAT_DEFAULTS = [
-  { title: "Success Rate",        description: "" },
-  { title: "Parent Satisfaction", description: "" },
-  { title: "Improvement Rate",    description: "" },
-  { title: "Early Detection",     description: "" },
-  { title: "Phone No One",        description: "" },
-  { title: "Phone No Two",        description: "" },
-];
+// Shared color-class lookup so every SECTION_TYPE_META color (not just a
+// hardcoded few) renders correctly in the section header badge/icon.
+const SECTION_COLOR_CLASSES = {
+  blue:    { solid: "bg-blue-500",    badge: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400" },
+  amber:   { solid: "bg-amber-500",   badge: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" },
+  violet:  { solid: "bg-violet-500",  badge: "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-400" },
+  emerald: { solid: "bg-emerald-500", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" },
+  fuchsia: { solid: "bg-fuchsia-500", badge: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-500/20 dark:text-fuchsia-400" },
+  gray:    { solid: "bg-gray-500",    badge: "bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400" },
+  slate:   { solid: "bg-slate-500",   badge: "bg-slate-100 text-slate-700 dark:bg-slate-500/20 dark:text-slate-400" },
+  rose:    { solid: "bg-rose-500",    badge: "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400" },
+};
 
 // ════════════════════════════════════════════════════
 //  CUSTOM DROPDOWN COMPONENT
@@ -167,8 +166,12 @@ function CustomDropdown({ value, onChange, options, className = "" }) {
   );
 }
 
+// Enabling a section should never invent marketing copy, sample stats, or
+// placeholder lists. It only scaffolds an empty record — page/section/order —
+// so the admin's own content (typed in, or already present from a prior save)
+// is the only thing that ever shows up in the editor/preview.
 function buildSectionPayload(page, section, order) {
-  const base = {
+  return {
     page: String(page).toLowerCase(),
     section: String(section).toLowerCase(),
     title: "",
@@ -176,63 +179,6 @@ function buildSectionPayload(page, section, order) {
     data: [],
     order,
   };
-
-  if (section === "hero") {
-    return {
-      ...base,
-      title: "Compassionate care for every child",
-      description: "We support children and families with personalized therapy, learning, and growth plans.",
-    };
-  }
-
-  if (section === "hero-stats") {
-    return { ...base, title: "Our impact", description: "Trusted by families across the region.", data: HERO_STAT_DEFAULTS };
-  }
-
-  if (section === "services") {
-    return { ...base, title: "Our Services", description: "Flexible programs tailored to each child’s needs." };
-  }
-
-  if (section === "features") {
-    return { ...base, title: "Why families choose us", description: "Support that combines expertise, warmth, and measurable progress." };
-  }
-
-  if (section === "gallery") {
-    return { ...base, title: "Moments from our center", description: "A glimpse into learning, play, and growth." };
-  }
-
-  if (section === "about-main") {
-    return { ...base, title: "About our center", description: "We bring compassionate, child-focused care and personalized support to families." };
-  }
-
-  if (section === "branches") {
-    return {
-      ...base,
-      title: "Branches",
-      description: "Locations where families can access our support.",
-      data: ["WestMambalam", "Choolaimedu", "Anna Nagar", "Adambakkam", "Egmore", "Tambaram", "Porur", "Thiruvanmiyur", "Mylapore", "K.K. Nagar"].map((t) => ({ title: t, description: "" })),
-    };
-  }
-
-  if (section === "program-options") {
-    return {
-      ...base,
-      title: "Program options",
-      description: "Appointment program choices shown to families.",
-      data: ["Speech Therapy", "Cognitive Therapy", "Day Care"].map((t) => ({ title: t, description: "" })),
-    };
-  }
-
-  if (section === "country-codes") {
-    return {
-      ...base,
-      title: "Country codes",
-      description: "Phone country code options for appointments.",
-      data: ["+91", "+1", "+44", "+61", "+971", "+81", "+49", "+33", "+39", "+34", "+86", "+7", "+55", "+27", "+65", "+82", "+966", "+93", "+213"].map((t) => ({ title: t, description: "" })),
-    };
-  }
-
-  return base;
 }
 
 // ════════════════════════════════════════════════════
@@ -857,6 +803,7 @@ function AdminDashboard() {
                 const item    = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
                 const isEdit  = editModeIds.includes(def.section);
                 const meta    = SECTION_TYPE_META[def.type] || SECTION_TYPE_META.cards;
+                const colorCls = SECTION_COLOR_CLASSES[meta.color] || SECTION_COLOR_CLASSES.emerald;
                 const draftItem = item ? (drafts[item.id] || item) : null;
 
                 return (
@@ -865,22 +812,13 @@ function AdminDashboard() {
                     {/* Section Header */}
                     <div className="px-4 py-4 sm:px-6 border-b border-gray-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#16191f]/95 backdrop-blur-sm flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-start gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0 ${
-                          meta.color === "blue"   ? "bg-blue-500"   :
-                          meta.color === "amber"  ? "bg-amber-500"  :
-                          meta.color === "violet" ? "bg-violet-500" : "bg-emerald-500"
-                        }`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0 ${colorCls.solid}`}>
                           {meta.icon}
                         </div>
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="font-bold text-gray-900 dark:text-white">{def.label}</h3>
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${
-                              meta.color === "blue"   ? "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400"   :
-                              meta.color === "amber"  ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400"  :
-                              meta.color === "violet" ? "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-400" :
-                                                       "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400"
-                            }`}>{meta.label}</span>
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${colorCls.badge}`}>{meta.label}</span>
                           </div>
                           <p className="text-xs text-gray-400 mt-0.5">{def.description}</p>
                         </div>
@@ -975,6 +913,7 @@ function SectionEditor({ item, savedItem, type, updateLocal, uploadImage, quickS
     case "stats":    return <StatsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
     case "features": return <FeaturesEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
     case "simple":   return <SimpleEditor   item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
+    case "mission-vision": return <MissionVisionEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
     default:         return <CardsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} />;
   }
 }
@@ -1299,6 +1238,137 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave }) {
   );
 }
 
+// ── Mission & Vision Editor (icon cards, e.g. About page) ──
+function MissionVisionEditor({ item, savedItem, updateLocal, quickSave }) {
+  const data = Array.isArray(item.data) ? [...item.data] : [];
+  const [form, setForm] = useState({ title: "", description: "", icon: "" });
+  const [editingIdx, setEditingIdx] = useState(null);
+  const [iconDropdown, setIconDropdown] = useState(false);
+  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
+
+  const handleSubmit = () => {
+    if (!form.title.trim()) return;
+    const newData = [...data];
+    if (editingIdx !== null) newData[editingIdx] = form;
+    else newData.push(form);
+    updateLocal(item.id, { data: newData });
+    quickSave({ ...item, data: newData });
+    setForm({ title: "", description: "", icon: "" });
+    setEditingIdx(null);
+  };
+
+  const handleDelete = (idx) => {
+    if (!window.confirm("Delete this card?")) return;
+    const newData = data.filter((_, i) => i !== idx);
+    updateLocal(item.id, { data: newData });
+    quickSave({ ...item, data: newData });
+  };
+
+  const SelectedIcon = ICON_LIST[form.icon] || null;
+
+  return (
+    <div className="space-y-6">
+      {/* Table */}
+      <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50 dark:bg-white/[0.04] border-b border-gray-200 dark:border-white/[0.06]">
+              <tr>
+                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-16 text-center">Icon</th>
+                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Title</th>
+                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Description</th>
+                <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-32">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+              {data.map((d, i) => {
+                const IC = ICON_LIST[d.icon] || Target;
+                return (
+                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
+                    <td className="px-4 py-3 text-center"><IC size={18} className="text-rose-600 inline-block"/></td>
+                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{d.title}</td>
+                    <td className="px-4 py-3 text-gray-500 truncate max-w-[220px]">{d.description}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button onClick={() => { setForm({ title: d.title||"", description: d.description||"", icon: d.icon||"" }); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Edit</button>
+                        <button onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {data.length === 0 && <tr><td colSpan="4" className="px-4 py-8 text-center text-gray-400 text-sm">No cards added yet — add "Our Mission" and "Our Vision" below.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Existing content summary */}
+      <div className="w-full min-w-0 rounded-[1rem] border border-rose-200/70 dark:border-rose-500/15 bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(244,63,94,0.35)]">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h4 className="text-sm font-semibold text-rose-800 dark:text-rose-400">Current cards</h4>
+          <span className="text-[11px] uppercase tracking-wide text-rose-600 dark:text-rose-300">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
+        </div>
+        {savedData.length === 0 ? (
+          <p className="text-sm text-gray-500">No cards have been added yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {savedData.map((d, i) => (
+              <div key={i} className="rounded-lg border border-rose-100 dark:border-rose-500/10 bg-rose-50/70 dark:bg-rose-500/5 px-3 py-2">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{d.description || "No description yet"}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Form */}
+      <div className="bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10 rounded-xl p-5 shadow-sm">
+        <h3 className="text-sm font-bold text-rose-800 dark:text-rose-500 mb-4">{editingIdx !== null ? "Edit Card" : "Add Card"}</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
+            <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Our Mission" />
+          </div>
+          <div className="relative">
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
+            <button onClick={() => setIconDropdown(!iconDropdown)} className="w-full flex items-center gap-2 border border-gray-200 dark:border-white/[0.06] rounded-xl px-3.5 py-2.5 bg-white dark:bg-white/[0.02] text-sm text-left hover:border-rose-400 transition">
+              {SelectedIcon ? <SelectedIcon size={16} className="text-rose-600"/> : null}
+              <span className="flex-1 text-gray-700 dark:text-gray-300">{form.icon || "Pick an icon..."}</span>
+              <ChevronDown size={14} className="text-gray-400"/>
+            </button>
+            {iconDropdown && (
+              <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                {Object.keys(ICON_LIST).map((name) => {
+                  const IC = ICON_LIST[name];
+                  return (
+                    <button key={name} onClick={() => { setForm({...form, icon: name}); setIconDropdown(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-sm transition text-left">
+                      <IC size={16} className="text-rose-600"/> {name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
+            <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="e.g. We focus on speech, cognitive, and behavioral development..." />
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+            {editingIdx !== null ? "Update" : "Add"}
+          </button>
+          {editingIdx !== null && (
+            <button onClick={() => { setForm({title:"", description:"", icon:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Generic Cards Editor ──
 function CardsEditor({ item, savedItem, updateLocal, quickSave }) {
   const data = Array.isArray(item.data)
@@ -1590,6 +1660,38 @@ function ContentPreview({ item, type }) {
               })}
             </div>
           : <p className="text-sm text-gray-400">No services configured yet.</p>
+        }
+      </div>
+    );
+  }
+
+  if (type === "mission-vision") {
+    const palette = [
+      { bg: "bg-rose-100 dark:bg-rose-500/20",  text: "text-rose-600" },
+      { bg: "bg-amber-100 dark:bg-amber-500/20", text: "text-amber-600" },
+      { bg: "bg-blue-100 dark:bg-blue-500/20",   text: "text-blue-600" },
+      { bg: "bg-emerald-100 dark:bg-emerald-500/20", text: "text-emerald-600" },
+    ];
+    return (
+      <div className="space-y-3">
+        {item.title && <h3 className="text-lg font-bold">{item.title}</h3>}
+        {data.length > 0
+          ? <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {data.map((c,i) => {
+                const IC = ICON_LIST[c.icon] || Target;
+                const clr = palette[i % palette.length];
+                return (
+                  <div key={i} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
+                    <div className={`w-11 h-11 rounded-xl ${clr.bg} flex items-center justify-center mb-3`}>
+                      <IC size={20} className={clr.text}/>
+                    </div>
+                    <h4 className="font-bold text-base mb-1.5">{c.title||"—"}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{c.description||"—"}</p>
+                  </div>
+                );
+              })}
+            </div>
+          : <p className="text-sm text-gray-400">No cards configured yet — add "Our Mission" and "Our Vision".</p>
         }
       </div>
     );
