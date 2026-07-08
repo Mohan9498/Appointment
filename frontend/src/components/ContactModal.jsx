@@ -59,61 +59,34 @@ function ContactModal({ onClose, prefill = null }) {
   const programsCMS = getSection("program-options"); 
   const countryCMS = getSection("country-codes");
 
-  const defaultCountries = [
-    { code: "+91", label: "🇮🇳" },
-    { code: "+1", label: "🇺🇸" },
-    { code: "+44", label: "🇬🇧" },
-    { code: "+61", label: "🇦🇺" },
-    { code: "+971", label: "🇦🇪" },
-    { code: "+81", label: "🇯🇵" },
-    { code: "+49", label: "🇩🇪" },
-    { code: "+33", label: "🇫🇷" },
-    { code: "+39", label: "🇮🇹" },
-    { code: "+34", label: "🇪🇸" },
-    { code: "+86", label: "🇨🇳" },
-    { code: "+7", label: "🇷🇺" },
-    { code: "+55", label: "🇧🇷" },
-    { code: "+27", label: "🇿🇦" },
-    { code: "+65", label: "🇸🇬" },
-    { code: "+82", label: "🇰🇷" },
-    { code: "+966", label: "🇸🇦" },
-    { code: "+93", label: "🇦🇫" },
-    { code: "+213", label: "🇩🇿" },
-  ];
+  // Cosmetic-only lookup: adds a flag emoji next to a country code IF we
+  // happen to recognize it. This is NOT a fallback data source — the list
+  // of codes shown in the dropdown always comes from CMS (`country-codes`
+  // section in Settings). Unrecognized codes just show without a flag.
+  const COUNTRY_FLAGS = {
+    "+91": "🇮🇳", "+1": "🇺🇸", "+44": "🇬🇧", "+61": "🇦🇺", "+971": "🇦🇪",
+    "+81": "🇯🇵", "+49": "🇩🇪", "+33": "🇫🇷", "+39": "🇮🇹", "+34": "🇪🇸",
+    "+86": "🇨🇳", "+7": "🇷🇺", "+55": "🇧🇷", "+27": "🇿🇦", "+65": "🇸🇬",
+    "+82": "🇰🇷", "+966": "🇸🇦", "+93": "🇦🇫", "+213": "🇩🇿",
+  };
 
-  const countries = countryCMS?.data?.length
-    ? countryCMS.data.map(c => ({ code: c.title, label: c.title }))
-    : defaultCountries;
+  const countries = (countryCMS?.data || []).map(c => ({
+    code: c.title,
+    label: COUNTRY_FLAGS[c.title] || c.title,
+  }));
 
-  const programs = programsCMS?.data?.length
-    ? programsCMS.data.map(p => ({ value: p.title, label: p.title }))
-    : [
-        { value: "Speech Therapy",   label: "Speech Therapy" },
-        { value: "Cognitive Therapy", label: "Cognitive Therapy" },
-        { value: "Day Care",          label: "Day Care" },
-      ];
+  const programs = (programsCMS?.data || []).map(p => ({
+    value: p.title,
+    label: p.title,
+  }));
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const inputRef = useRef();
 
-  const branches = branchesCMS?.data?.length
-  ? [...branchesCMS.data].sort((a, b) => a.title.localeCompare(b.title))
-  : [
-      { title: "WestMambalam" },
-      { title: "Choolaimedu" },
-      { title: "Anna Nagar" },
-      { title: "Adambakkam" },
-      { title: "Egmore" },
-      { title: "Tambaram" },
-      { title: "Porur" },
-      { title: "Thiruvanmiyur" },
-      { title: "Mylapore" },
-      { title: "K.K. Nagar" },
-    ];
-
-
-  
+  const branches = [...(branchesCMS?.data || [])].sort((a, b) =>
+    a.title.localeCompare(b.title)
+  );
 
   // Derived phone error — recalculates whenever phone or countryCode changes
   const phoneError = getPhoneError(form.countryCode, form.phone);
@@ -126,6 +99,15 @@ function ContactModal({ onClose, prefill = null }) {
   useEffect(() => {
     if (prefill) setForm((prev) => ({ ...prev, ...prefill }));
   }, [prefill]);
+
+  // Once the country-codes list loads from CMS, make sure the selected
+  // code is actually one of the available options (falls back to the
+  // first CMS option rather than a hardcoded "+91").
+  useEffect(() => {
+    if (countries.length && !countries.some((c) => c.code === form.countryCode)) {
+      setForm((prev) => ({ ...prev, countryCode: countries[0].code }));
+    }
+  }, [countries]);
 
   useEffect(() => {
     const handleEsc = (e) => { if (e.key === "Escape") onClose(); };

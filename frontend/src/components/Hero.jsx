@@ -15,6 +15,24 @@ function Hero({ onOpenModal }) {
     { title: "Parent Satisfaction", description: "98%" },
   ];
 
+  // Badge text and the highlighted (accent-colored) line of the heading are
+  // stored as two entries in hero.data, using the same {title, description}
+  // shape every other CMS section's data array uses (stats, cards,
+  // mission-vision) — the backend's serializer rejected a custom shape.
+  const heroData = Array.isArray(hero?.data) ? hero.data : [];
+  const badgeText = heroData.find((d) => d?.title === "badge")?.description || "✨ Professional Child Therapy";
+  const highlightText = heroData.find((d) => d?.title === "highlight")?.description || "Little Minds";
+  const headingLine1 = hero?.title || "Empowering";
+
+  // Uploaded images come back as relative backend paths (e.g. "/media/..."),
+  // same as in the admin dashboard preview — needs the API origin prefixed,
+  // or the <img> 404s and silently falls back to nothing.
+  const heroImage = hero?.image
+    ? hero.image.startsWith("http")
+      ? hero.image
+      : `https://appointment-83q0.onrender.com${hero.image}`
+    : g1;
+
   return (
     <section className="relative pt-20 min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
 
@@ -41,27 +59,18 @@ function Hero({ onOpenModal }) {
           {/* Badge */}
           <div className="animate-fade-in-up">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-blue-100/80 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200/50 dark:border-blue-700/30 backdrop-blur-sm">
-              ✨ Professional Child Therapy
+              {badgeText}
             </span>
           </div>
 
-          {/* ✅ CMS TITLE */}
+          {/* ✅ CMS TITLE — first line comes from `title`, second (accent) line
+              from `data[0].highlight`. Both are editable independently in the
+              admin dashboard, so there's no brittle string-splitting here. */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight text-gray-900 dark:text-white animate-fade-in-up-delay-1">
-            {hero?.title ? (
-              <>
-                {hero.title.split("Little Minds")[0]}
-                <span className="text-gradient">
-                  Little Minds
-                </span>
-              </>
-            ) : (
-              <>
-                Empowering{" "}
-                <span className="text-gradient">
-                  Little Minds
-                </span>
-              </>
-            )}
+            {headingLine1}{" "}
+            <span className="text-gradient">
+              {highlightText}
+            </span>
           </h1>
 
           {/* ✅ CMS DESCRIPTION */}
@@ -111,7 +120,7 @@ function Hero({ onOpenModal }) {
 
           {/* ✅ CMS IMAGE */}
           <img
-            src={hero?.image || g1}
+            src={heroImage}
             alt="Child Therapy"
             width={400}
             height={300}

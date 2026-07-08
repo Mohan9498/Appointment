@@ -1,14 +1,47 @@
 import useCMS from "../hooks/useCMS";
+import {
+  Target,
+  Sparkles,
+  HeartPulse,
+  ShieldCheck,
+  Users,
+  Star,
+  Lightbulb,
+  Award,
+  GraduationCap,
+  Smile,
+} from "lucide-react";
 
 import SEO from "../components/SEO";
 
+// Same icon keys the admin dashboard's MissionVisionEditor picker uses
+// (ICON_LIST in AdminDashboard.jsx) — kept in sync so any icon chosen there
+// renders correctly here.
+const ICON_MAP = {
+  Target, Sparkles, HeartPulse, ShieldCheck, Users, Star, Lightbulb, Award,
+  GraduationCap, Smile,
+};
+
+const CARD_STYLES = [
+  { iconBg: "bg-blue-100 dark:bg-blue-900/30", emoji: "🎯" },
+  { iconBg: "bg-indigo-100 dark:bg-indigo-900/30", emoji: "🌟" },
+];
+
 function About() {
 
-  // ✅ CMS HOOK
+  // ✅ CMS HOOK — reads the two sections actually registered for the About
+  // page in the admin dashboard (see PAGE_SECTIONS.about in AdminDashboard.jsx)
   const { getSection } = useCMS("about");
+  const missionVision = getSection("about-mission-vision");
+  const story = getSection("about-story");
 
-  // 🔥 FIX: match section correctly
-  const about = getSection("about-main");
+  // Falls back to the original static Mission/Vision copy whenever the CMS
+  // section hasn't been configured yet, so the page never looks empty.
+  const staticCards = [
+    { title: "Our Mission", description: "We focus on speech, cognitive, and behavioral development through personalized therapy programs tailored for each child.", icon: "" },
+    { title: "Our Vision", description: "Every child deserves a chance to succeed, grow confidently, and reach their fullest potential.", icon: "" },
+  ];
+  const cards = missionVision?.data?.length ? missionVision.data : staticCards;
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white">
@@ -43,35 +76,31 @@ function About() {
       <section className="px-6 pb-24">
         <div className="max-w-6xl mx-auto space-y-10">
 
-          {/* Mission & Vision */}
+          {/* ✅ CMS Mission & Vision — rendered as separate cards, same as before,
+              but the title/description/icon of each card now comes from the
+              admin dashboard's "Mission & Vision" section instead of being
+              hardcoded. Each entry in `data` becomes its own card. */}
           <div className="grid md:grid-cols-2 gap-6">
-
-            <div className="group p-8 rounded-2xl bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-5">
-                <span className="text-2xl">🎯</span>
-              </div>
-              <h2 className="text-2xl font-bold mb-4 tracking-tight text-gray-900 dark:text-white">
-                Our Mission
-              </h2>
-              <p className="text-gray-500 dark:text-gray-400 leading-7 text-sm md:text-base">
-                We focus on speech, cognitive, and behavioral development through
-                personalized therapy programs tailored for each child.
-              </p>
-            </div>
-
-            <div className="group p-8 rounded-2xl bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-5">
-                <span className="text-2xl">🌟</span>
-              </div>
-              <h2 className="text-2xl font-bold mb-4 tracking-tight text-gray-900 dark:text-white">
-                Our Vision
-              </h2>
-              <p className="text-gray-500 dark:text-gray-400 leading-7 text-sm md:text-base">
-                Every child deserves a chance to succeed, grow confidently, and
-                reach their fullest potential.
-              </p>
-            </div>
-
+            {cards.map((card, i) => {
+              const style = CARD_STYLES[i % CARD_STYLES.length];
+              const Icon = ICON_MAP[card.icon];
+              return (
+                <div
+                  key={i}
+                  className="group p-8 rounded-2xl bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
+                >
+                  <div className={`w-12 h-12 rounded-xl ${style.iconBg} flex items-center justify-center mb-5`}>
+                    {Icon ? <Icon size={22} className="text-blue-600 dark:text-blue-400" /> : <span className="text-2xl">{style.emoji}</span>}
+                  </div>
+                  <h2 className="text-2xl font-bold mb-4 tracking-tight text-gray-900 dark:text-white">
+                    {card.title || "—"}
+                  </h2>
+                  <p className="text-gray-500 dark:text-gray-400 leading-7 text-sm md:text-base">
+                    {card.description || ""}
+                  </p>
+                </div>
+              );
+            })}
           </div>
 
           {/* MAIN CONTENT */}
@@ -79,13 +108,16 @@ function About() {
 
             <div className="flex items-center gap-3 mb-6">
               <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full" />
-              <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Our Story</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                {story?.title || "Our Story"}
+              </h2>
             </div>
 
-            {/* ✅ FIX: CMS overrides FULL content safely */}
-            {about?.description ? (
-              <p className="text-gray-500 dark:text-gray-400 leading-8 text-justify text-sm md:text-base">
-                {about.description}
+            {/* ✅ CMS overrides FULL content safely — reads from the
+                "Our Story" section (type: text) in the admin dashboard */}
+            {story?.description ? (
+              <p className="text-gray-500 dark:text-gray-400 leading-8 text-justify text-sm md:text-base whitespace-pre-line">
+                {story.description}
               </p>
             ) : (
               <>

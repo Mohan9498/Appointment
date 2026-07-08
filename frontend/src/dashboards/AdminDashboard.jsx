@@ -34,6 +34,7 @@ import {
   Eye,
   GraduationCap,
   HandHeart,
+  Heart,
   HeartPulse,
   HelpingHand,
   Library,
@@ -55,6 +56,10 @@ import {
   TrendingUp,
   Hash,
   Type,
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
 } from "lucide-react";
 import {
   BarChart,
@@ -69,13 +74,27 @@ import {
   Legend,
 } from "recharts";
 import useAuthStore from "../store/useAuthStore";
+import serviceSpeechImage from "../assets/j3.webp";
+import serviceCognitiveImage from "../assets/j5.webp";
+import serviceDayCareImage from "../assets/j4.webp";
+import gallerySpeechImage from "../assets/c1.jpg";
+import galleryLearningImage from "../assets/c2-640.webp";
+import galleryCognitiveImage from "../assets/j6.webp";
+import galleryPlayImage from "../assets/j7.webp";
+import featureTherapyImage from "../assets/features/therapy.jpeg";
+import featureSafeImage from "../assets/features/safe-env.jpeg";
+import featurePlayImage from "../assets/features/play-learning.jpeg";
+import featureScheduleImage from "../assets/features/schedule.png";
+import featureFamilyImage from "../assets/features/parent.jpeg";
+import featureProgressImage from "../assets/features/progress.jpeg";
 
 // ── ICON REGISTRY for Services picker ──
 const ICON_LIST = {
   Activity, Award, Baby, BookOpen, Brain, Calculator, ClipboardList,
   Ear, Eye, GraduationCap, HandHeart, HeartPulse, HelpingHand, Library,
-  Lightbulb, Mic, Notebook, PenTool, Puzzle, School, ShieldCheck, Smile,
+  Heart, Lightbulb, Mic, Notebook, PenTool, Puzzle, School, ShieldCheck, Smile,
   Sparkles, Star, Stethoscope, Target, Timer, UserCheck, Users,
+  Phone, Mail, MapPin, Clock,
 };
 
 // ── CMS PAGE SECTIONS ──
@@ -88,8 +107,14 @@ const PAGE_SECTIONS = {
     { section: "gallery",    label: "Gallery / Activities",type: "cards",    description: "Activity photo cards" },
   ],
   about: [
-    { section: "about-mission-vision", label: "Mission & Vision", type: "mission-vision", description: "Our Mission and Our Vision icon cards" },
-    { section: "about-story",          label: "Our Story",        type: "text",           description: "Story heading & narrative paragraph" },
+    { section: "about-mission", label: "Our Mission", type: "single-card", description: "The Mission icon card (title, description & icon)" },
+    { section: "about-vision",  label: "Our Vision",  type: "single-card", description: "The Vision icon card (title, description & icon)" },
+    { section: "about-story",   label: "Our Story",   type: "text",        description: "Story heading & narrative paragraph" },
+  ],
+  contact: [
+    { section: "contact-hero",  label: "Contact Hero",     type: "hero",           description: "Badge, heading & subtitle at the top of the page" },
+    { section: "contact-info",  label: "Contact Info Cards", type: "mission-vision", description: "Call, Email, Location, WhatsApp, Hours cards" },
+    { section: "contact-form",  label: "Contact Form",      type: "text",           description: "Title & subtitle shown above the message form" },
   ],
   programs: [
     { section: "programs",    label: "Programs List",       type: "cards",    description: "Program cards shown on the programs page" },
@@ -102,10 +127,11 @@ const PAGE_SECTIONS = {
 };
 
 const PAGE_ICONS = {
-  home: <Home size={16} />,
-  about: <Info size={16} />,
-  programs: <BookOpen size={16} />,
-  settings: <Settings size={16} />,
+  home: <Home size={13} />,
+  about: <Info size={13} />,
+  programs: <BookOpen size={13} />,
+  contact: <MessageSquare size={13} />,
+  settings: <Settings size={13} />,
 };
 
 const SECTION_TYPE_META = {
@@ -117,6 +143,7 @@ const SECTION_TYPE_META = {
   simple:         { color: "gray",   label: "List",           icon: <Type size={12}/> },
   text:           { color: "slate",  label: "Text",           icon: <Type size={12}/> },
   "mission-vision": { color: "rose", label: "Mission & Vision", icon: <Target size={12}/> },
+  "single-card":  { color: "rose",   label: "Card",           icon: <Target size={12}/> },
 };
 
 // Shared color-class lookup so every SECTION_TYPE_META color (not just a
@@ -170,13 +197,276 @@ function CustomDropdown({ value, onChange, options, className = "" }) {
 // placeholder lists. It only scaffolds an empty record — page/section/order —
 // so the admin's own content (typed in, or already present from a prior save)
 // is the only thing that ever shows up in the editor/preview.
-function buildSectionPayload(page, section, order) {
+//
+// EXCEPTION — home/hero: Hero.jsx ships with hardcoded fallback copy (the
+// badge, heading, and subtitle already visible on the live site right now)
+// so the public page never looks broken before an admin has touched the CMS.
+// If we scaffolded that section blank, the editor would show empty fields
+// while the real site kept showing that fallback copy — confusing, and an
+// easy way to accidentally wipe it by saving. So for this one section only,
+// we seed the editor with the exact same strings already hardcoded in
+// Hero.jsx, rather than inventing anything new. Keep these two in sync.
+const HOME_HERO_DEFAULTS = {
+  title: "Empowering",
+  description: "Professional therapy & development programs designed to help your child grow with confidence, communication, and care.",
+  data: [
+    { title: "badge", description: "✨ Professional Child Therapy" },
+    { title: "highlight", description: "Little Minds" },
+  ],
+};
+
+// Same exception as home/hero — seed the Contact hero and info cards with the
+// copy already hardcoded/live in Contact.jsx, so the editor never opens blank
+// while the real site shows something different.
+const CONTACT_HERO_DEFAULTS = {
+  title: "Let's talk about your child's",
+  description: "Reach out for therapy consultation, program details, appointment support, or general questions.",
+  data: [
+    { title: "badge", description: "Get in touch" },
+    { title: "highlight", description: "care." },
+  ],
+};
+
+const CONTACT_INFO_DEFAULTS = [
+  { title: "Call us", description: "+91 99413 50646", icon: "Phone" },
+  { title: "Email", description: "support@tinytodds.com", icon: "Mail" },
+  { title: "Location", description: "Chennai, Tamil Nadu", icon: "MapPin" },
+  { title: "WhatsApp", description: "Chat on WhatsApp", icon: "Phone" },
+  { title: "Hours", description: "Mon - Sat, 10 AM - 8 PM", icon: "Clock" },
+];
+
+// Seed the Contact Form section with the default copy already live in
+// Contact.jsx so the editor never opens blank while the site shows content.
+const CONTACT_FORM_DEFAULTS = {
+  title: "Send a message",
+  description: "Fill in your details and we\u2019ll get back to you soon.",
+  data: [],
+};
+
+const HERO_STATS_DEFAULTS = {
+  data: [
+    { title: "Children Helped", description: "700+" },
+    { title: "Branches", description: "35+" },
+    { title: "Parent Satisfaction", description: "98%" },
+  ],
+};
+
+const SERVICES_DEFAULTS = {
+  title: "Our Services",
+  description: "Specialized therapy programs designed to support every child's growth, learning, and development journey.",
+  data: [
+    {
+      title: "Speech Therapy",
+      description: "Improve communication, language, and social skills through evidence-based speech development techniques tailored to each child.",
+      image: serviceSpeechImage,
+    },
+    {
+      title: "Cognitive Therapy",
+      description: "Enhance memory, attention, and problem-solving abilities with structured cognitive training programs.",
+      image: serviceCognitiveImage,
+    },
+    {
+      title: "Day Care",
+      description: "A safe, nurturing, and engaging environment for learning, play, and social growth throughout the day.",
+      image: serviceDayCareImage,
+    },
+  ],
+};
+
+const FEATURES_DEFAULTS = {
+  data: [
+    {
+      icon: "Brain",
+      title: "Expert Therapists",
+      description: "Our certified specialists bring years of experience in pediatric speech, cognitive, and behavioral therapy.",
+      image: featureTherapyImage,
+    },
+    {
+      icon: "ShieldCheck",
+      title: "Safe Environment",
+      description: "A fully child-proofed, nurturing space designed to make every child feel comfortable and secure.",
+      image: featureSafeImage,
+    },
+    {
+      icon: "Heart",
+      title: "Child Friendly",
+      description: "Programs are built around play-based learning so children enjoy every session and thrive.",
+      image: featurePlayImage,
+    },
+    {
+      icon: "Clock",
+      title: "Flexible Scheduling",
+      description: "Morning, afternoon, and weekend slots available to fit your family's routine.",
+      image: featureScheduleImage,
+    },
+    {
+      icon: "Users",
+      title: "Family Involvement",
+      description: "We keep parents engaged with regular progress updates and at-home activity guides.",
+      image: featureFamilyImage,
+    },
+    {
+      icon: "Star",
+      title: "Proven Results",
+      description: "Over 2850 children have made meaningful developmental progress across our 35 branches.",
+      image: featureProgressImage,
+    },
+  ],
+};
+
+const GALLERY_DEFAULTS = {
+  title: "Our Activities",
+  description: "A glimpse into our engaging sessions that help children grow, learn, and thrive.",
+  data: [
+    {
+      title: "Speech Activities",
+      description: "Speech therapy activity",
+      image: gallerySpeechImage,
+    },
+    {
+      title: "Learning Sessions",
+      description: "Interactive learning session",
+      image: galleryLearningImage,
+    },
+    {
+      title: "Cognitive Training",
+      description: "Cognitive development activity",
+      image: galleryCognitiveImage,
+    },
+    {
+      title: "Play & Growth",
+      description: "Play-based learning activity",
+      image: galleryPlayImage,
+    },
+  ],
+};
+
+const PROGRAMS_DEFAULTS = {
+  title: "Our Programs",
+  description: "Carefully designed therapy programs to support your child's growth and development.",
+  data: [
+    {
+      title: "Speech Therapy",
+      description: "Improve communication and language development skills in children through personalized, evidence-based sessions.",
+      image: serviceSpeechImage,
+    },
+    {
+      title: "Cognitive Therapy",
+      description: "Enhance memory, attention, and problem-solving abilities with structured cognitive training programs.",
+      image: serviceCognitiveImage,
+    },
+    {
+      title: "Day Care",
+      description: "A safe, engaging environment for learning and social growth with expert supervision throughout the day.",
+      image: serviceDayCareImage,
+    },
+  ],
+};
+
+// ── SETTINGS DEFAULTS ──
+// These seed the Settings sections (Branches / Program Options / Country
+// Codes) with the exact same values ContactModal.jsx expects/consumes, so
+// enabling a section for the first time — or previewing/editing it before
+// it's been saved — already shows a real, usable list instead of "empty".
+const BRANCHES_DEFAULTS = {
+  data: [
+    { title: "WestMambalam", description: "" },
+    { title: "Choolaimedu", description: "" },
+    { title: "Anna Nagar", description: "" },
+    { title: "Adambakkam", description: "" },
+    { title: "Egmore", description: "" },
+    { title: "Tambaram", description: "" },
+    { title: "Porur", description: "" },
+    { title: "Thiruvanmiyur", description: "" },
+    { title: "Mylapore", description: "" },
+    { title: "K.K. Nagar", description: "" },
+  ],
+};
+
+const PROGRAM_OPTIONS_DEFAULTS = {
+  data: [
+    { title: "Speech Therapy", description: "" },
+    { title: "Cognitive Therapy", description: "" },
+    { title: "Day Care", description: "" },
+  ],
+};
+
+const COUNTRY_CODES_DEFAULTS = {
+  data: [
+    { title: "+91", description: "" },
+    { title: "+1", description: "" },
+    { title: "+44", description: "" },
+    { title: "+61", description: "" },
+    { title: "+971", description: "" },
+    { title: "+81", description: "" },
+    { title: "+49", description: "" },
+    { title: "+33", description: "" },
+    { title: "+39", description: "" },
+    { title: "+34", description: "" },
+    { title: "+86", description: "" },
+    { title: "+7", description: "" },
+    { title: "+55", description: "" },
+    { title: "+27", description: "" },
+    { title: "+65", description: "" },
+    { title: "+82", description: "" },
+    { title: "+966", description: "" },
+    { title: "+93", description: "" },
+    { title: "+213", description: "" },
+  ],
+};
+
+const SECTION_DEFAULTS = {
+  home: {
+    hero: HOME_HERO_DEFAULTS,
+    "hero-stats": HERO_STATS_DEFAULTS,
+    services: SERVICES_DEFAULTS,
+    features: FEATURES_DEFAULTS,
+    gallery: GALLERY_DEFAULTS,
+  },
+  contact: {
+    "contact-hero": CONTACT_HERO_DEFAULTS,
+    "contact-info": { data: CONTACT_INFO_DEFAULTS },
+    "contact-form": CONTACT_FORM_DEFAULTS,
+  },
+  programs: {
+    programs: PROGRAMS_DEFAULTS,
+  },
+  settings: {
+    branches: BRANCHES_DEFAULTS,
+    "program-options": PROGRAM_OPTIONS_DEFAULTS,
+    "country-codes": COUNTRY_CODES_DEFAULTS,
+  },
+};
+
+const cloneDefaultData = (data = []) => data.map((d) => ({ ...d }));
+
+function getSectionDefaults(page, section) {
+  return SECTION_DEFAULTS[String(page || "").toLowerCase()]?.[String(section || "").toLowerCase()] || {};
+}
+
+function applySectionDefaults(item) {
+  const defaults = getSectionDefaults(item?.page, item?.section);
+  const hasData = Array.isArray(item?.data) && item.data.length > 0;
+
   return {
-    page: String(page).toLowerCase(),
-    section: String(section).toLowerCase(),
-    title: "",
-    description: "",
-    data: [],
+    ...item,
+    title: item?.title || defaults.title || "",
+    description: item?.description || defaults.description || "",
+    data: hasData ? item.data : cloneDefaultData(defaults.data),
+  };
+}
+
+function buildSectionPayload(page, section, order) {
+  const normalizedPage = String(page).toLowerCase();
+  const normalizedSection = String(section).toLowerCase();
+  const defaults = getSectionDefaults(normalizedPage, normalizedSection);
+
+  return {
+    page: normalizedPage,
+    section: normalizedSection,
+    title: defaults.title || "",
+    description: defaults.description || "",
+    data: cloneDefaultData(defaults.data),
     order,
   };
 }
@@ -319,7 +609,24 @@ function AdminDashboard() {
       toast.success("Section enabled");
       setEditModeIds((prev) => [...prev, section]);
     } catch (err) {
-      toast.error(err.response?.data?.section?.[0] ?? "Failed to create section");
+      console.error("Payload:", payload);
+      console.error("Status:", err.response?.status);
+      console.error("Backend response:", err.response?.data);
+        
+      const data = err.response?.data || {};
+        
+      const error =
+        data.detail ||
+        data.non_field_errors?.[0] ||
+        data.section?.[0] ||
+        data.page?.[0] ||
+        data.title?.[0] ||
+        data.description?.[0] ||
+        data.data?.[0] ||
+        JSON.stringify(data) ||
+        "Failed to create section";
+        
+      toast.error(error);
     }
   };
 
@@ -677,7 +984,7 @@ function AdminDashboard() {
                         ?.slice()
                         .sort((a, b) => a.title.localeCompare(b.title))
                         .map(b => ({ value: b.title, label: b.title })) 
-                        || ["WestMambalam", "Choolaimedu", "Anna Nagar", "Adambakkam", "Egmore", "Tambaram", "Porur", "Thiruvanmiyur", "Mylapore", "K.K. Nagar"].map(b => ({ value: b, label: b })))
+                        || [])
                     ]}
                   />
 
@@ -779,49 +1086,68 @@ function AdminDashboard() {
           {active === "pages" && (
             <div className="space-y-6">
               {/* Header */}
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Pages Editor</h2>
-                <p className="text-sm text-gray-500 mt-1">Edit your website content section by section.</p>
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-md shadow-blue-600/20 shrink-0">
+                  <FileText size={20} className="text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Pages Editor</h2>
+                  <p className="text-sm text-gray-500 mt-0.5">Edit your website content section by section.</p>
+                </div>
               </div>
 
               {/* Page Tabs */}
               <div className="bg-white dark:bg-[#16191f] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] shadow-sm">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Select Page</p>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-                  {Object.keys(PAGE_SECTIONS).map((page) => (
-                    <button key={page}
-                      onClick={() => setPagesTab(page)}
-                      className={`flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2.5 rounded-xl border text-sm font-medium capitalize transition-all duration-200 ${
-                        pagesTab === page
-                          ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-transparent shadow-md shadow-blue-600/20"
-                          : "bg-gray-50 dark:bg-white/[0.02] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-700"
-                      }`}
-                    >
-                      {PAGE_ICONS[page]}
-                      {page}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {Object.keys(PAGE_SECTIONS).map((page) => {
+                    const isActive = pagesTab === page;
+                    return (
+                      <button key={page}
+                        onClick={() => setPagesTab(page)}
+                        className={`group flex items-center justify-center gap-1.5 w-full px-4 py-2.5 rounded-xl border text-sm font-medium capitalize transition-all duration-200 ${
+                          isActive
+                            ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-transparent shadow-md shadow-blue-600/20"
+                            : "bg-gray-50 dark:bg-white/[0.02] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-white/[0.04]"
+                        }`}
+                      >
+                        {PAGE_ICONS[page]}
+                        <span className="truncate">{page}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Sections */}
+              {/* Sections — each one is its own card, so it reads as a
+                  distinct, self-contained unit rather than a flat list row. */}
+              <div className="space-y-4">
               {PAGE_SECTIONS[pagesTab]?.map((def) => {
                 const item    = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
                 const isEdit  = editModeIds.includes(def.section);
                 const meta    = SECTION_TYPE_META[def.type] || SECTION_TYPE_META.cards;
                 const colorCls = SECTION_COLOR_CLASSES[meta.color] || SECTION_COLOR_CLASSES.emerald;
                 const draftItem = item ? (drafts[item.id] || item) : null;
+                const bannerImage = item?.image
+                  ? (item.image.startsWith("http") ? item.image : `https://appointment-83q0.onrender.com${item.image}`)
+                  : null;
 
                 return (
-                  <div key={def.section} className="bg-white/95 dark:bg-[#16191f]/95 rounded-[1.5rem] border border-slate-200/80 dark:border-white/[0.08] shadow-[0_20px_55px_-30px_rgba(15,23,42,0.45)] backdrop-blur-sm overflow-hidden isolate">
+                  <div key={def.section} className={`rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 ${
+                    item ? "border-gray-100 dark:border-white/[0.06]" : "border-dashed border-gray-200 dark:border-white/[0.08]"
+                  }`}>
 
                     {/* Section Header */}
-                    <div className="px-4 py-4 sm:px-6 border-b border-gray-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#16191f]/95 backdrop-blur-sm flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex items-start gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0 ${colorCls.solid}`}>
-                          {meta.icon}
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
+                      <div className="flex items-center gap-3 sm:w-64 shrink-0">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm">
+                          {bannerImage ? (
+                            <img src={bannerImage} alt={def.label} className="h-full w-full object-cover" />
+                          ) : (
+                            <div className={`w-full h-full flex items-center justify-center ${colorCls.solid}`}>{meta.icon}</div>
+                          )}
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="font-bold text-gray-900 dark:text-white">{def.label}</h3>
                             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${colorCls.badge}`}>{meta.label}</span>
@@ -830,12 +1156,12 @@ function AdminDashboard() {
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:items-center sm:gap-2 flex-shrink-0">
+                      <div className="flex-1 min-w-0 flex flex-col gap-2 sm:max-w-xs sm:ml-auto">
                         {item && (
-                          <div className="flex bg-gray-100 dark:bg-white/[0.05] p-1 rounded-xl w-full sm:w-auto">
+                          <div className="flex bg-gray-100 dark:bg-white/[0.05] p-1 rounded-xl w-full">
                             {["Preview","Edit"].map((label, i) => (
                               <button key={label} onClick={() => toggleEdit(def.section)}
-                                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                className={`flex-1 px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
                                   (i===0 ? !isEdit : isEdit)
                                     ? "bg-white dark:bg-gray-800 shadow text-gray-900 dark:text-white"
                                     : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -844,18 +1170,18 @@ function AdminDashboard() {
                           </div>
                         )}
                         {item ? (
-                          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                            <button onClick={() => deleteSection(item.id)} className="flex-1 sm:flex-none px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
+                          <div className="flex gap-2 w-full">
+                            <button onClick={() => deleteSection(item.id)} className="flex-1 px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
                               Delete
                             </button>
                             <button onClick={() => saveContent(item)} disabled={savingIds.includes(item.id)}
-                              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-60">
+                              className="flex-1 flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-60">
                               <Save size={13}/> {savingIds.includes(item.id) ? "Saving…" : "Save"}
                             </button>
                           </div>
                         ) : (
                           <button onClick={() => autoCreate(pagesTab, def.section)}
-                            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm w-full sm:w-auto">
+                            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm w-full">
                             <Plus size={13}/> Enable Section
                           </button>
                         )}
@@ -863,7 +1189,7 @@ function AdminDashboard() {
                     </div>
 
                     {/* Section Body */}
-                    <div className="overflow-x-hidden overflow-y-visible p-3 sm:p-6 max-[320px]:p-2 bg-gray-50/60 dark:bg-white/[0.015]">
+                    <div className="pt-4">
 
                       {item ? (
                         <div className="w-full min-w-0 space-y-3 sm:space-y-4">
@@ -875,7 +1201,7 @@ function AdminDashboard() {
                             </span>
                           </div>
 
-                          <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1f2a] shadow-sm p-3 sm:p-4">
+                          <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] shadow-sm p-3 sm:p-4">
                             <div className="mb-3 flex items-center justify-between gap-2">
                               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Current content</h4>
                               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Live preview</span>
@@ -916,7 +1242,7 @@ function AdminDashboard() {
                               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Draft — not published</span>
                             </div>
                             <SectionEditor
-                                item={draftItem || { ...def, title: "", description: "", data: [] }}
+                                item={draftItem || applySectionDefaults({ ...def, page: pagesTab, title: "", description: "", data: [] })}
                                 savedItem={null}
                                 type={def.type}
                                 updateLocal={() => {}}
@@ -932,6 +1258,7 @@ function AdminDashboard() {
                   </div>
                 );
               })}
+              </div>
             </div>
           )}
 
@@ -946,52 +1273,90 @@ function AdminDashboard() {
 // ════════════════════════════════════════════════════
 function SectionEditor({ item, savedItem, type, updateLocal, uploadImage, quickSave, savingIds, isEnabled = true }) {
   switch (type) {
-    case "hero":     return <HeroEditor     item={item} savedItem={savedItem} updateLocal={updateLocal} uploadImage={uploadImage} savingIds={savingIds} isEnabled={isEnabled} />;
-    case "text":     return <TextEditor     item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    case "stats":    return <StatsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    case "features": return <FeaturesEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    case "simple":   return <SimpleEditor   item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "hero":        return <HeroEditor        item={item} savedItem={savedItem} updateLocal={updateLocal} uploadImage={uploadImage} savingIds={savingIds} isEnabled={isEnabled} />;
+    case "text":        return <TextEditor        item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "stats":       return <StatsEditor       item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "features":    return <FeaturesEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "simple":      return <SimpleEditor      item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
     case "mission-vision": return <MissionVisionEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    default:         return <CardsEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "single-card": return <SingleCardEditor  item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    default:            return <CardsEditor       item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
   }
 }
 
 // ── Hero Editor ──
 function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds, isEnabled = true }) {
+  // Badge text and the highlighted (colored) part of the heading are stored
+  // as two entries inside `data`, using the SAME {title, description} shape
+  // every other section's data array already uses (stats, cards,
+  // mission-vision) — rather than inventing a new {badge, highlight} shape,
+  // which the backend's serializer rejected with a 400.
+  const data = Array.isArray(item.data) ? item.data : [];
+  const isContactHero = item.section === "contact-hero";
+  const defaults = isContactHero ? CONTACT_HERO_DEFAULTS : HOME_HERO_DEFAULTS;
+  const defaultData = defaults.data;
+  const getDefaultExtra = (key) => defaultData.find((d) => d?.title === key)?.description || "";
+  const getExtra = (key) => data.find((d) => d?.title === key)?.description || getDefaultExtra(key);
+  const setExtra = (key, value) => {
+    const next = data.filter((d) => d?.title !== key);
+    next.push({ title: key, description: value });
+    updateLocal(item.id, { data: next });
+  };
+
   return (
     <div className="space-y-5">
-      <FieldGroup label="Title">
+      {!isContactHero && (
+        <FieldGroup >
+          {item.image
+            ? <img src={item.image.startsWith("http") ? item.image : `https://appointment-83q0.onrender.com${item.image}`}
+                alt="hero" className="w-full max-w-sm h-40 object-cover rounded-xl border border-gray-200 dark:border-white/10 mb-3"/>
+            : <div className="w-full max-w-xs h-32 rounded-xl border-2 border-dashed border-gray-300 dark:border-white/10 flex flex-col items-center justify-center text-gray-400 mb-3 gap-1">
+                <ImageIcon size={22}/><span className="text-xs">No image yet</span>
+              </div>
+          }
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={(e) => isEnabled && uploadImage(item.id, e.target.files?.[0])} 
+            disabled={!isEnabled}
+            className="text-sm text-gray-500" 
+          />
+        </FieldGroup>
+      )}
+      <FieldGroup label="Badge Text (small pill above the heading)">
+        <input
+          value={getExtra("badge")}
+          onChange={(e) => isEnabled && setExtra("badge", e.target.value)}
+          disabled={!isEnabled}
+          className={isEnabled ? inputCls : disabledInputCls}
+          placeholder="✨ Professional Child Therapy"
+        />
+      </FieldGroup>
+      <FieldGroup label="Title (first line of heading)">
         <input 
-          value={item.title||""} 
+          value={item.title || defaults.title || ""} 
           onChange={(e) => isEnabled && updateLocal(item.id,{title:e.target.value})}
           disabled={!isEnabled}
           className={isEnabled ? inputCls : disabledInputCls} 
           placeholder="Hero heading text" 
         />
       </FieldGroup>
+      <FieldGroup label="Highlighted Line (second line, shown in the accent color)">
+        <input
+          value={getExtra("highlight")}
+          onChange={(e) => isEnabled && setExtra("highlight", e.target.value)}
+          disabled={!isEnabled}
+          className={isEnabled ? inputCls : disabledInputCls}
+          placeholder="Little Minds"
+        />
+      </FieldGroup>
       <FieldGroup label="Description / Subtitle">
         <textarea 
-          value={item.description||""} 
+          value={item.description || defaults.description || ""} 
           onChange={(e) => isEnabled && updateLocal(item.id,{description:e.target.value})}
           disabled={!isEnabled}
           className={`${isEnabled ? inputCls : disabledInputCls} min-h-[100px] resize-y`} 
           placeholder="Subtitle or description" 
-        />
-      </FieldGroup>
-      <FieldGroup label="Section Image">
-        {item.image
-          ? <img src={item.image.startsWith("http") ? item.image : `https://appointment-83q0.onrender.com${item.image}`}
-              alt="hero" className="w-full max-w-sm h-40 object-cover rounded-xl border border-gray-200 dark:border-white/10 mb-3"/>
-          : <div className="w-full max-w-xs h-32 rounded-xl border-2 border-dashed border-gray-300 dark:border-white/10 flex flex-col items-center justify-center text-gray-400 mb-3 gap-1">
-              <ImageIcon size={22}/><span className="text-xs">No image yet</span>
-            </div>
-        }
-        <input 
-          type="file" 
-          accept="image/*" 
-          onChange={(e) => isEnabled && uploadImage(item.id, e.target.files?.[0])} 
-          disabled={!isEnabled}
-          className="text-sm text-gray-500" 
         />
       </FieldGroup>
     </div>
@@ -1028,8 +1393,10 @@ function TextEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true 
 
 // ── Stats Editor (like TTTC Home/About stats) ──
 function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
-  const data = Array.isArray(item.data)
-  ? [...item.data].sort((a, b) =>
+  const effectiveItem = applySectionDefaults(item);
+  const effectiveSavedItem = savedItem ? applySectionDefaults(savedItem) : effectiveItem;
+  const data = Array.isArray(effectiveItem.data)
+  ? [...effectiveItem.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
         String(b?.title || ""),
         undefined,
@@ -1039,7 +1406,6 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
   : [];
   const [form, setForm] = useState({ title: "", description: "" });
   const [editingIdx, setEditingIdx] = useState(null);
-  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -1101,26 +1467,6 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
         </div>
       </div>
 
-      {/* Existing content summary */}
-      <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${isEnabled ? "border-amber-200/70 dark:border-amber-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(245,158,11,0.35)]" : "border-amber-300/50 dark:border-amber-600/20 bg-amber-50/60 dark:bg-amber-900/10"}`}>
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className={`text-sm font-semibold ${isEnabled ? "text-amber-800 dark:text-amber-400" : "text-amber-700 dark:text-amber-500"}`}>Current values</h4>
-          <span className={`text-[11px] uppercase tracking-wide ${isEnabled ? "text-amber-600 dark:text-amber-300" : "text-amber-600 dark:text-amber-400"}`}>{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
-        </div>
-        {savedData.length === 0 ? (
-          <p className={`text-sm ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>No stats have been added yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {savedData.map((d, i) => (
-              <div key={i} className={`rounded-lg border p-2 ${isEnabled ? "border-amber-100 dark:border-amber-500/10 bg-amber-50/70 dark:bg-amber-500/5" : "border-amber-200 dark:border-amber-600/20 bg-amber-100/40 dark:bg-amber-900/20"}`}>
-                <p className={`text-sm font-semibold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{d.title || "Untitled"}</p>
-                <p className={`text-xs ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{d.description || "No value yet"}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Form */}
       {isEnabled && (
         <div className="bg-amber-50/50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10 rounded-xl p-5 shadow-sm">
@@ -1151,8 +1497,10 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
 
 // ── Features Editor (Icon + Image background) ──
 function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
-  const data = Array.isArray(item.data)
-  ? [...item.data].sort((a, b) =>
+  const effectiveItem = applySectionDefaults(item);
+  const effectiveSavedItem = savedItem ? applySectionDefaults(savedItem) : effectiveItem;
+  const data = Array.isArray(effectiveItem.data)
+  ? [...effectiveItem.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
         String(b?.title || ""),
         undefined,
@@ -1163,7 +1511,6 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
   const [form, setForm] = useState({ title: "", description: "", icon: "", image: "" });
   const [editingIdx, setEditingIdx] = useState(null);
   const [iconDropdown, setIconDropdown] = useState(false);
-  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -1234,26 +1581,6 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
         </div>
       </div>
 
-      {/* Existing content summary */}
-      <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${isEnabled ? "border-fuchsia-200/70 dark:border-fuchsia-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(217,70,239,0.35)]" : "border-fuchsia-300/50 dark:border-fuchsia-600/20 bg-fuchsia-50/60 dark:bg-fuchsia-900/10"}`}>
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className={`text-sm font-semibold ${isEnabled ? "text-fuchsia-800 dark:text-fuchsia-400" : "text-fuchsia-700 dark:text-fuchsia-500"}`}>Current features</h4>
-          <span className={`text-[11px] uppercase tracking-wide ${isEnabled ? "text-fuchsia-600 dark:text-fuchsia-300" : "text-fuchsia-600 dark:text-fuchsia-400"}`}>{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
-        </div>
-        {savedData.length === 0 ? (
-          <p className={`text-sm ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>No features have been added yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {savedData.map((d, i) => (
-              <div key={i} className={`rounded-lg border p-2 ${isEnabled ? "border-fuchsia-100 dark:border-fuchsia-500/10 bg-fuchsia-50/70 dark:bg-fuchsia-500/5" : "border-fuchsia-200 dark:border-fuchsia-600/20 bg-fuchsia-100/40 dark:bg-fuchsia-900/20"}`}>
-                <p className={`text-sm font-semibold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{d.title || "Untitled"}</p>
-                <p className={`text-xs ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{d.description || "No description yet"}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Form */}
       {isEnabled && (
         <div className="bg-fuchsia-50/50 dark:bg-fuchsia-500/5 border border-fuchsia-100 dark:border-fuchsia-500/10 rounded-xl p-5 shadow-sm">
@@ -1264,7 +1591,7 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
               <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="Feature Name" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Background Image URL</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Background Image URL (Required)</label>
               <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
             </div>
             <div className="relative">
@@ -1312,7 +1639,6 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnable
   const [form, setForm] = useState({ title: "", description: "", icon: "" });
   const [editingIdx, setEditingIdx] = useState(null);
   const [iconDropdown, setIconDropdown] = useState(false);
-  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -1381,26 +1707,6 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnable
         </div>
       </div>
 
-      {/* Existing content summary */}
-      <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${isEnabled ? "border-rose-200/70 dark:border-rose-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(244,63,94,0.35)]" : "border-rose-300/50 dark:border-rose-600/20 bg-rose-50/60 dark:bg-rose-900/10"}`}>
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className={`text-sm font-semibold ${isEnabled ? "text-rose-800 dark:text-rose-400" : "text-rose-700 dark:text-rose-500"}`}>Current cards</h4>
-          <span className={`text-[11px] uppercase tracking-wide ${isEnabled ? "text-rose-600 dark:text-rose-300" : "text-rose-600 dark:text-rose-400"}`}>{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
-        </div>
-        {savedData.length === 0 ? (
-          <p className={`text-sm ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>No cards have been added yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {savedData.map((d, i) => (
-              <div key={i} className={`rounded-lg border p-2 ${isEnabled ? "border-rose-100 dark:border-rose-500/10 bg-rose-50/70 dark:bg-rose-500/5" : "border-rose-200 dark:border-rose-600/20 bg-rose-100/40 dark:bg-rose-900/20"}`}>
-                <p className={`text-sm font-semibold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{d.title || "Untitled"}</p>
-                <p className={`text-xs ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{d.description || "No description yet"}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Form */}
       {isEnabled && (
         <div className="bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10 rounded-xl p-5 shadow-sm">
@@ -1449,10 +1755,115 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnable
   );
 }
 
+// ── Single Card Editor (Our Mission / Our Vision) ──
+// Stores the card content directly in item.title, item.description, and item.data[0].icon
+// so each section is a self-contained, independently editable card.
+function SingleCardEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
+  const iconKey = Array.isArray(item.data) && item.data[0]?.icon ? item.data[0].icon : "";
+  const savedIconKey = Array.isArray(savedItem?.data) && savedItem?.data[0]?.icon ? savedItem.data[0].icon : "";
+  const [iconDropdown, setIconDropdown] = useState(false);
+
+  const setIconKey = (key) => {
+    const newData = [{ ...(Array.isArray(item.data) ? (item.data[0] || {}) : {}), icon: key }];
+    updateLocal(item.id, { data: newData });
+  };
+
+  const SelectedIcon = ICON_LIST[iconKey] || null;
+  const SavedIcon    = ICON_LIST[savedIconKey] || null;
+
+  return (
+    <div className="space-y-5">
+      {/* Live preview of saved content */}
+      {savedItem && (
+        <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${
+          isEnabled
+            ? "border-rose-200/70 dark:border-rose-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(244,63,94,0.35)]"
+            : "border-rose-300/50 dark:border-rose-600/20 bg-rose-50/60 dark:bg-rose-900/10"
+        }`}>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <h4 className={`text-sm font-semibold ${isEnabled ? "text-rose-800 dark:text-rose-400" : "text-rose-700 dark:text-rose-500"}`}>Saved values</h4>
+          </div>
+          <div className="flex items-start gap-3">
+            {SavedIcon && (
+              <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center shrink-0">
+                <SavedIcon size={18} className="text-rose-600 dark:text-rose-400" />
+              </div>
+            )}
+            <div>
+              <p className={`text-sm font-bold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{savedItem.title || "—"}</p>
+              <p className={`text-xs mt-0.5 ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{savedItem.description || "No description yet"}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit fields */}
+      <FieldGroup label="Card Title">
+        <input
+          value={item.title || ""}
+          onChange={(e) => isEnabled && updateLocal(item.id, { title: e.target.value })}
+          onBlur={() => isEnabled && quickSave(item)}
+          disabled={!isEnabled}
+          className={isEnabled ? inputCls : disabledInputCls}
+          placeholder="e.g. Our Mission"
+        />
+      </FieldGroup>
+
+      <FieldGroup label="Description">
+        <textarea
+          value={item.description || ""}
+          onChange={(e) => isEnabled && updateLocal(item.id, { description: e.target.value })}
+          onBlur={() => isEnabled && quickSave(item)}
+          disabled={!isEnabled}
+          className={`${isEnabled ? inputCls : disabledInputCls} min-h-[120px] resize-y`}
+          placeholder="e.g. We focus on speech, cognitive, and behavioral development…"
+        />
+      </FieldGroup>
+
+      <FieldGroup label="Icon">
+        <div className="relative">
+          <button
+            onClick={() => isEnabled && setIconDropdown(!iconDropdown)}
+            disabled={!isEnabled}
+            className={`w-full flex items-center gap-2 border rounded-xl px-3.5 py-2.5 text-sm text-left transition ${
+              isEnabled
+                ? "border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] hover:border-rose-400"
+                : "border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/20 cursor-not-allowed"
+            }`}
+          >
+            {SelectedIcon ? <SelectedIcon size={16} className="text-rose-600" /> : null}
+            <span className="flex-1 text-gray-700 dark:text-gray-300">{iconKey || "Pick an icon…"}</span>
+            <ChevronDown size={14} className="text-gray-400" />
+          </button>
+          {iconDropdown && isEnabled && (
+            <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+              {Object.keys(ICON_LIST).map((name) => {
+                const IC = ICON_LIST[name];
+                return (
+                  <button
+                    key={name}
+                    onClick={() => { setIconKey(name); setIconDropdown(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-sm transition text-left"
+                  >
+                    <IC size={16} className="text-rose-600" /> {name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </FieldGroup>
+    </div>
+  );
+}
+
 // ── Generic Cards Editor ──
 function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
-  const data = Array.isArray(item.data)
-  ? [...item.data].sort((a, b) =>
+  const effectiveItem = applySectionDefaults(item);
+  const effectiveSavedItem = savedItem ? applySectionDefaults(savedItem) : effectiveItem;
+  const requiresImage = ["services", "gallery", "programs"].includes(item.section);
+  const data = Array.isArray(effectiveItem.data)
+  ? [...effectiveItem.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
         String(b?.title || ""),
         undefined,
@@ -1462,7 +1873,6 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
   : [];
   const [form, setForm] = useState({ title: "", description: "", image: "" });
   const [editingIdx, setEditingIdx] = useState(null);
-  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -1487,7 +1897,7 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FieldGroup label="Section Title">
           <input 
-            value={item.title||""} 
+            value={effectiveItem.title || ""} 
             onChange={(e) => isEnabled && updateLocal(item.id,{title:e.target.value})} 
             onBlur={() => isEnabled && quickSave(item)} 
             disabled={!isEnabled}
@@ -1497,7 +1907,7 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
         </FieldGroup>
         <FieldGroup label="Section Description">
           <textarea 
-            value={item.description||""} 
+            value={effectiveItem.description || ""} 
             onChange={(e) => isEnabled && updateLocal(item.id,{description:e.target.value})} 
             onBlur={() => isEnabled && quickSave(item)}
             disabled={!isEnabled}
@@ -1552,26 +1962,6 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
           </div>
         </div>
 
-        {/* Existing content summary */}
-        <div className={`w-full min-w-0 rounded-[1rem] border p-3 sm:p-4 shadow-sm ${isEnabled ? "border-emerald-200/70 dark:border-emerald-500/15 bg-white/90 dark:bg-[#171b24]/90 shadow-[0_10px_25px_-18px_rgba(16,185,129,0.35)]" : "border-emerald-300/50 dark:border-emerald-600/20 bg-emerald-50/60 dark:bg-emerald-900/10"}`}>
-          <div className="flex items-center justify-between gap-2 mb-3">
-            <h4 className={`text-sm font-semibold ${isEnabled ? "text-emerald-800 dark:text-emerald-400" : "text-emerald-700 dark:text-emerald-500"}`}>Current cards</h4>
-            <span className={`text-[11px] uppercase tracking-wide ${isEnabled ? "text-emerald-600 dark:text-emerald-300" : "text-emerald-600 dark:text-emerald-400"}`}>{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
-          </div>
-          {savedData.length === 0 ? (
-            <p className={`text-sm ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>No cards have been added yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {savedData.map((d, i) => (
-                <div key={i} className={`rounded-lg border p-2 ${isEnabled ? "border-emerald-100 dark:border-emerald-500/10 bg-emerald-50/70 dark:bg-emerald-500/5" : "border-emerald-200 dark:border-emerald-600/20 bg-emerald-100/40 dark:bg-emerald-900/20"}`}>
-                  <p className={`text-sm font-semibold ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{d.title || "Untitled"}</p>
-                  <p className={`text-xs ${isEnabled ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-500"}`}>{d.description || "No description yet"}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Form */}
         {isEnabled && (
           <div className="bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10 rounded-xl p-5 shadow-sm">
@@ -1582,7 +1972,9 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
                 <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="Card title" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Image URL</label>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                  Image URL{requiresImage ? " (Required)" : ""}
+                </label>
                 <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
               </div>
               <div className="sm:col-span-2">
@@ -1606,7 +1998,7 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
 }
 
 // ── Simple List Editor (Branches, Programs, Country Codes) ──
-function SimpleEditor({ item, savedItem, updateLocal, quickSave }) {
+function SimpleEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
   const data = Array.isArray(item.data)
   ? [...item.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1618,13 +2010,16 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave }) {
   : [];
   const [form, setForm] = useState("");
   const [editingIdx, setEditingIdx] = useState(null);
-  const savedData = Array.isArray(savedItem?.data) ? [...savedItem.data] : [];
+
+  const isDuplicate = form.trim() && data.some(
+    (d, i) => i !== editingIdx && String(d?.title || "").toLowerCase() === form.trim().toLowerCase()
+  );
 
   const handleSubmit = () => {
-    if(!form.trim()) return;
+    if(!isEnabled || !form.trim() || isDuplicate) return;
     const newData = [...data];
-    if (editingIdx !== null) newData[editingIdx] = { title: form, description: "" };
-    else newData.push({ title: form, description: "" });
+    if (editingIdx !== null) newData[editingIdx] = { title: form.trim(), description: "" };
+    else newData.push({ title: form.trim(), description: "" });
     updateLocal(item.id, { data: newData });
     quickSave({ ...item, data: newData });
     setForm("");
@@ -1632,6 +2027,7 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave }) {
   };
 
   const handleDelete = (idx) => {
+    if(!isEnabled) return;
     if(!window.confirm("Delete this item?")) return;
     const newData = data.filter((_, i) => i !== idx);
     updateLocal(item.id, { data: newData });
@@ -1640,22 +2036,27 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm">
+      <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+        <div className={`flex items-center justify-between px-4 py-2.5 border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
+          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            {data.length} {data.length === 1 ? "item" : "items"}{!isEnabled && data.length > 0 ? " · default preview" : ""}
+          </span>
+        </div>
         <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50 dark:bg-white/[0.04] border-b border-gray-200 dark:border-white/[0.06]">
+          <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
             <tr>
-              <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Name</th>
-              <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-32">Actions</th>
+              <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Name</th>
+              <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
             {data.map((d, i) => (
-              <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
-                <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{d.title}</td>
+              <tr key={i} className={`transition ${editingIdx === i ? "bg-blue-50/60 dark:bg-blue-500/[0.06]" : ""} ${isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02]" : ""}`}>
+                <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-500 dark:text-gray-400"}`}>{d.title}</td>
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
-                    <button onClick={() => { setForm(d.title||""); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Edit</button>
-                    <button onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all">Delete</button>
+                    <button disabled={!isEnabled} onClick={() => { setForm(d.title||""); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none">Edit</button>
+                    <button disabled={!isEnabled} onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -1665,37 +2066,28 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave }) {
         </table>
       </div>
 
-      <div className="w-full min-w-0 rounded-[1rem] border border-gray-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[#171b24]/90 p-3 sm:p-4 shadow-[0_10px_25px_-18px_rgba(15,23,42,0.3)]">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Current items</h4>
-          <span className="text-[11px] uppercase tracking-wide text-gray-500">{savedData.length} item{savedData.length === 1 ? "" : "s"}</span>
-        </div>
-        {savedData.length === 0 ? (
-          <p className="text-sm text-gray-500">No items have been added yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {savedData.map((d, i) => (
-              <div key={i} className="rounded-lg border border-gray-200 dark:border-white/[0.08] bg-gray-50/80 dark:bg-white/[0.03] px-3 py-2">
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{d.title || "Untitled"}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5 shadow-sm">
+      <div className={`border rounded-xl p-5 shadow-sm ${isEnabled ? "bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/30 border-gray-300 dark:border-gray-600"}`}>
         <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4">{editingIdx !== null ? "Edit Item" : "Add Item"}</h3>
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
           <div className="flex-1 w-full">
             <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Name / Value</label>
-            <input value={form} onChange={(e) => setForm(e.target.value)} className={inputCls} placeholder="Enter value..." />
+            <input
+              value={form}
+              onChange={(e) => isEnabled && setForm(e.target.value)}
+              onKeyDown={(e) => { if (isEnabled && e.key === "Enter" && form.trim() && !isDuplicate) handleSubmit(); }}
+              disabled={!isEnabled}
+              className={`${isEnabled ? inputCls : disabledInputCls} ${isEnabled && isDuplicate ? "border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-red-500/20" : ""}`}
+              placeholder="Enter value..."
+            />
+            {isEnabled && isDuplicate && <p className="mt-1.5 text-xs text-red-500">This value already exists.</p>}
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
-            <button onClick={handleSubmit} className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+            <button onClick={handleSubmit} disabled={!isEnabled || !form.trim() || isDuplicate}
+              className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none">
               {editingIdx !== null ? "Update" : "Add"}
             </button>
             {editingIdx !== null && (
-              <button onClick={() => { setForm(""); setEditingIdx(null); }} className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
+              <button disabled={!isEnabled} onClick={() => { setForm(""); setEditingIdx(null); }} className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">Cancel</button>
             )}
           </div>
         </div>
@@ -1703,6 +2095,7 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave }) {
     </div>
   );
 }
+
 
 // ════════════════════════════════════════════════════
 //  CONTENT PREVIEW
@@ -1712,8 +2105,9 @@ function ContentPreview({ item, type }) {
   // branch in the sections list, so `item` is always truthy here. Disabled
   // sections use SectionEditor (with isEnabled={false}) to show the
   // read-only fields directly, rather than this preview block.
-  const data = Array.isArray(item.data)
-  ? [...item.data].sort((a, b) =>
+  const previewItem = applySectionDefaults(item);
+  const data = Array.isArray(previewItem.data)
+  ? [...previewItem.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
         String(b?.title || ""),
         undefined,
@@ -1725,11 +2119,11 @@ function ContentPreview({ item, type }) {
   if (type === "stats") {
     return (
       <div className="space-y-3">
-        {item.title && <h3 className="text-lg font-bold">{item.title}</h3>}
+        {previewItem.title && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
         {data.length > 0
           ? <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {data.map((s,i) => (
-                <div key={i} className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/10 rounded-xl p-4 text-center shadow-sm">
+                <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition text-center">
                   <p className="text-2xl font-black text-orange-500">{s.description||"—"}</p>
                   <p className="text-[11px] text-gray-500 uppercase tracking-wide mt-1">{s.title||"—"}</p>
                 </div>
@@ -1744,18 +2138,18 @@ function ContentPreview({ item, type }) {
   if (type === "services") {
     return (
       <div className="space-y-3">
-        {item.title && <h3 className="text-lg font-bold">{item.title}</h3>}
+        {previewItem.title && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
         {data.length > 0
           ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {data.map((c,i) => {
                 const IC = ICON_LIST[c.image] || Briefcase;
                 return (
-                  <div key={i} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 rounded-xl p-5 shadow-sm">
+                  <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
                     <div className="w-11 h-11 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center mb-3">
                       <IC size={20} className="text-violet-600"/>
                     </div>
                     <h4 className="font-bold text-sm mb-1">{c.title||"—"}</h4>
-                    <p className="text-xs text-gray-500">{c.description||"—"}</p>
+                    <p className="text-xs text-gray-500 max-h-8 overflow-y-auto pr-1">{c.description||"—"}</p>
                   </div>
                 );
               })}
@@ -1775,19 +2169,19 @@ function ContentPreview({ item, type }) {
     ];
     return (
       <div className="space-y-3">
-        {item.title && <h3 className="text-lg font-bold">{item.title}</h3>}
+        {previewItem.title && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
         {data.length > 0
           ? <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {data.map((c,i) => {
                 const IC = ICON_LIST[c.icon] || Target;
                 const clr = palette[i % palette.length];
                 return (
-                  <div key={i} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
+                  <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
                     <div className={`w-11 h-11 rounded-xl ${clr.bg} flex items-center justify-center mb-3`}>
                       <IC size={20} className={clr.text}/>
                     </div>
                     <h4 className="font-bold text-base mb-1.5">{c.title||"—"}</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed">{c.description||"—"}</p>
+                    <p className="text-sm text-gray-500 leading-relaxed max-h-11 overflow-y-auto pr-1">{c.description||"—"}</p>
                   </div>
                 );
               })}
@@ -1798,19 +2192,102 @@ function ContentPreview({ item, type }) {
     );
   }
 
-  // Default (hero / cards)
+  if (type === "simple") {
+    return (
+      <div className="space-y-3">
+        {data.length > 0 ? (
+          <>
+            <div className="flex flex-wrap gap-2">
+              {data.map((d, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-white/[0.06] text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-white/[0.08]"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500" />
+                  {d.title || "—"}
+                </span>
+              ))}
+            </div>
+            <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium">
+              {data.length} {data.length === 1 ? "item" : "items"}
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-gray-400">No items added yet.</p>
+        )}
+      </div>
+    );
+  }
+
+  if (type === "single-card") {
+    // Icon on top, text below — same vertical "image/icon-first" layout as
+    // every other card preview, using the exact Appointment Leads card format.
+    const iconKey = Array.isArray(previewItem.data) && previewItem.data[0]?.icon ? previewItem.data[0].icon : "";
+    const IC = ICON_LIST[iconKey] || Target;
+    return (
+      <div className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
+        <div className="w-11 h-11 rounded-xl bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center mb-3">
+          <IC size={20} className="text-rose-600 dark:text-rose-400" />
+        </div>
+        <h4 className="font-bold text-base mb-1.5">{previewItem.title || "—"}</h4>
+        <p className="text-sm text-gray-500 leading-relaxed max-h-11 overflow-y-auto pr-1">{previewItem.description || "No description yet."}</p>
+      </div>
+    );
+  }
+
+  if (type === "hero") {
+    const heroData = Array.isArray(previewItem.data) ? previewItem.data : [];
+    const isContactHero = previewItem.section === "contact-hero";
+    const defaults = isContactHero ? CONTACT_HERO_DEFAULTS : HOME_HERO_DEFAULTS;
+    const defaultData = defaults.data;
+    const getDefaultExtra = (key) => defaultData.find((d) => d?.title === key)?.description || "";
+    const badge = heroData.find((d) => d?.title === "badge")?.description || getDefaultExtra("badge");
+    const highlight = heroData.find((d) => d?.title === "highlight")?.description || getDefaultExtra("highlight");
+    const title = previewItem.title || defaults.title || "";
+    const description = previewItem.description || defaults.description || "";
+    // Resolve relative backend image paths the same way HeroEditor & Contact.jsx do.
+    const imgSrc = !isContactHero && previewItem.image
+      ? (previewItem.image.startsWith("http") ? previewItem.image : `https://appointment-83q0.onrender.com${previewItem.image}`)
+      : null;
+    return (
+      <div className="space-y-3">
+        {imgSrc && <img src={imgSrc} alt="preview" className="w-full max-w-xs h-36 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-white/10"/>}
+        {badge && (
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400">
+            {badge}
+          </span>
+        )}
+        <h3 className="text-lg font-bold">
+          {title || "—"}
+          {highlight && <span className="text-orange-500"> {highlight}</span>}
+        </h3>
+        {description && <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-h-11 overflow-y-auto pr-1">{description}</p>}
+        {!badge && !title && !highlight && !description && !imgSrc && (
+          <p className="text-sm text-gray-400">No hero content configured yet.</p>
+        )}
+      </div>
+    );
+  }
+
+  // Default (cards)
   return (
     <div className="relative isolate w-full min-w-0 overflow-hidden bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] p-3 sm:p-5 max-[320px]:p-2 rounded-xl space-y-3">
-      {item.title       && <h3 className="text-lg font-bold">{item.title}</h3>}
-      {item.description && <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{item.description}</p>}
-      {item.image       && <img src={item.image} alt="preview" className="w-full max-w-xs h-36 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-white/10"/>}
+      {previewItem.title       && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
+      {previewItem.description && <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-h-11 overflow-y-auto pr-1">{previewItem.description}</p>}
+      {previewItem.image       && <img src={previewItem.image} alt="preview" className="w-full max-w-xs h-36 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-white/10"/>}
       {data.length > 0  && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-3 border-t border-gray-100 dark:border-white/10">
           {data.map((c,i) => (
-            <div key={i} className="bg-white dark:bg-white/[0.04] border border-gray-200 dark:border-white/10 rounded-xl p-4 shadow-sm">
-              {c.image && <img src={c.image} alt="" className="w-full h-28 object-cover rounded-lg mb-3" onError={(e)=>e.target.style.display="none"}/>}
-              <h4 className="font-semibold text-sm">{c.title||"—"}</h4>
-              <p className="text-xs text-gray-500 mt-1">{c.description}</p>
+            <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition overflow-hidden">
+              {c.image && (
+                <div className="h-28 w-full overflow-hidden">
+                  <img src={c.image} alt="" className="w-full h-full object-cover" onError={(e)=>e.target.parentElement.style.display="none"}/>
+                </div>
+              )}
+              <div className="p-4">
+                <h4 className="font-semibold text-sm">{c.title||"—"}</h4>
+                <p className="text-xs text-gray-500 mt-1 max-h-8 overflow-y-auto pr-1">{c.description}</p>
+              </div>
             </div>
           ))}
         </div>
