@@ -281,7 +281,7 @@ function InfoCard({ icon, title, value, color = "blue" }) {
           {icon}
         </div>
         <div>
-          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">{title}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-500 font-medium uppercase tracking-wider">{title}</p>
           <div className="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">{value}</div>
         </div>
       </div>

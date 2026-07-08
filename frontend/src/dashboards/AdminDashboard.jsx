@@ -1105,14 +1105,14 @@ function AdminDashboard() {
                     return (
                       <button key={page}
                         onClick={() => setPagesTab(page)}
-                        className={`group flex items-center justify-center gap-1.5 w-full px-4 py-2.5 rounded-xl border text-sm font-medium capitalize transition-all duration-200 ${
+                        className={`group flex items-center justify-center gap-1.5 min-w-0 w-full overflow-hidden px-3 sm:px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-medium capitalize transition-all duration-200 ${
                           isActive
                             ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-transparent shadow-md shadow-blue-600/20"
                             : "bg-gray-50 dark:bg-white/[0.02] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-white/[0.04]"
                         }`}
                       >
-                        {PAGE_ICONS[page]}
-                        <span className="truncate">{page}</span>
+                        <span className="shrink-0 flex items-center">{PAGE_ICONS[page]}</span>
+                        <span className="truncate min-w-0">{page}</span>
                       </button>
                     );
                   })}
