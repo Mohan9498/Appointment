@@ -58,6 +58,7 @@ import {
   Type,
   Phone,
   Mail,
+  Loader2,
   MapPin,
   Clock,
 } from "lucide-react";
@@ -593,10 +594,12 @@ function AdminDashboard() {
     }));
   };
 
-  const autoCreate = async (page, section) => {
+  const autoCreate = async (page, section, opts = {}) => {
+    const { silent = false } = opts;
     if (content.find((c) => c.page === page && c.section === section)) return;
+    let payload;
     try {
-      const payload = buildSectionPayload(page, section, content.length + 1);
+      payload = buildSectionPayload(page, section, content.length + 1);
       const res = await API.post("content/", payload);
       const createdItem = res?.data;
 
@@ -606,8 +609,10 @@ function AdminDashboard() {
         await fetchContent();
       }
 
-      toast.success("Section enabled");
-      setEditModeIds((prev) => [...prev, section]);
+      if (!silent) {
+        toast.success("Section enabled");
+        setEditModeIds((prev) => [...prev, section]);
+      }
     } catch (err) {
       console.error("Payload:", payload);
       console.error("Status:", err.response?.status);
@@ -625,10 +630,24 @@ function AdminDashboard() {
         data.data?.[0] ||
         JSON.stringify(data) ||
         "Failed to create section";
-        
-      toast.error(error);
+
+      if (!silent) toast.error(error);
     }
   };
+
+  // Every section is now always "on" — instead of requiring a manual
+  // "Enable Section" click, whichever page tab is open gets any of its
+  // missing sections silently created (with their default seed content)
+  // in the background, so the UI can just show the live preview directly.
+  useEffect(() => {
+    if (loading) return;
+    const defs = PAGE_SECTIONS[pagesTab] || [];
+    defs.forEach((def) => {
+      const exists = content.some((c) => c.page === pagesTab && c.section === def.section);
+      if (!exists) autoCreate(pagesTab, def.section, { silent: true });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagesTab, content, loading]);
 
   const saveContent = async (item) => {
     const draftItem = drafts[item.id] || item;
@@ -1099,20 +1118,20 @@ function AdminDashboard() {
               {/* Page Tabs */}
               <div className="bg-white dark:bg-[#16191f] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] shadow-sm">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Select Page</p>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <div className="flex flex-wrap gap-2">
                   {Object.keys(PAGE_SECTIONS).map((page) => {
                     const isActive = pagesTab === page;
                     return (
                       <button key={page}
                         onClick={() => setPagesTab(page)}
-                        className={`group flex items-center justify-center gap-1.5 min-w-0 w-full overflow-hidden px-3 sm:px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-medium capitalize transition-all duration-200 ${
+                        className={`flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-xs sm:text-sm font-medium capitalize transition-all duration-200 ${
                           isActive
                             ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-transparent shadow-md shadow-blue-600/20"
                             : "bg-gray-50 dark:bg-white/[0.02] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-white/[0.04]"
                         }`}
                       >
                         <span className="shrink-0 flex items-center">{PAGE_ICONS[page]}</span>
-                        <span className="truncate min-w-0">{page}</span>
+                        <span>{page}</span>
                       </button>
                     );
                   })}
@@ -1124,6 +1143,8 @@ function AdminDashboard() {
               <div className="space-y-4">
               {PAGE_SECTIONS[pagesTab]?.map((def) => {
                 const item    = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
+                const pending = !item; // brief window while the silent auto-create finishes
+                const displayItem = item || applySectionDefaults({ ...def, page: pagesTab, title: "", description: "", data: [] });
                 const isEdit  = editModeIds.includes(def.section);
                 const meta    = SECTION_TYPE_META[def.type] || SECTION_TYPE_META.cards;
                 const colorCls = SECTION_COLOR_CLASSES[meta.color] || SECTION_COLOR_CLASSES.emerald;
@@ -1133,9 +1154,7 @@ function AdminDashboard() {
                   : null;
 
                 return (
-                  <div key={def.section} className={`rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 ${
-                    item ? "border-gray-100 dark:border-white/[0.06]" : "border-dashed border-gray-200 dark:border-white/[0.08]"
-                  }`}>
+                  <div key={def.section} className="rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5">
 
                     {/* Section Header */}
                     <div className="flex flex-col sm:flex-row sm:items-start gap-4 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
@@ -1157,7 +1176,7 @@ function AdminDashboard() {
                       </div>
 
                       <div className="flex-1 min-w-0 flex flex-col gap-2 sm:max-w-xs sm:ml-auto">
-                        {item && (
+                        {!pending && (
                           <div className="flex bg-gray-100 dark:bg-white/[0.05] p-1 rounded-xl w-full">
                             {["Preview","Edit"].map((label, i) => (
                               <button key={label} onClick={() => toggleEdit(def.section)}
@@ -1169,7 +1188,11 @@ function AdminDashboard() {
                             ))}
                           </div>
                         )}
-                        {item ? (
+                        {pending ? (
+                          <div className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 text-xs font-medium w-full">
+                            <Loader2 size={13} className="animate-spin" /> Setting up…
+                          </div>
+                        ) : (
                           <div className="flex gap-2 w-full">
                             <button onClick={() => deleteSection(item.id)} className="flex-1 px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
                               Delete
@@ -1179,81 +1202,53 @@ function AdminDashboard() {
                               <Save size={13}/> {savingIds.includes(item.id) ? "Saving…" : "Save"}
                             </button>
                           </div>
-                        ) : (
-                          <button onClick={() => autoCreate(pagesTab, def.section)}
-                            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm w-full">
-                            <Plus size={13}/> Enable Section
-                          </button>
                         )}
                       </div>
                     </div>
 
-                    {/* Section Body */}
+                    {/* Section Body — always shows the live preview; no
+                        separate "enable this section" step anymore. */}
                     <div className="pt-4">
-
-                      {item ? (
-                        <div className="w-full min-w-0 space-y-3 sm:space-y-4">
-                          {/* Status Badge */}
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 w-fit">
-                            <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              Enabled (Live)
-                            </span>
-                          </div>
-
-                          <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] shadow-sm p-3 sm:p-4">
-                            <div className="mb-3 flex items-center justify-between gap-2">
-                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Current content</h4>
-                              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Live preview</span>
-                            </div>
-                            <ContentPreview item={item} type={def.type} />
-                          </div>
-
-                          {isEdit && (
-                            <div className="w-full min-w-0 rounded-xl border border-blue-200 dark:border-blue-500/20 bg-blue-50/40 dark:bg-blue-500/[0.04] shadow-sm p-3 sm:p-4">
-                              <div className="mb-3 flex items-center justify-between gap-2">
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Edit fields</h4>
-                                <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Editing</span>
-                              </div>
-                              <SectionEditor
-                                item={draftItem || item}
-                                savedItem={item}
-                                type={def.type}
-                                updateLocal={updateLocal} uploadImage={uploadImage}
-                                quickSave={quickSave} savingIds={savingIds}
-                                isEnabled={true}
-                              />
-                            </div>
-                          )}
+                      <div className="w-full min-w-0 space-y-3 sm:space-y-4">
+                        {/* Status Badge */}
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit ${
+                          pending
+                            ? "bg-gray-100 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.08]"
+                            : "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20"
+                        }`}>
+                          <span className={`flex items-center gap-1.5 text-xs font-semibold ${
+                            pending ? "text-gray-500 dark:text-gray-400" : "text-emerald-700 dark:text-emerald-400"
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${pending ? "bg-gray-400" : "bg-emerald-500"}`} />
+                            {pending ? "Setting up…" : "Enabled (Live)"}
+                          </span>
                         </div>
-                      ) : (
-                        <div className="w-full min-w-0 space-y-3 sm:space-y-4">
-                          {/* Status Badge - Disabled */}
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.08] w-fit">
-                            <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
-                              <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                              Disabled (Draft)
-                            </span>
-                          </div>
 
-                          <div className="w-full min-w-0 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-white/[0.02] p-3 sm:p-4">
+                        <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] shadow-sm p-3 sm:p-4">
+                          <div className="mb-3 flex items-center justify-between gap-2">
+                            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Current content</h4>
+                            <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Live preview</span>
+                          </div>
+                          <ContentPreview item={displayItem} type={def.type} />
+                        </div>
+
+                        {isEdit && !pending && (
+                          <div className="w-full min-w-0 rounded-xl border border-blue-200 dark:border-blue-500/20 bg-blue-50/40 dark:bg-blue-500/[0.04] shadow-sm p-3 sm:p-4">
                             <div className="mb-3 flex items-center justify-between gap-2">
-                              <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400">Preview (read-only)</h4>
-                              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Draft — not published</span>
+                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Edit fields</h4>
+                              <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Editing</span>
                             </div>
                             <SectionEditor
-                                item={draftItem || applySectionDefaults({ ...def, page: pagesTab, title: "", description: "", data: [] })}
-                                savedItem={null}
-                                type={def.type}
-                                updateLocal={() => {}}
-                                uploadImage={() => {}}
-                                quickSave={() => {}}
-                                savingIds={[]}
-                                isEnabled={false}
-                              />
+                              item={draftItem || item}
+                              savedItem={item}
+                              type={def.type}
+                              updateLocal={updateLocal} uploadImage={uploadImage}
+                              quickSave={quickSave} savingIds={savingIds}
+                              isEnabled={true}
+                            />
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
