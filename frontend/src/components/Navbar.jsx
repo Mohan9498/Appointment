@@ -33,18 +33,18 @@ function Navbar({ onOpenModal = () => {} }) {
       }` 
     }>
 
-      <div className="max-w-full mx-auto px-4 h-16 flex justify-between items-center">
+      <div className="max-w-full mx-auto px-4 h-14 sm:h-16 flex justify-between items-center">
 
-        <Link to="/" className="flex  items-center gap-2.5 group">     
+        <Link to="/" className="flex  items-center gap-2 sm:gap-2.5 group">     
           <img
             src={logo}
             alt="Tiny Todds Therapy Care logo"
-            width={72}
+            width={48}
             height={48}
             decoding="async"
-            className="h-20  w-auto object-contain mix-blend-multiply dark:mix-blend-screen group-hover:scale-105 transition-transform duration-300"
+            className="h-9 sm:h-12 md:h-14 w-auto object-contain mix-blend-multiply dark:mix-blend-screen group-hover:scale-105 transition-transform duration-300"
           />
-          <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+          <span className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-white">
             Tiny Todds
             <span className="hidden sm:inline text-gray-500 dark:text-gray-400 font-medium ml-1">Therapy</span>
           </span>

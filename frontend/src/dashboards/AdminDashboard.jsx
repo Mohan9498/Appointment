@@ -492,6 +492,10 @@ function AdminDashboard() {
   const [editModeIds,  setEditModeIds]  = useState([]);
   const [drafts,       setDrafts]       = useState({});
   const [dark,         setDark]         = useState(localStorage.getItem("theme") === "dark");
+  // Sections the admin explicitly deleted — kept out of the silent
+  // auto-create effect below so a delete actually sticks instead of the
+  // section immediately reappearing with default content.
+  const [removedSections, setRemovedSections] = useState(() => new Set());
 
   const logout   = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
@@ -609,6 +613,14 @@ function AdminDashboard() {
         await fetchContent();
       }
 
+      // A section that just got (re)created obviously isn't "removed" anymore.
+      setRemovedSections((prev) => {
+        if (!prev.has(`${page}:${section}`)) return prev;
+        const next = new Set(prev);
+        next.delete(`${page}:${section}`);
+        return next;
+      });
+
       if (!silent) {
         toast.success("Section enabled");
         setEditModeIds((prev) => [...prev, section]);
@@ -635,19 +647,23 @@ function AdminDashboard() {
     }
   };
 
-  // Every section is now always "on" — instead of requiring a manual
+  // Every section is "on" by default — instead of requiring a manual
   // "Enable Section" click, whichever page tab is open gets any of its
-  // missing sections silently created (with their default seed content)
-  // in the background, so the UI can just show the live preview directly.
+  // missing sections silently created (with their default seed content) in
+  // the background. Sections the admin explicitly deleted are skipped here
+  // (see removedSections) so a delete actually sticks instead of the
+  // section immediately reappearing.
   useEffect(() => {
     if (loading) return;
     const defs = PAGE_SECTIONS[pagesTab] || [];
     defs.forEach((def) => {
+      const key = `${pagesTab}:${def.section}`;
+      if (removedSections.has(key)) return;
       const exists = content.some((c) => c.page === pagesTab && c.section === def.section);
       if (!exists) autoCreate(pagesTab, def.section, { silent: true });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagesTab, content, loading]);
+  }, [pagesTab, content, loading, removedSections]);
 
   const saveContent = async (item) => {
     const draftItem = drafts[item.id] || item;
@@ -714,11 +730,12 @@ function AdminDashboard() {
     finally { setSaving(id, false); }
   };
 
-  const deleteSection = async (id) => {
+  const deleteSection = async (item) => {
     if (!window.confirm("Delete this section?")) return;
     try {
-      await API.delete(`content/${id}/`);
-      setContent((prev) => prev.filter((c) => c.id !== id));
+      await API.delete(`content/${item.id}/`);
+      setContent((prev) => prev.filter((c) => c.id !== item.id));
+      setRemovedSections((prev) => new Set(prev).add(`${item.page}:${item.section}`));
       toast.success("Section deleted");
     } catch { toast.error("Delete failed"); }
   };
@@ -843,53 +860,53 @@ function AdminDashboard() {
       <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
 
         {/* ── Top Header ── */}
-        <header className="sticky top-0 z-30 h-10 bg-white/80 dark:bg-[#16191f]/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between px-5 md:px-8 shadow-sm">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition">
-              <Menu size={20} />
+        <header className="sticky top-0 z-30 h-12 sm:h-[52px] md:h-14 bg-white/80 dark:bg-[#16191f]/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between px-3 sm:px-5 md:px-6 shadow-sm">
+          <div className="flex items-center gap-2 min-w-0">
+            <button onClick={() => setMobileOpen(true)} className="md:hidden p-1.5 -ml-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition shrink-0">
+              <Menu size={17} />
             </button>
-            <div>
-              <h1 className="font-bold text-gray-900 dark:text-white text-sm">{PAGE_LABELS[active] || active}</h1>
-              <p className="text-[11px] text-gray-400 leading-none">Admin Dashboard</p>
+            <div className="min-w-0 leading-tight">
+              <h1 className="font-semibold text-gray-900 dark:text-white text-[13px] sm:text-sm truncate">{PAGE_LABELS[active] || active}</h1>
+              <p className="hidden sm:block text-[10px] text-gray-400 leading-none">Admin Dashboard</p>
             </div>
           </div>
 
           {/* Profile dropdown */}
-          <div className="relative" ref={profileRef}>
+          <div className="relative shrink-0" ref={profileRef}>
             <div
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-3 bg-white dark:bg-white/[0.04] px-3 py-2 rounded-xl border border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/10 transition shadow-sm cursor-pointer"
+              className="flex items-center gap-1.5 sm:gap-2 bg-white dark:bg-white/[0.04] px-1.5 py-1 sm:px-2 sm:py-1 rounded-lg border border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/10 transition shadow-sm cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
-                <User size={16} className="text-blue-600 dark:text-blue-400" />
+              <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center shrink-0">
+                <User size={12} className="text-blue-600 dark:text-blue-400" />
               </div>
 
-              <div className="text-left leading-tight hidden sm:block">
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">
+              <div className="text-left leading-none hidden sm:block">
+                <div className="text-xs font-semibold text-gray-900 dark:text-white">
                   Admin
                 </div>
-                <div className="text-[11px] text-green-500 font-medium">
+                <div className="text-[9px] text-green-500 font-medium mt-0.5">
                   Active
                 </div>
               </div>
 
-              <ChevronDown size={14} className="text-gray-400" />
+              <ChevronDown size={12} className="text-gray-400 hidden sm:block" />
             </div>
 
             {profileOpen && (
-              <div className="absolute right-0 top-14 w-48 bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/[0.08] rounded-xl shadow-xl p-2 space-y-1 z-50">
+              <div className="absolute right-0 top-10 w-40 sm:w-44 bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/[0.08] rounded-xl shadow-xl p-1.5 space-y-1 z-50">
                 <button
                   onClick={() => setProfileOpen(false)}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition"
                 >
-                  <User size={14} className="text-gray-500" />
+                  <User size={13} className="text-gray-500" />
                   Profile
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                 >
-                  <LogOut size={14} className="text-red-500" />
+                  <LogOut size={13} className="text-red-500" />
                   Logout
                 </button>
               </div>
@@ -898,7 +915,7 @@ function AdminDashboard() {
         </header>
 
         {/* ── Content Area ── */}
-        <main className="flex-1 p-5 md:p-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-3 sm:p-5 md:p-8 max-w-7xl mx-auto w-full">
 
           {/* ════════ DASHBOARD ════════ */}
           {active === "dashboard" && (
@@ -1142,8 +1159,9 @@ function AdminDashboard() {
                   distinct, self-contained unit rather than a flat list row. */}
               <div className="space-y-4">
               {PAGE_SECTIONS[pagesTab]?.map((def) => {
-                const item    = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
-                const pending = !item; // brief window while the silent auto-create finishes
+                const item      = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
+                const isRemoved = !item && removedSections.has(`${pagesTab}:${def.section}`);
+                const pending   = !item && !isRemoved; // brief window while the silent auto-create finishes
                 const displayItem = item || applySectionDefaults({ ...def, page: pagesTab, title: "", description: "", data: [] });
                 const isEdit  = editModeIds.includes(def.section);
                 const meta    = SECTION_TYPE_META[def.type] || SECTION_TYPE_META.cards;
@@ -1154,7 +1172,9 @@ function AdminDashboard() {
                   : null;
 
                 return (
-                  <div key={def.section} className="rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5">
+                  <div key={def.section} className={`rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 ${
+                    isRemoved ? "border-dashed border-gray-300 dark:border-gray-600 opacity-75" : "border-gray-100 dark:border-white/[0.06]"
+                  }`}>
 
                     {/* Section Header */}
                     <div className="flex flex-col sm:flex-row sm:items-start gap-4 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
@@ -1176,7 +1196,7 @@ function AdminDashboard() {
                       </div>
 
                       <div className="flex-1 min-w-0 flex flex-col gap-2 sm:max-w-xs sm:ml-auto">
-                        {!pending && (
+                        {!pending && !isRemoved && (
                           <div className="flex bg-gray-100 dark:bg-white/[0.05] p-1 rounded-xl w-full">
                             {["Preview","Edit"].map((label, i) => (
                               <button key={label} onClick={() => toggleEdit(def.section)}
@@ -1188,13 +1208,18 @@ function AdminDashboard() {
                             ))}
                           </div>
                         )}
-                        {pending ? (
+                        {isRemoved ? (
+                          <button onClick={() => autoCreate(pagesTab, def.section)}
+                            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm w-full">
+                            <Plus size={13}/> Add Section Back
+                          </button>
+                        ) : pending ? (
                           <div className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 text-xs font-medium w-full">
                             <Loader2 size={13} className="animate-spin" /> Setting up…
                           </div>
                         ) : (
                           <div className="flex gap-2 w-full">
-                            <button onClick={() => deleteSection(item.id)} className="flex-1 px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
+                            <button onClick={() => deleteSection(item)} className="flex-1 px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
                               Delete
                             </button>
                             <button onClick={() => saveContent(item)} disabled={savingIds.includes(item.id)}
@@ -1207,32 +1232,39 @@ function AdminDashboard() {
                     </div>
 
                     {/* Section Body — always shows the live preview; no
-                        separate "enable this section" step anymore. */}
+                        separate "enable this section" step anymore (unless
+                        it was explicitly deleted). */}
                     <div className="pt-4">
                       <div className="w-full min-w-0 space-y-3 sm:space-y-4">
                         {/* Status Badge */}
                         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit ${
-                          pending
+                          isRemoved
+                            ? "bg-gray-100 dark:bg-white/[0.04] border-gray-300 dark:border-gray-600"
+                            : pending
                             ? "bg-gray-100 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.08]"
                             : "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20"
                         }`}>
                           <span className={`flex items-center gap-1.5 text-xs font-semibold ${
-                            pending ? "text-gray-500 dark:text-gray-400" : "text-emerald-700 dark:text-emerald-400"
+                            isRemoved || pending ? "text-gray-500 dark:text-gray-400" : "text-emerald-700 dark:text-emerald-400"
                           }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${pending ? "bg-gray-400" : "bg-emerald-500"}`} />
-                            {pending ? "Setting up…" : "Enabled (Live)"}
+                            <span className={`w-1.5 h-1.5 rounded-full ${isRemoved || pending ? "bg-gray-400" : "bg-emerald-500"}`} />
+                            {isRemoved ? "Removed" : pending ? "Setting up…" : "Enabled (Live)"}
                           </span>
                         </div>
 
-                        <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] shadow-sm p-3 sm:p-4">
-                          <div className="mb-3 flex items-center justify-between gap-2">
-                            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Current content</h4>
-                            <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Live preview</span>
+                        {isRemoved ? (
+                          <p className="text-sm text-gray-400">This section was removed. Click "Add Section Back" to restore it with its default content.</p>
+                        ) : (
+                          <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] shadow-sm p-3 sm:p-4">
+                            <div className="mb-3 flex items-center justify-between gap-2">
+                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Current content</h4>
+                              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Live preview</span>
+                            </div>
+                            <ContentPreview item={displayItem} type={def.type} />
                           </div>
-                          <ContentPreview item={displayItem} type={def.type} />
-                        </div>
+                        )}
 
-                        {isEdit && !pending && (
+                        {isEdit && !pending && !isRemoved && (
                           <div className="w-full min-w-0 rounded-xl border border-blue-200 dark:border-blue-500/20 bg-blue-50/40 dark:bg-blue-500/[0.04] shadow-sm p-3 sm:p-4">
                             <div className="mb-3 flex items-center justify-between gap-2">
                               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Edit fields</h4>
@@ -1505,7 +1537,6 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
   : [];
   const [form, setForm] = useState({ title: "", description: "", icon: "", image: "" });
   const [editingIdx, setEditingIdx] = useState(null);
-  const [iconDropdown, setIconDropdown] = useState(false);
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -1529,8 +1560,8 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
 
   return (
     <div className="space-y-6">
-      {/* Table */}
-      <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+      {/* Desktop: table. Mobile: stacked cards. */}
+      <div className={`hidden sm:block border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
@@ -1576,6 +1607,49 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
         </div>
       </div>
 
+      {/* Mobile card list */}
+      <div className="sm:hidden space-y-2.5">
+        {data.length === 0 && (
+          <div className={`rounded-xl border text-center py-8 text-sm text-gray-400 ${isEnabled ? "border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02]" : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/20"}`}>
+            No features added yet.
+          </div>
+        )}
+        {data.map((d, i) => {
+          const IC = ICON_LIST[d.icon] || Briefcase;
+          return (
+            <div key={i} className={`rounded-xl border p-3 flex gap-3 ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+              <div className="shrink-0 flex flex-col items-center gap-1.5">
+                {(d.image || d.src) ? (
+                  <img src={d.image||d.src} alt="" className="w-12 h-12 object-cover rounded-lg" />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-gray-100 dark:bg-white/[0.04] border border-gray-200 dark:border-white/10">
+                    <IC size={16} className={isEnabled ? "text-fuchsia-600" : "text-fuchsia-500/60"} />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className={`text-sm font-semibold truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title || "—"}</h4>
+                <p className={`text-xs mt-0.5 line-clamp-2 ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</p>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => { if(isEnabled) { setForm({title: d.title||"", description: d.description||"", icon: d.icon||"", image: d.image||"",}); setEditingIdx(i); } }}
+                    disabled={!isEnabled}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => { if(isEnabled) handleDelete(i); }}
+                    disabled={!isEnabled}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       {/* Form */}
       {isEnabled && (
         <div className="bg-fuchsia-50/50 dark:bg-fuchsia-500/5 border border-fuchsia-100 dark:border-fuchsia-500/10 rounded-xl p-5 shadow-sm">
@@ -1589,25 +1663,24 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Background Image URL (Required)</label>
               <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
             </div>
-            <div className="relative">
+            <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
-              <button onClick={() => setIconDropdown(!iconDropdown)} className="w-full flex items-center gap-2 border border-gray-200 dark:border-white/[0.06] rounded-xl px-3.5 py-2.5 bg-white dark:bg-white/[0.02] text-sm text-left hover:border-fuchsia-400 transition">
-                {SelectedIcon ? <SelectedIcon size={16} className="text-fuchsia-600"/> : null}
-                <span className="flex-1 text-gray-700 dark:text-gray-300">{form.icon || "Pick an icon..."}</span>
-                <ChevronDown size={14} className="text-gray-400"/>
-              </button>
-              {iconDropdown && (
-                <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto">
-                  {Object.keys(ICON_LIST).map((name) => {
-                    const IC = ICON_LIST[name];
-                    return (
-                      <button key={name} onClick={() => { setForm({...form, icon: name}); setIconDropdown(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-500/10 text-sm transition text-left">
-                        <IC size={16} className="text-fuchsia-600"/> {name}
-                      </button>
-                    );
-                  })}
+              <div className="relative">
+                <select
+                  value={form.icon}
+                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                  className={`${inputCls} appearance-none pr-9`}
+                >
+                  <option value="">Pick an icon...</option>
+                  {Object.keys(ICON_LIST).map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                  {SelectedIcon && <SelectedIcon size={15} className="text-fuchsia-600"/>}
+                  <ChevronDown size={14} className="text-gray-400"/>
                 </div>
-              )}
+              </div>
             </div>
             <div className="sm:col-span-2">
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
@@ -1913,8 +1986,10 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
       </div>
 
       <div className="pt-2 border-t border-gray-100 dark:border-white/[0.06] space-y-6">
-        {/* Table */}
-        <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+        {/* Desktop: table. Mobile: stacked cards (tables don't work well on
+            small screens — squeezed columns and forced horizontal scroll
+            read as janky/"overlapping"). */}
+        <div className={`hidden sm:block border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
@@ -1955,6 +2030,44 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Mobile card list */}
+        <div className={`sm:hidden space-y-2.5`}>
+          {data.length === 0 && (
+            <div className={`rounded-xl border text-center py-8 text-sm text-gray-400 ${isEnabled ? "border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02]" : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/20"}`}>
+              No cards added yet.
+            </div>
+          )}
+          {data.map((d, i) => (
+            <div key={i} className={`rounded-xl border p-3 flex gap-3 ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+              <div className="shrink-0">
+                {(d.image || d.src) ? (
+                  <img src={d.image||d.src} alt="" className="w-14 h-14 object-cover rounded-lg border border-gray-200 dark:border-white/10" onError={(e)=>e.target.style.display="none"}/>
+                ) : (
+                  <div className="w-14 h-14 rounded-lg flex items-center justify-center text-[10px] text-gray-400 bg-gray-100 dark:bg-white/[0.04] border border-gray-200 dark:border-white/10">None</div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className={`text-sm font-semibold truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title || "—"}</h4>
+                <p className={`text-xs mt-0.5 line-clamp-2 ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</p>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", image: d.image||d.src||"" }); setEditingIdx(i); } }}
+                    disabled={!isEnabled}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => { if(isEnabled) handleDelete(i); }}
+                    disabled={!isEnabled}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Form */}
