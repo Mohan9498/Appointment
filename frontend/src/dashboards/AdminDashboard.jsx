@@ -1454,9 +1454,8 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
 
   return (
     <div className="space-y-6">
-      {/* Table */}
       <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
-        <div className="overflow-x-auto">
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
               <tr>
@@ -1491,6 +1490,35 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
               {data.length === 0 && <tr><td colSpan="3" className="px-4 py-8 text-center text-gray-400 text-sm">No stats added yet.</td></tr>}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card list */}
+        <div className="sm:hidden divide-y divide-gray-100 dark:divide-white/[0.06]">
+          {data.length === 0 && (
+            <div className="px-4 py-8 text-center text-gray-400 text-sm">No stats added yet.</div>
+          )}
+          {data.map((d, i) => (
+            <div key={i} className="flex items-center justify-between gap-2 px-4 py-3">
+              <div className="min-w-0">
+                <p className={`text-sm font-medium truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</p>
+                <p className={`text-sm font-bold ${isEnabled ? "text-orange-500" : "text-orange-400/60"}`}>{d.description}</p>
+              </div>
+              <div className="flex gap-1.5 shrink-0">
+                <button
+                  onClick={() => { if(isEnabled) { setForm(d); setEditingIdx(i); } }}
+                  disabled={!isEnabled}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
+                  Edit
+                </button>
+                <button
+                  onClick={() => { if(isEnabled) handleDelete(i); }}
+                  disabled={!isEnabled}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -1706,7 +1734,6 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnable
   const data = Array.isArray(item.data) ? [...item.data] : [];
   const [form, setForm] = useState({ title: "", description: "", icon: "" });
   const [editingIdx, setEditingIdx] = useState(null);
-  const [iconDropdown, setIconDropdown] = useState(false);
 
   const handleSubmit = () => {
     if (!form.title.trim()) return;
@@ -1730,9 +1757,8 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnable
 
   return (
     <div className="space-y-6">
-      {/* Table */}
       <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
-        <div className="overflow-x-auto">
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
               <tr>
@@ -1773,6 +1799,41 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnable
             </tbody>
           </table>
         </div>
+
+        {/* Mobile card list */}
+        <div className="sm:hidden divide-y divide-gray-100 dark:divide-white/[0.06]">
+          {data.length === 0 && (
+            <div className="px-4 py-8 text-center text-gray-400 text-sm">No cards added yet — add "Our Mission" and "Our Vision" below.</div>
+          )}
+          {data.map((d, i) => {
+            const IC = ICON_LIST[d.icon] || Target;
+            return (
+              <div key={i} className="flex gap-3 px-4 py-3">
+                <div className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center bg-rose-50 dark:bg-rose-500/10">
+                  <IC size={16} className={isEnabled ? "text-rose-600" : "text-rose-500/60"} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className={`text-sm font-semibold truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title || "—"}</h4>
+                  <p className={`text-xs mt-0.5 line-clamp-2 ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</p>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", icon: d.icon||"" }); setEditingIdx(i); } }}
+                      disabled={!isEnabled}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => { if(isEnabled) handleDelete(i); }}
+                      disabled={!isEnabled}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Form */}
@@ -1784,25 +1845,24 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnable
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
               <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Our Mission" />
             </div>
-            <div className="relative">
+            <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
-              <button onClick={() => setIconDropdown(!iconDropdown)} className="w-full flex items-center gap-2 border border-gray-200 dark:border-white/[0.06] rounded-xl px-3.5 py-2.5 bg-white dark:bg-white/[0.02] text-sm text-left hover:border-rose-400 transition">
-                {SelectedIcon ? <SelectedIcon size={16} className="text-rose-600"/> : null}
-                <span className="flex-1 text-gray-700 dark:text-gray-300">{form.icon || "Pick an icon..."}</span>
-                <ChevronDown size={14} className="text-gray-400"/>
-              </button>
-              {iconDropdown && (
-                <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1e2128] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto">
-                  {Object.keys(ICON_LIST).map((name) => {
-                    const IC = ICON_LIST[name];
-                    return (
-                      <button key={name} onClick={() => { setForm({...form, icon: name}); setIconDropdown(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-sm transition text-left">
-                        <IC size={16} className="text-rose-600"/> {name}
-                      </button>
-                    );
-                  })}
+              <div className="relative">
+                <select
+                  value={form.icon}
+                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                  className={`${inputCls} appearance-none pr-9`}
+                >
+                  <option value="">Pick an icon...</option>
+                  {Object.keys(ICON_LIST).map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                  {SelectedIcon && <SelectedIcon size={15} className="text-rose-600"/>}
+                  <ChevronDown size={14} className="text-gray-400"/>
                 </div>
-              )}
+              </div>
             </div>
             <div className="sm:col-span-2">
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
@@ -2150,28 +2210,47 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave, isEnabled = tru
             {data.length} {data.length === 1 ? "item" : "items"}{!isEnabled && data.length > 0 ? " · default preview" : ""}
           </span>
         </div>
-        <table className="w-full text-sm text-left">
-          <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
-            <tr>
-              <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Name</th>
-              <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
-            {data.map((d, i) => (
-              <tr key={i} className={`transition ${editingIdx === i ? "bg-blue-50/60 dark:bg-blue-500/[0.06]" : ""} ${isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02]" : ""}`}>
-                <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-500 dark:text-gray-400"}`}>{d.title}</td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    <button disabled={!isEnabled} onClick={() => { setForm(d.title||""); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none">Edit</button>
-                    <button disabled={!isEnabled} onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none">Delete</button>
-                  </div>
-                </td>
+        {/* Desktop table */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
+              <tr>
+                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Name</th>
+                <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
               </tr>
-            ))}
-            {data.length === 0 && <tr><td colSpan="2" className="px-4 py-8 text-center text-gray-400 text-sm">No items added yet.</td></tr>}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+              {data.map((d, i) => (
+                <tr key={i} className={`transition ${editingIdx === i ? "bg-blue-50/60 dark:bg-blue-500/[0.06]" : ""} ${isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02]" : ""}`}>
+                  <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-500 dark:text-gray-400"}`}>{d.title}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button disabled={!isEnabled} onClick={() => { setForm(d.title||""); setEditingIdx(i); }} className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none">Edit</button>
+                      <button disabled={!isEnabled} onClick={() => handleDelete(i)} className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {data.length === 0 && <tr><td colSpan="2" className="px-4 py-8 text-center text-gray-400 text-sm">No items added yet.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile card list */}
+        <div className="sm:hidden divide-y divide-gray-100 dark:divide-white/[0.06]">
+          {data.length === 0 && (
+            <div className="px-4 py-8 text-center text-gray-400 text-sm">No items added yet.</div>
+          )}
+          {data.map((d, i) => (
+            <div key={i} className={`flex items-center justify-between gap-2 px-4 py-3 ${editingIdx === i ? "bg-blue-50/60 dark:bg-blue-500/[0.06]" : ""}`}>
+              <span className={`text-sm font-medium truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-500 dark:text-gray-400"}`}>{d.title}</span>
+              <div className="flex gap-1.5 shrink-0">
+                <button disabled={!isEnabled} onClick={() => { setForm(d.title||""); setEditingIdx(i); }} className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg text-xs font-semibold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">Edit</button>
+                <button disabled={!isEnabled} onClick={() => handleDelete(i)} className="px-3 py-1.5 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg text-xs font-semibold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className={`border rounded-xl p-5 shadow-sm ${isEnabled ? "bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/30 border-gray-300 dark:border-gray-600"}`}>
