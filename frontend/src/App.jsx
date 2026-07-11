@@ -99,7 +99,7 @@ function App() {
       )}
 
       {/* ✅ <main> landmark fixes accessibility audit */}
-      <main className="pt-2 bg-background min-h-screen">
+      <main className={`bg-background min-h-screen ${isAdminRoute ? "" : "pt-14 sm:pt-16"}`}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home onOpenModal={() => handleOpenModal()} />} />
