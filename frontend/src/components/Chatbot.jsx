@@ -1,21 +1,62 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, RotateCcw, Bot, Sparkles } from "lucide-react";
+import {
+  MessageCircle,
+  X,
+  Send,
+  RotateCcw,
+  Bot,
+  Sparkles,
+  MapPin,
+  Mic,
+  Brain,
+  Home as HomeIcon,
+  Phone,
+  Clock,
+} from "lucide-react";
 
-const QUICK_REPLIES = [
-  "Speech Therapy",
-  "Cognitive Therapy",
-  "Day Care",
-  "Timings",
-  "Branches",
-  "Location",
+const QUICK_REPLIES = ["Our Programs", "Timings", "Branches", "Location", "Contact Us"];
+
+const MAP_QUERY = "26Q9+8W Chennai, Tamil Nadu";
+const MAP_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&output=embed`;
+const MAP_LINK = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAP_QUERY)}`;
+
+const PROGRAMS = [
+  {
+    icon: Mic,
+    title: "Speech Therapy",
+    ages: "Ages 1–12",
+    desc: "Builds communication, articulation, and language skills through individualized sessions.",
+  },
+  {
+    icon: Brain,
+    title: "Cognitive Therapy",
+    ages: "Ages 2–15",
+    desc: "Strengthens memory, attention, and learning ability, beginning with a personalized assessment.",
+  },
+  {
+    icon: HomeIcon,
+    title: "Day Care",
+    ages: "All ages",
+    desc: "Structured full-day and half-day care for children with special needs, in a safe, nurturing setting.",
+  },
 ];
 
-const MAP_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.8!2d80.23!3d13.04!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAyJzI0LjAiTiA4MMKwMTMnNDguMCJF!5e0!3m2!1sen!2sin!4v1";
-const MAP_LINK = "https://www.google.com/maps/search/?api=1&query=26Q9%2B8W%20Chennai%2C%20Tamil%20Nadu";
+const BRANCHES = [
+  "West Mambalam",
+  "Choolaimedu",
+  "Anna Nagar",
+  "Tambaram",
+  "Porur",
+  "Velachery",
+  "Adyar",
+  "T. Nagar",
+  "Perambur",
+  "OMR",
+];
 
 const INITIAL_MESSAGES = [
-  { role: "bot", text: "Hi 👋 I'm the Tiny Todds Assistant!" },
-  { role: "bot", text: "You can ask me about our therapy programs, timings, or locations. How can I help you today?" },
+  { role: "bot", text: "Hi 👋 I'm the Tiny Todds Assistant." },
+  { role: "bot", text: "I can help with our therapy programs, timings, or branch locations. What would you like to know?" },
 ];
 
 export default function Chatbot({ onOpenModal }) {
@@ -23,7 +64,8 @@ export default function Chatbot({ onOpenModal }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [isTyping, setIsTyping] = useState(false);
-  const [showQuickReplies, setShowQuickReplies] = useState(true);
+  const [usedChips, setUsedChips] = useState([]);
+  const topicCounts = useRef({});
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -45,72 +87,163 @@ export default function Chatbot({ onOpenModal }) {
     setInput("");
     setMessages(INITIAL_MESSAGES);
     setIsTyping(false);
-    setShowQuickReplies(true);
+    setUsedChips([]);
+    topicCounts.current = {};
+  };
+
+  // Returns how many times this topic has already been asked, then increments it.
+  const askTopic = (topic) => {
+    const count = topicCounts.current[topic] || 0;
+    topicCounts.current[topic] = count + 1;
+    return count;
+  };
+
+  // Runs a bot reply after a short, natural typing delay.
+  const respondWithDelay = (callback) => {
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      callback();
+    }, 800 + Math.random() * 600);
   };
 
   // ✅ SIMPLE AI (NO API)
   const sendToAI = (userText) => {
     const text = userText.toLowerCase();
-    let reply = "I'm here to help 😊";
 
-    if (text.includes("speech")) {
-      reply = "🗣️ **Speech Therapy** helps children improve communication and language skills. It's suitable for ages 1 to 12. Would you like to book a session?";
-    }
-    else if (text.includes("cognitive")) {
-      reply = "🧠 **Cognitive Therapy** supports memory, learning, and attention skills. Suitable for ages 2 to 15. We offer personalized assessment sessions!";
-    }
-    else if (text.includes("day care")) {
-      reply = "🏠 We offer structured **Day Care** for children with special needs, with both full-day and half-day options. Safe, nurturing environment guaranteed!";
-    }
-    else if (text.includes("timing") || text.includes("time")) {
-      reply = "🕐 We are open **Monday to Saturday** from **10 AM to 8 PM**. Sunday is closed. Would you like to schedule an appointment?";
-    }
-    else if (text.includes("branch")) {
-      reply = "🏥 We have branches across Chennai including **WestMambalam, Choolaimedu, Anna Nagar, Tambaram, Porur**, and more. Which branch is closest to you?";
-    }
-    else if (text.includes("location") || text.includes("map") || text.includes("where")) {
-      reply = "📍 Here's our main branch location in **Chennai, Tamil Nadu**:";
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        addBot(reply);
+    if (text.includes("location") || text.includes("map") || text.includes("where") || text.includes("address")) {
+      const asked = askTopic("location");
+      respondWithDelay(() => {
+        addBot(
+          asked === 0
+            ? "Here is our main branch location in Chennai, Tamil Nadu:"
+            : "Sure, here's that location again:"
+        );
         setTimeout(() => addBot("", "map"), 300);
-      }, 800 + Math.random() * 600);
+      });
       return;
     }
-    else if (text.includes("contact") || text.includes("phone") || text.includes("email") || text.includes("call") || text.includes("whatsapp")) {
-      reply = "📞 Here's how to reach us:\n\n**Phone:** +91 99413 50646\n**Email:** support@tinytodds.com\n**WhatsApp:** Chat with us directly!\n**Hours:** Mon - Sat, 10 AM - 8 PM";
-    }
-    else if (text.includes("age")) {
-      reply = "👶 Our programs are designed for children from **1 to 15 years** depending on the therapy type. Each program is age-appropriate!";
-    }
-    else if (text.includes("book") || text.includes("appointment")) {
-      reply = "📅 You can book an appointment through our **Book Appointment** button on the home page, or call us directly. Want me to guide you?";
-    }
-    else if (text.includes("cost") || text.includes("price") || text.includes("fee")) {
-      reply = "💰 Our fees vary based on the program and session type. Please contact us for a personalized quote. We also offer package discounts!";
-    }
-    else if (text.includes("hi") || text.includes("hello") || text.includes("hey")) {
-      reply = "Hello! 😊 Welcome to Tiny Todds. How can I assist you today? You can ask about our programs, timings, or locations!";
-    }
-    else {
-      reply = "We offer **Speech Therapy**, **Cognitive Therapy**, and **Day Care**. You can also ask about timings, locations, or booking appointments 😊";
+
+    if (text.includes("branch")) {
+      const asked = askTopic("branches");
+      respondWithDelay(() => {
+        addBot(asked === 0 ? "We have branches across Chennai:" : "Here's our branch list again:");
+        setTimeout(() => addBot("", "branches"), 300);
+      });
+      return;
     }
 
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      addBot(reply);
-    }, 800 + Math.random() * 600);
+    if (
+      text.includes("speech") ||
+      text.includes("cognitive") ||
+      text.includes("day care") ||
+      text.includes("daycare") ||
+      text.includes("program") ||
+      text.includes("therapy")
+    ) {
+      const asked = askTopic("programs");
+      respondWithDelay(() => {
+        addBot(asked === 0 ? "Here's an overview of our programs:" : "As mentioned, here are our programs again:");
+        setTimeout(() => addBot("", "programs"), 300);
+      });
+      return;
+    }
+
+    if (text.includes("timing") || text.includes("time") || text.includes("hour")) {
+      const asked = askTopic("timing");
+      respondWithDelay(() =>
+        addBot(
+          asked === 0
+            ? "🕐 We're open **Monday to Saturday, 10 AM – 8 PM**. We're closed on Sundays. Would you like to schedule an appointment?"
+            : "🕐 Just to recap — **Mon to Sat, 10 AM – 8 PM**, closed Sundays."
+        )
+      );
+      return;
+    }
+
+    if (
+      text.includes("contact") ||
+      text.includes("phone") ||
+      text.includes("email") ||
+      text.includes("call") ||
+      text.includes("whatsapp")
+    ) {
+      const asked = askTopic("contact");
+      respondWithDelay(() =>
+        addBot(
+          asked === 0
+            ? "📞 Here's how to reach us:\n\n**Phone:** +91 99413 50646\n**Email:** support@tinytodds.com\n**Hours:** Mon – Sat, 10 AM – 8 PM"
+            : "📞 Here's that number again: **+91 99413 50646** (support@tinytodds.com)"
+        )
+      );
+      return;
+    }
+
+    if (text.includes("age")) {
+      const asked = askTopic("age");
+      respondWithDelay(() =>
+        addBot(
+          asked === 0
+            ? "👶 Our programs serve children from **1 to 15 years**, with the age range depending on the therapy type."
+            : "👶 Right, ages **1–15** overall — it depends on the specific program."
+        )
+      );
+      return;
+    }
+
+    if (text.includes("book") || text.includes("appointment")) {
+      const asked = askTopic("book");
+      respondWithDelay(() =>
+        addBot(
+          asked === 0
+            ? "📅 You can book an appointment using the **Book Appointment** button on our home page, or by calling us directly. Would you like the phone number?"
+            : "📅 Same as before — use the **Book Appointment** button, or give us a call."
+        )
+      );
+      return;
+    }
+
+    if (text.includes("cost") || text.includes("price") || text.includes("fee")) {
+      const asked = askTopic("cost");
+      respondWithDelay(() =>
+        addBot(
+          asked === 0
+            ? "💰 Fees vary by program and session type. Package discounts are available. Contact us for a personalized quote."
+            : "💰 As mentioned, pricing depends on the program — reach out to us directly for a quote."
+        )
+      );
+      return;
+    }
+
+    if (text.includes("hi") || text.includes("hello") || text.includes("hey")) {
+      const asked = askTopic("greeting");
+      respondWithDelay(() =>
+        addBot(
+          asked === 0
+            ? "Hello! 😊 Welcome to Tiny Todds. Ask me about our programs, timings, or branch locations anytime."
+            : "Hi again! 👋 What else can I help you with?"
+        )
+      );
+      return;
+    }
+
+    const asked = askTopic("fallback");
+    respondWithDelay(() =>
+      addBot(
+        asked === 0
+          ? "We offer **Speech Therapy**, **Cognitive Therapy**, and **Day Care**. You can also ask about timings, branches, or booking an appointment."
+          : "I might not have understood that. Try asking about our **programs**, **timings**, **branches**, or **contact details**."
+      )
+    );
   };
 
-  const handleSubmit = (text) => {
+  const handleSubmit = (text, isChip = false) => {
     const value = (text || input).trim();
     if (!value) return;
 
     addUser(value);
     setInput("");
-    setShowQuickReplies(false);
+    if (isChip) setUsedChips((prev) => [...prev, value]);
     sendToAI(value);
   };
 
@@ -124,7 +257,11 @@ export default function Chatbot({ onOpenModal }) {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
     return parts.map((part, i) => {
       if (part.startsWith("**") && part.endsWith("**")) {
-        return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+        return (
+          <strong key={i} className="font-semibold">
+            {part.slice(2, -2)}
+          </strong>
+        );
       }
       return part;
     });
@@ -149,8 +286,10 @@ export default function Chatbot({ onOpenModal }) {
       </button>
 
       {open && (
-        <div className="fixed bottom-24 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border border-gray-200/80 dark:border-white/[0.08] bg-white dark:bg-[#0f1629] shadow-2xl animate-scale-in flex flex-col" style={{ maxHeight: "520px" }}>
-
+        <div
+          className="fixed bottom-24 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border border-gray-200/80 dark:border-white/[0.08] bg-white dark:bg-[#0f1629] shadow-2xl animate-scale-in flex flex-col"
+          style={{ maxHeight: "520px" }}
+        >
           {/* HEADER */}
           <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 text-white overflow-hidden">
             {/* Decorative circles */}
@@ -222,10 +361,44 @@ export default function Chatbot({ onOpenModal }) {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                         >
-                          📍 Open in Google Maps →
+                          <MapPin size={12} /> Open in Google Maps →
                         </a>
                       </div>
-                    ) : msg.role === "bot" ? renderText(msg.text) : msg.text}
+                    ) : msg.type === "branches" ? (
+                      <ul className="space-y-2.5 min-w-[200px]">
+                        {BRANCHES.map((branch) => (
+                          <li key={branch} className="flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-md bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                              <MapPin size={13} className="text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{branch}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : msg.type === "programs" ? (
+                      <div className="space-y-3 min-w-[220px]">
+                        {PROGRAMS.map(({ icon: Icon, title, ages, desc }) => (
+                          <div key={title} className="flex gap-2.5">
+                            <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                              <Icon size={14} />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-semibold">{title}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400">
+                                  {ages}
+                                </span>
+                              </div>
+                              <p className="text-gray-500 dark:text-gray-400 mt-0.5">{desc}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : msg.role === "bot" ? (
+                      renderText(msg.text)
+                    ) : (
+                      msg.text
+                    )}
                   </div>
                   {msg.time && (
                     <span className={`text-[10px] text-gray-400 mt-1 ${msg.role === "user" ? "text-right" : "ml-1"}`}>
@@ -253,19 +426,24 @@ export default function Chatbot({ onOpenModal }) {
             )}
 
             {/* Quick Reply Chips */}
-            {showQuickReplies && messages.length <= 2 && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {QUICK_REPLIES.map((chip) => (
-                  <button
-                    key={chip}
-                    onClick={() => handleSubmit(chip)}
-                    className="text-xs px-3 py-2 rounded-full border border-blue-200 dark:border-blue-800/50 bg-blue-50/80 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 font-medium"
-                  >
-                    {chip}
-                  </button>
-                ))}
-              </div>
-            )}
+            {!isTyping &&
+              (() => {
+                const remainingChips = QUICK_REPLIES.filter((chip) => !usedChips.includes(chip));
+                if (remainingChips.length === 0) return null;
+                return (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {remainingChips.map((chip) => (
+                      <button
+                        key={chip}
+                        onClick={() => handleSubmit(chip, true)}
+                        className="text-xs px-3 py-2 rounded-full border border-blue-200 dark:border-blue-800/50 bg-blue-50/80 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 font-medium"
+                      >
+                        {chip}
+                      </button>
+                    ))}
+                  </div>
+                );
+              })()}
 
             <div ref={bottomRef} />
           </div>

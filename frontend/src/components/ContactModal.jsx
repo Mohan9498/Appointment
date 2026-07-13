@@ -43,6 +43,21 @@ function getPhoneError(countryCode, phone) {
   return null; // valid
 }
 
+// Default branch list — mirrors the branches shown in the chatbot.
+// Used as a fallback if the CMS "branches" section hasn't been set up yet.
+const DEFAULT_BRANCHES = [
+  "West Mambalam",
+  "Choolaimedu",
+  "Anna Nagar",
+  "Tambaram",
+  "Porur",
+  "Velachery",
+  "Adyar",
+  "T. Nagar",
+  "Perambur",
+  "OMR",
+];
+
 function ContactModal({ onClose, prefill = null }) {
   const [form, setForm] = useState({
     parentName: prefill?.parentName || "",
@@ -84,9 +99,11 @@ function ContactModal({ onClose, prefill = null }) {
   const [submitted, setSubmitted] = useState(false);
   const inputRef = useRef();
 
-  const branches = [...(branchesCMS?.data || [])].sort((a, b) =>
-    a.title.localeCompare(b.title)
-  );
+  const branches = [
+    ...(branchesCMS?.data?.length
+      ? branchesCMS.data
+      : DEFAULT_BRANCHES.map((title) => ({ title }))),
+  ].sort((a, b) => a.title.localeCompare(b.title));
 
   // Derived phone error — recalculates whenever phone or countryCode changes
   const phoneError = getPhoneError(form.countryCode, form.phone);
