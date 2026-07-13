@@ -796,7 +796,7 @@ function AdminDashboard() {
   //  RENDER
   // ════════════════════════════════
   return (
-    <div className="min-h-screen flex  bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
+    <div className="min-h-screen flex w-fit bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
 
       {/* ══════════════ SIDEBAR ══════════════ */}
       <aside className={`
