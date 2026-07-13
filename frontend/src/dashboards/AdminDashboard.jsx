@@ -796,7 +796,7 @@ function AdminDashboard() {
   //  RENDER
   // ════════════════════════════════
   return (
-    <div className="min-h-screen flex bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
+    <div className="min-h-screen flex  bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
 
       {/* ══════════════ SIDEBAR ══════════════ */}
       <aside className={`
@@ -857,10 +857,10 @@ function AdminDashboard() {
       )}
 
       {/* ══════════════ MAIN ══════════════ */}
-      <div className="flex-1 md:ml-64 flex flex-col min-h-screen overflow-x-hidden">
+      <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
 
         {/* ── Top Header ── */}
-        <header className="sticky top-0 z-30 h-12 sm:h-[52px] md:h-14 bg-white/80 dark:bg-[#16191f]/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between px-3 sm:px-5 md:px-6 shadow-sm">
+        <header className="sticky top-0 z-30 h-12 sm:h-[52px] md:h-14 bg-white dark:bg-[#16191f] border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between px-3 sm:px-5 md:px-6 shadow-sm">
           <div className="flex items-center gap-2 min-w-0">
             <button onClick={() => setMobileOpen(true)} className="md:hidden p-1.5 -ml-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition shrink-0">
               <Menu size={17} />
@@ -1177,7 +1177,7 @@ function AdminDashboard() {
                   }`}>
 
                     {/* Section Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-3 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
                       <div className="flex items-center gap-3 sm:w-64 shrink-0">
                         <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm">
                           {bannerImage ? (
@@ -1195,7 +1195,7 @@ function AdminDashboard() {
                         </div>
                       </div>
 
-                      <div className="flex-1 min-w-0 flex flex-col gap-2 sm:max-w-xs sm:ml-auto w-full">
+                      <div className="flex-1 min-w-0 flex flex-col gap-2 sm:max-w-xs sm:ml-auto">
                         {!pending && !isRemoved && (
                           <div className="flex bg-gray-100 dark:bg-white/[0.05] p-1 rounded-xl w-full">
                             {["Preview","Edit"].map((label, i) => (
@@ -1218,12 +1218,12 @@ function AdminDashboard() {
                             <Loader2 size={13} className="animate-spin" /> Setting up…
                           </div>
                         ) : (
-                          <div className="flex flex-wrap gap-2 w-full">
-                            <button onClick={() => deleteSection(item)} className="flex-1 min-w-[80px] px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
+                          <div className="flex gap-2 w-full">
+                            <button onClick={() => deleteSection(item)} className="flex-1 px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
                               Delete
                             </button>
                             <button onClick={() => saveContent(item)} disabled={savingIds.includes(item.id)}
-                              className="flex-1 min-w-[80px] flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-60">
+                              className="flex-1 flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-60">
                               <Save size={13}/> {savingIds.includes(item.id) ? "Saving…" : "Save"}
                             </button>
                           </div>
@@ -2242,11 +2242,11 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave, isEnabled = tru
             <div className="px-4 py-8 text-center text-gray-400 text-sm">No items added yet.</div>
           )}
           {data.map((d, i) => (
-            <div key={i} className={`flex items-center gap-2 px-3 py-3 ${editingIdx === i ? "bg-blue-50/60 dark:bg-blue-500/[0.06]" : ""}`}>
-              <span className={`text-sm font-medium truncate flex-1 min-w-0 ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-500 dark:text-gray-400"}`}>{d.title}</span>
+            <div key={i} className={`flex items-center justify-between gap-2 px-4 py-3 ${editingIdx === i ? "bg-blue-50/60 dark:bg-blue-500/[0.06]" : ""}`}>
+              <span className={`text-sm font-medium truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-500 dark:text-gray-400"}`}>{d.title}</span>
               <div className="flex gap-1.5 shrink-0">
-                <button disabled={!isEnabled} onClick={() => { setForm(d.title||""); setEditingIdx(i); }} className="px-2.5 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg text-xs font-semibold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">Edit</button>
-                <button disabled={!isEnabled} onClick={() => handleDelete(i)} className="px-2.5 py-1.5 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg text-xs font-semibold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">Delete</button>
+                <button disabled={!isEnabled} onClick={() => { setForm(d.title||""); setEditingIdx(i); }} className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg text-xs font-semibold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">Edit</button>
+                <button disabled={!isEnabled} onClick={() => handleDelete(i)} className="px-3 py-1.5 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg text-xs font-semibold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">Delete</button>
               </div>
             </div>
           ))}
@@ -2308,10 +2308,10 @@ function ContentPreview({ item, type }) {
       <div className="space-y-3">
         {previewItem.title && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
         {data.length > 0
-          ? <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          ? <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {data.map((s,i) => (
-                <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition text-center">
-                  <p className="text-2xl font-black text-orange-500 truncate">{s.description||"—"}</p>
+                <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition text-center">
+                  <p className="text-2xl font-black text-orange-500">{s.description||"—"}</p>
                   <p className="text-[11px] text-gray-500 uppercase tracking-wide mt-1">{s.title||"—"}</p>
                 </div>
               ))}
