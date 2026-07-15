@@ -796,11 +796,11 @@ function AdminDashboard() {
   //  RENDER
   // ════════════════════════════════
   return (
-    <div className="min-h-screen flex-row w-fill bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
+    <div className="min-h-screen flex flex-row w-fit bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
 
       {/* ══════════════ SIDEBAR ══════════════ */}
       <aside className={`
-        fixed top-0 left-0 h-screen w-64 bg-white dark:bg-[#16191f]
+        fixed top-0 left-0 min-h-screen w-46 bg-white dark:bg-[#16191f]
         flex flex-col shadow-xl border-r border-gray-100 dark:border-white/[0.06]
         z-50 transition-transform duration-300
         ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
@@ -1157,7 +1157,7 @@ function AdminDashboard() {
 
               {/* Sections — each one is its own card, so it reads as a
                   distinct, self-contained unit rather than a flat list row. */}
-              <div className="space-y-4">
+              <div className="space-y-4 ">
               {PAGE_SECTIONS[pagesTab]?.map((def) => {
                 const item      = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
                 const isRemoved = !item && removedSections.has(`${pagesTab}:${def.section}`);
@@ -1172,12 +1172,12 @@ function AdminDashboard() {
                   : null;
 
                 return (
-                  <div key={def.section} className={`rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 ${
+                  <div key={def.section} className={`rounded-2xl border w-fill bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 ${
                     isRemoved ? "border-dashed border-gray-300 dark:border-gray-600 opacity-75" : "border-gray-100 dark:border-white/[0.06]"
                   }`}>
 
                     {/* Section Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-4 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
+                    <div className="flex flex-col w-full sm:flex-row sm:items-start gap-4 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
                       <div className="flex items-center gap-3 sm:w-64 shrink-0">
                         <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm">
                           {bannerImage ? (
