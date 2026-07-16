@@ -491,6 +491,7 @@ function AdminDashboard() {
   const [pagesTab,     setPagesTab]     = useState("home");
   const [editModeIds,  setEditModeIds]  = useState([]);
   const [drafts,       setDrafts]       = useState({});
+  const [sectionFormState, setSectionFormState] = useState({});
   const [dark,         setDark]         = useState(localStorage.getItem("theme") === "dark");
   // Sections the admin explicitly deleted — kept out of the silent
   // auto-create effect below so a delete actually sticks instead of the
@@ -585,6 +586,14 @@ function AdminDashboard() {
         [existingItem.id]: prev[existingItem.id] || { ...existingItem },
       }));
     }
+  };
+
+  const handleDeleteCard = (targetItem, idx) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+    const currentData = Array.isArray(targetItem?.data) ? targetItem.data : [];
+    const newData = currentData.filter((_, i) => i !== idx);
+    updateLocal(targetItem.id, { data: newData });
+    quickSave({ ...targetItem, data: newData });
   };
 
   const updateLocal = (id, updates) => {
@@ -1133,7 +1142,7 @@ function AdminDashboard() {
               </div>
 
               {/* Page Tabs */}
-              <div className="bg-white dark:bg-[#16191f] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] shadow-sm">
+              <div className="relative z-10 w-full bg-white dark:bg-[#16191f] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] shadow-sm overflow-hidden">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Select Page</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(PAGE_SECTIONS).map((page) => {
@@ -1157,11 +1166,11 @@ function AdminDashboard() {
 
               {/* Sections — each one is its own card, so it reads as a
                   distinct, self-contained unit rather than a flat list row. */}
-              <div className="space-y-4 ">
+              <div className="relative z-10 w-full space-y-4 overflow-hidden">
               {PAGE_SECTIONS[pagesTab]?.map((def) => {
                 const item      = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
                 const isRemoved = !item && removedSections.has(`${pagesTab}:${def.section}`);
-                const pending   = !item && !isRemoved; // brief window while the silent auto-create finishes
+                const pending   = !item && !isRemoved;
                 const displayItem = item || applySectionDefaults({ ...def, page: pagesTab, title: "", description: "", data: [] });
                 const isEdit  = editModeIds.includes(def.section);
                 const meta    = SECTION_TYPE_META[def.type] || SECTION_TYPE_META.cards;
@@ -1172,115 +1181,200 @@ function AdminDashboard() {
                   : null;
 
                 return (
-                  <div key={def.section} className={`rounded-2xl border w-fill bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 p-4 sm:p-5 ${
+                 <div  key={def.section} className={`relative w-full max-w-full rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden ${
                     isRemoved ? "border-dashed border-gray-300 dark:border-gray-600 opacity-75" : "border-gray-100 dark:border-white/[0.06]"
                   }`}>
 
-                    {/* Section Header */}
-                    <div className="flex flex-col w-full sm:flex-row sm:items-start gap-4 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
-                      <div className="flex items-center gap-3 sm:w-64 shrink-0">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm">
-                          {bannerImage ? (
-                            <img src={bannerImage} alt={def.label} className="h-full w-full object-cover" />
-                          ) : (
-                            <div className={`w-full h-full flex items-center justify-center ${colorCls.solid}`}>{meta.icon}</div>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-bold text-gray-900 dark:text-white">{def.label}</h3>
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${colorCls.badge}`}>{meta.label}</span>
-                          </div>
-                          <p className="text-xs text-gray-400 mt-0.5">{def.description}</p>
-                        </div>
+                    {/* ── Banner / Section Header ── */}
+                    <div className="relative flex items-center gap-3 px-4 sm:px-5 py-4 bg-gradient-to-r from-gray-50 to-white dark:from-white/[0.03] dark:to-white/[0.01] border-b border-gray-100 dark:border-white/[0.06]">
+                      {/* Icon / thumbnail */}
+                      <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm">
+                        {bannerImage ? (
+                          <img src={bannerImage} alt={def.label} className="h-full w-full object-cover" />
+                        ) : (
+                          <div className={`w-full h-full flex items-center justify-center ${colorCls.solid}`}>{meta.icon}</div>
+                        )}
                       </div>
 
-                      <div className="flex-1 min-w-0 flex flex-col gap-2 sm:max-w-xs sm:ml-auto">
-                        {!pending && !isRemoved && (
-                          <div className="flex bg-gray-100 dark:bg-white/[0.05] p-1 rounded-xl w-full">
-                            {["Preview","Edit"].map((label, i) => (
-                              <button key={label} onClick={() => toggleEdit(def.section)}
-                                className={`flex-1 px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                                  (i===0 ? !isEdit : isEdit)
-                                    ? "bg-white dark:bg-gray-800 shadow text-gray-900 dark:text-white"
-                                    : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                                }`}>{label}</button>
-                            ))}
-                          </div>
-                        )}
+                      {/* Label + badge */}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-bold text-gray-900 dark:text-white text-sm">{def.label}</h3>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${colorCls.badge}`}>{meta.label}</span>
+                          {/* Live status dot */}
+                          {!isRemoved && !pending && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live
+                            </span>
+                          )}
+                          {pending && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-400">
+                              <Loader2 size={10} className="animate-spin" /> Setting up…
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-400 mt-0.5 truncate">{def.description}</p>
+                      </div>
+
+                      {/* ── Compact icon controls (top-right) ── */}
+                      <div className="flex items-center gap-1.5 shrink-0">
                         {isRemoved ? (
-                          <button onClick={() => autoCreate(pagesTab, def.section)}
-                            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm w-full">
-                            <Plus size={13}/> Add Section Back
+                          <button
+                            onClick={() => autoCreate(pagesTab, def.section)}
+                            title="Restore section"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition shadow-sm"
+                          >
+                            <Plus size={13}/> Restore
                           </button>
-                        ) : pending ? (
-                          <div className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 text-xs font-medium w-full">
-                            <Loader2 size={13} className="animate-spin" /> Setting up…
-                          </div>
-                        ) : (
-                          <div className="flex gap-2 w-full">
-                            <button onClick={() => deleteSection(item)} className="flex-1 px-3 py-2 rounded-xl text-xs font-medium bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 transition">
-                              Delete
+                        ) : !pending && (
+                          <>
+                            {/* Plus / Add Card icon (only for list-based sections) */}
+                            {!["hero", "text", "single-card"].includes(def.type) && (
+                              <button
+                                onClick={() => {
+                                  setSectionFormState((prev) => {
+                                    const curr = prev[def.section];
+                                    const isAdd = curr?.mode === "add";
+                                    return {
+                                      ...prev,
+                                      [def.section]: isAdd ? null : { mode: "add" },
+                                    };
+                                  });
+                                  if (item && !drafts[item.id]) {
+                                    setDrafts((prev) => ({
+                                      ...prev,
+                                      [item.id]: { ...item },
+                                    }));
+                                  }
+                                }}
+                                title="Add content item"
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm hover:shadow-md ${
+                                  sectionFormState[def.section]?.mode === "add"
+                                    ? "bg-emerald-600 text-white shadow-emerald-600/30"
+                                    : "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20"
+                                }`}
+                              >
+                                <Plus size={13} />
+                              </button>
+                            )}
+                            {/* Edit icon */}
+                            <button
+                              onClick={() => toggleEdit(def.section)}
+                              title={isEdit ? "Close editor" : "Edit section details"}
+                              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm hover:shadow-md ${
+                                isEdit
+                                  ? "bg-blue-600 text-white shadow-blue-600/30"
+                                  : "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20"
+                                }`}
+                            >
+                              <Pencil size={13} />
                             </button>
-                            <button onClick={() => saveContent(item)} disabled={savingIds.includes(item.id)}
-                              className="flex-1 flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-60">
-                              <Save size={13}/> {savingIds.includes(item.id) ? "Saving…" : "Save"}
+                            {/* Save icon (only when editing) */}
+                            {isEdit && (
+                              <button
+                                onClick={() => saveContent(item)}
+                                disabled={savingIds.includes(item.id)}
+                                title="Save section"
+                                className="w-8 h-8 rounded-full flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white transition-all shadow-sm hover:shadow-md disabled:opacity-60"
+                              >
+                                {savingIds.includes(item.id)
+                                  ? <Loader2 size={13} className="animate-spin" />
+                                  : <Save size={13} />}
+                              </button>
+                            )}
+                            {/* Delete icon */}
+                            <button
+                              onClick={() => deleteSection(item)}
+                              title="Delete section"
+                              className="w-8 h-8 rounded-full flex items-center justify-center bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20 transition-all shadow-sm hover:shadow-md"
+                            >
+                              <Trash2 size={13} />
                             </button>
-                          </div>
+                          </>
                         )}
                       </div>
                     </div>
 
-                    {/* Section Body — always shows the live preview; no
-                        separate "enable this section" step anymore (unless
-                        it was explicitly deleted). */}
-                    <div className="pt-4">
-                      <div className="w-full min-w-0 space-y-3 sm:space-y-4">
-                        {/* Status Badge */}
-                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit ${
-                          isRemoved
-                            ? "bg-gray-100 dark:bg-white/[0.04] border-gray-300 dark:border-gray-600"
-                            : pending
-                            ? "bg-gray-100 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.08]"
-                            : "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20"
-                        }`}>
-                          <span className={`flex items-center gap-1.5 text-xs font-semibold ${
-                            isRemoved || pending ? "text-gray-500 dark:text-gray-400" : "text-emerald-700 dark:text-emerald-400"
-                          }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${isRemoved || pending ? "bg-gray-400" : "bg-emerald-500"}`} />
-                            {isRemoved ? "Removed" : pending ? "Setting up…" : "Enabled (Live)"}
-                          </span>
-                        </div>
-
-                        {isRemoved ? (
-                          <p className="text-sm text-gray-400">This section was removed. Click "Add Section Back" to restore it with its default content.</p>
-                        ) : (
+                    {/* ── Section Body — preview always visible ── */}
+                    <div className="p-4 sm:p-5 space-y-4">
+                      {isRemoved ? (
+                        <p className="text-sm text-gray-400">This section was removed. Click Restore to add it back with default content.</p>
+                      ) : (
+                        <>
+                          {/* Always-on live preview */}
                           <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] shadow-sm p-3 sm:p-4">
-                            <div className="mb-3 flex items-center justify-between gap-2">
-                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Current content</h4>
-                              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Live preview</span>
+                            <div className="mb-2 flex items-center justify-between gap-2">
+                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Live Preview</span>
                             </div>
-                            <ContentPreview item={displayItem} type={def.type} />
-                          </div>
-                        )}
-
-                        {isEdit && !pending && !isRemoved && (
-                          <div className="w-full min-w-0 rounded-xl border border-blue-200 dark:border-blue-500/20 bg-blue-50/40 dark:bg-blue-500/[0.04] shadow-sm p-3 sm:p-4">
-                            <div className="mb-3 flex items-center justify-between gap-2">
-                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Edit fields</h4>
-                              <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Editing</span>
-                            </div>
-                            <SectionEditor
-                              item={draftItem || item}
-                              savedItem={item}
+                            <ContentPreview
+                              item={displayItem}
                               type={def.type}
-                              updateLocal={updateLocal} uploadImage={uploadImage}
-                              quickSave={quickSave} savingIds={savingIds}
-                              isEnabled={true}
+                              isEnabled={!pending && !isRemoved}
+                              onEditCard={(idx) => {
+                                setSectionFormState((prev) => ({
+                                  ...prev,
+                                  [def.section]: { mode: "edit", index: idx },
+                                }));
+                                if (item && !drafts[item.id]) {
+                                  setDrafts((prev) => ({
+                                    ...prev,
+                                    [item.id]: { ...item },
+                                  }));
+                                }
+                              }}
+                              onDeleteCard={(idx) => handleDeleteCard(item, idx)}
                             />
                           </div>
-                        )}
-                      </div>
+
+                          {/* Edit panel — shown when pencil icon is active */}
+                          {isEdit && (
+                            <div className="w-full min-w-0 rounded-xl border border-blue-200 dark:border-blue-500/20 bg-blue-50/40 dark:bg-blue-500/[0.04] shadow-sm p-3 sm:p-4">
+                              <div className="mb-3 flex items-center justify-between gap-2">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                  {["hero", "text", "single-card"].includes(def.type) ? "Edit fields" : "Edit Section Header"}
+                                </h4>
+                                <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Editing</span>
+                              </div>
+                              <SectionEditor
+                                item={draftItem || item}
+                                savedItem={item}
+                                type={def.type}
+                                updateLocal={updateLocal} uploadImage={uploadImage}
+                                quickSave={quickSave} savingIds={savingIds}
+                                isEnabled={true}
+                                editMetaOnly={!["hero", "text", "single-card"].includes(def.type)}
+                              />
+                            </div>
+                          )}
+
+                          {/* Card Add/Edit Form — shown when card form mode is active */}
+                          {!["hero", "text", "single-card"].includes(def.type) && sectionFormState[def.section] && (
+                            <div className="w-full min-w-0 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-500/[0.04] shadow-sm p-3 sm:p-4 mt-3">
+                              <div className="mb-3 flex items-center justify-between gap-2">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                  {sectionFormState[def.section].mode === "edit" ? "Edit Card" : "Add Card"}
+                                </h4>
+                                <button
+                                  onClick={() => setSectionFormState((prev) => ({ ...prev, [def.section]: null }))}
+                                  className="text-[10px] font-bold uppercase tracking-wide text-red-500 hover:underline"
+                                >
+                                  Close
+                                </button>
+                              </div>
+                              <SectionEditor
+                                item={draftItem || item}
+                                savedItem={item}
+                                type={def.type}
+                                updateLocal={updateLocal} uploadImage={uploadImage}
+                                quickSave={quickSave} savingIds={savingIds}
+                                isEnabled={true}
+                                formState={sectionFormState[def.section]}
+                                onCloseForm={() => setSectionFormState((prev) => ({ ...prev, [def.section]: null }))}
+                              />
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
                 );
@@ -1298,16 +1392,16 @@ function AdminDashboard() {
 // ════════════════════════════════════════════════════
 //  SECTION EDITOR — routes to specialized sub-editors
 // ════════════════════════════════════════════════════
-function SectionEditor({ item, savedItem, type, updateLocal, uploadImage, quickSave, savingIds, isEnabled = true }) {
+function SectionEditor({ item, savedItem, type, updateLocal, uploadImage, quickSave, savingIds, isEnabled = true, editMetaOnly = false, formState = null, onCloseForm = null }) {
   switch (type) {
     case "hero":        return <HeroEditor        item={item} savedItem={savedItem} updateLocal={updateLocal} uploadImage={uploadImage} savingIds={savingIds} isEnabled={isEnabled} />;
     case "text":        return <TextEditor        item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    case "stats":       return <StatsEditor       item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    case "features":    return <FeaturesEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    case "simple":      return <SimpleEditor      item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    case "mission-vision": return <MissionVisionEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    case "stats":       return <StatsEditor       item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} editMetaOnly={editMetaOnly} formState={formState} onCloseForm={onCloseForm} />;
+    case "features":    return <FeaturesEditor    item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} editMetaOnly={editMetaOnly} formState={formState} onCloseForm={onCloseForm} />;
+    case "simple":      return <SimpleEditor      item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} editMetaOnly={editMetaOnly} formState={formState} onCloseForm={onCloseForm} />;
+    case "mission-vision": return <MissionVisionEditor item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} editMetaOnly={editMetaOnly} formState={formState} onCloseForm={onCloseForm} />;
     case "single-card": return <SingleCardEditor  item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
-    default:            return <CardsEditor       item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} />;
+    default:            return <CardsEditor       item={item} savedItem={savedItem} updateLocal={updateLocal} quickSave={quickSave} isEnabled={isEnabled} editMetaOnly={editMetaOnly} formState={formState} onCloseForm={onCloseForm} />;
   }
 }
 
@@ -1419,9 +1513,8 @@ function TextEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true 
 }
 
 // ── Stats Editor (like TTTC Home/About stats) ──
-function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
+function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true, editMetaOnly = false, formState = null, onCloseForm = null }) {
   const effectiveItem = applySectionDefaults(item);
-  const effectiveSavedItem = savedItem ? applySectionDefaults(savedItem) : effectiveItem;
   const data = Array.isArray(effectiveItem.data)
   ? [...effectiveItem.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1434,6 +1527,21 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
   const [form, setForm] = useState({ title: "", description: "" });
   const [editingIdx, setEditingIdx] = useState(null);
 
+  useEffect(() => {
+    if (formState) {
+      if (formState.mode === "edit" && formState.index !== null) {
+        const d = data[formState.index];
+        if (d) {
+          setForm({ title: d.title || "", description: d.description || "" });
+          setEditingIdx(formState.index);
+          return;
+        }
+      }
+    }
+    setForm({ title: "", description: "" });
+    setEditingIdx(null);
+  }, [formState]);
+
   const handleSubmit = () => {
     if (!form.title.trim()) return;
     const newData = [...data];
@@ -1443,117 +1551,66 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
     quickSave({ ...item, data: newData });
     setForm({ title: "", description: "" });
     setEditingIdx(null);
+    if (onCloseForm) onCloseForm();
   };
 
-  const handleDelete = (idx) => {
-    if(!window.confirm("Delete this stat?")) return;
-    const newData = data.filter((_, i) => i !== idx);
-    updateLocal(item.id, { data: newData });
-    quickSave({ ...item, data: newData });
-  };
+  if (editMetaOnly) {
+    return (
+      <div className="space-y-4">
+        <FieldGroup label="Section Title">
+          <input
+            value={item.title || ""}
+            onChange={(e) => isEnabled && updateLocal(item.id, { title: e.target.value })}
+            onBlur={() => isEnabled && quickSave(item)}
+            disabled={!isEnabled}
+            className={isEnabled ? inputCls : disabledInputCls}
+            placeholder="Section Heading"
+          />
+        </FieldGroup>
+        <FieldGroup label="Section Description">
+          <textarea
+            value={item.description || ""}
+            onChange={(e) => isEnabled && updateLocal(item.id, { description: e.target.value })}
+            onBlur={() => isEnabled && quickSave(item)}
+            disabled={!isEnabled}
+            className={`${isEnabled ? inputCls : disabledInputCls} min-h-[80px] resize-y`}
+            placeholder="Section Subtitle"
+          />
+        </FieldGroup>
+      </div>
+    );
+  }
 
-  return (
-    <div className="space-y-6">
-      <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
-              <tr>
-                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Label</th>
-                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Value</th>
-                <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y ${isEnabled ? "divide-gray-100 dark:divide-white/[0.06]" : "divide-gray-200 dark:divide-gray-700"}`}>
-              {data.map((d, i) => (
-                <tr key={i} className={isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02] transition" : ""}>
-                  <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</td>
-                  <td className={`px-4 py-3 font-bold ${isEnabled ? "text-orange-500" : "text-orange-400/60"}`}>{d.description}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => { if(isEnabled) { setForm(d); setEditingIdx(i); } }} 
-                        disabled={!isEnabled}
-                        className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => { if(isEnabled) handleDelete(i); }} 
-                        disabled={!isEnabled}
-                        className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {data.length === 0 && <tr><td colSpan="3" className="px-4 py-8 text-center text-gray-400 text-sm">No stats added yet.</td></tr>}
-            </tbody>
-          </table>
+  // If formState is active, render ONLY the form.
+  if (formState) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Label</label>
+            <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Happy Students" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Value</label>
+            <input value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={inputCls} placeholder="e.g. 500+" />
+          </div>
         </div>
-
-        {/* Mobile card list */}
-        <div className="sm:hidden divide-y divide-gray-100 dark:divide-white/[0.06]">
-          {data.length === 0 && (
-            <div className="px-4 py-8 text-center text-gray-400 text-sm">No stats added yet.</div>
-          )}
-          {data.map((d, i) => (
-            <div key={i} className="flex items-center justify-between gap-2 px-4 py-3">
-              <div className="min-w-0">
-                <p className={`text-sm font-medium truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</p>
-                <p className={`text-sm font-bold ${isEnabled ? "text-orange-500" : "text-orange-400/60"}`}>{d.description}</p>
-              </div>
-              <div className="flex gap-1.5 shrink-0">
-                <button
-                  onClick={() => { if(isEnabled) { setForm(d); setEditingIdx(i); } }}
-                  disabled={!isEnabled}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
-                  Edit
-                </button>
-                <button
-                  onClick={() => { if(isEnabled) handleDelete(i); }}
-                  disabled={!isEnabled}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="flex gap-3">
+          <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+            {editingIdx !== null ? "Update" : "Add"}
+          </button>
+          <button onClick={() => { setForm({title:"", description:""}); setEditingIdx(null); if (onCloseForm) onCloseForm(); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
         </div>
       </div>
+    );
+  }
 
-      {/* Form */}
-      {isEnabled && (
-        <div className="bg-amber-50/50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10 rounded-xl p-5 shadow-sm">
-          <h3 className="text-sm font-bold text-amber-800 dark:text-amber-500 mb-4">{editingIdx !== null ? "Edit Stat" : "Add Stat"}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Label</label>
-              <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Happy Students" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Value</label>
-              <input value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={inputCls} placeholder="e.g. 500+" />
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-              {editingIdx !== null ? "Update" : "Add"}
-            </button>
-            {editingIdx !== null && (
-              <button onClick={() => { setForm({title:"", description:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  return null;
 }
 
 // ── Features Editor (Icon + Image background) ──
-function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
+function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true, editMetaOnly = false, formState = null, onCloseForm = null }) {
   const effectiveItem = applySectionDefaults(item);
-  const effectiveSavedItem = savedItem ? applySectionDefaults(savedItem) : effectiveItem;
   const data = Array.isArray(effectiveItem.data)
   ? [...effectiveItem.data].sort((a, b) =>
       String(a?.title || "").localeCompare(
@@ -1566,6 +1623,26 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
   const [form, setForm] = useState({ title: "", description: "", icon: "", image: "" });
   const [editingIdx, setEditingIdx] = useState(null);
 
+  useEffect(() => {
+    if (formState) {
+      if (formState.mode === "edit" && formState.index !== null) {
+        const d = data[formState.index];
+        if (d) {
+          setForm({
+            title: d.title || "",
+            description: d.description || "",
+            icon: d.icon || "",
+            image: d.image || ""
+          });
+          setEditingIdx(formState.index);
+          return;
+        }
+      }
+    }
+    setForm({ title: "", description: "", icon: "", image: "" });
+    setEditingIdx(null);
+  }, [formState]);
+
   const handleSubmit = () => {
     if (!form.title.trim()) return;
     const newData = [...data];
@@ -1575,158 +1652,85 @@ function FeaturesEditor({ item, savedItem, updateLocal, quickSave, isEnabled = t
     quickSave({ ...item, data: newData });
     setForm({ title: "", description: "", icon: "", image: "" });
     setEditingIdx(null);
-  };
-
-  const handleDelete = (idx) => {
-    if(!window.confirm("Delete this feature?")) return;
-    const newData = data.filter((_, i) => i !== idx);
-    updateLocal(item.id, { data: newData });
-    quickSave({ ...item, data: newData });
+    if (onCloseForm) onCloseForm();
   };
 
   const SelectedIcon = ICON_LIST[form.icon] || null;
 
-  return (
-    <div className="space-y-6">
-      {/* Desktop: table. Mobile: stacked cards. */}
-      <div className={`hidden sm:block border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
-              <tr>
-                <th className={`px-4 py-3 font-semibold w-16 text-center ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Icon</th>
-                <th className={`px-4 py-3 font-semibold w-16 text-center ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Bg Image</th>
-                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Title</th>
-                <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y ${isEnabled ? "divide-gray-100 dark:divide-white/[0.06]" : "divide-gray-200 dark:divide-gray-700"}`}>
-              {data.map((d, i) => {
-                const IC = ICON_LIST[d.icon] || Briefcase;
-                return (
-                  <tr key={i} className={isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02] transition" : ""}>
-                    <td className="px-4 py-3 text-center"><IC size={18} className={isEnabled ? "text-fuchsia-600" : "text-fuchsia-500/60"} /></td>
-                    <td className="px-4 py-3">
-                      {(d.image || d.src) ? <img src={d.image||d.src} alt="" className="w-8 h-8 object-cover rounded-md" /> : <span className={`text-xs ${isEnabled ? "text-gray-400" : "text-gray-500"}`}>None</span>}
-                    </td>
-                    <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => { if(isEnabled) { setForm({title: d.title||"", description: d.description||"", icon: d.icon||"", image: d.image||"",}); setEditingIdx(i); } }} 
-                          disabled={!isEnabled}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-600 hover:to-pink-600 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => { if(isEnabled) handleDelete(i); }} 
-                          disabled={!isEnabled}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-              {data.length === 0 && <tr><td colSpan="4" className="px-4 py-8 text-center text-gray-400 text-sm">No features added yet.</td></tr>}
-            </tbody>
-          </table>
-        </div>
+  if (editMetaOnly) {
+    return (
+      <div className="space-y-4">
+        <FieldGroup label="Section Title">
+          <input
+            value={item.title || ""}
+            onChange={(e) => isEnabled && updateLocal(item.id, { title: e.target.value })}
+            onBlur={() => isEnabled && quickSave(item)}
+            disabled={!isEnabled}
+            className={isEnabled ? inputCls : disabledInputCls}
+            placeholder="Section Heading"
+          />
+        </FieldGroup>
+        <FieldGroup label="Section Description">
+          <textarea
+            value={item.description || ""}
+            onChange={(e) => isEnabled && updateLocal(item.id, { description: e.target.value })}
+            onBlur={() => isEnabled && quickSave(item)}
+            disabled={!isEnabled}
+            className={`${isEnabled ? inputCls : disabledInputCls} min-h-[80px] resize-y`}
+            placeholder="Section Subtitle"
+          />
+        </FieldGroup>
       </div>
+    );
+  }
 
-      {/* Mobile card list */}
-      <div className="sm:hidden space-y-2.5">
-        {data.length === 0 && (
-          <div className={`rounded-xl border text-center py-8 text-sm text-gray-400 ${isEnabled ? "border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02]" : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/20"}`}>
-            No features added yet.
+  if (formState) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
+            <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="Feature Name" />
           </div>
-        )}
-        {data.map((d, i) => {
-          const IC = ICON_LIST[d.icon] || Briefcase;
-          return (
-            <div key={i} className={`rounded-xl border p-3 flex gap-3 ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
-              <div className="shrink-0 flex flex-col items-center gap-1.5">
-                {(d.image || d.src) ? (
-                  <img src={d.image||d.src} alt="" className="w-12 h-12 object-cover rounded-lg" />
-                ) : (
-                  <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-gray-100 dark:bg-white/[0.04] border border-gray-200 dark:border-white/10">
-                    <IC size={16} className={isEnabled ? "text-fuchsia-600" : "text-fuchsia-500/60"} />
-                  </div>
-                )}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Background Image URL (Required)</label>
+            <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
+            <div className="relative">
+              <select
+                value={form.icon}
+                onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                className={`${inputCls} appearance-none pr-9`}
+              >
+                <option value="">Pick an icon...</option>
+                {Object.keys(ICON_LIST).map((name) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                {SelectedIcon && <SelectedIcon size={15} className="text-fuchsia-600"/>}
+                <ChevronDown size={14} className="text-gray-400"/>
               </div>
-              <div className="flex-1 min-w-0">
-                <h4 className={`text-sm font-semibold truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title || "—"}</h4>
-                <p className={`text-xs mt-0.5 line-clamp-2 ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</p>
-                <div className="flex gap-2 mt-2">
-                  <button
-                    onClick={() => { if(isEnabled) { setForm({title: d.title||"", description: d.description||"", icon: d.icon||"", image: d.image||"",}); setEditingIdx(i); } }}
-                    disabled={!isEnabled}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => { if(isEnabled) handleDelete(i); }}
-                    disabled={!isEnabled}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Form */}
-      {isEnabled && (
-        <div className="bg-fuchsia-50/50 dark:bg-fuchsia-500/5 border border-fuchsia-100 dark:border-fuchsia-500/10 rounded-xl p-5 shadow-sm">
-          <h3 className="text-sm font-bold text-fuchsia-800 dark:text-fuchsia-500 mb-4">{editingIdx !== null ? "Edit Feature" : "Add Feature"}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
-              <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="Feature Name" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Background Image URL (Required)</label>
-              <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
-              <div className="relative">
-                <select
-                  value={form.icon}
-                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
-                  className={`${inputCls} appearance-none pr-9`}
-                >
-                  <option value="">Pick an icon...</option>
-                  {Object.keys(ICON_LIST).map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-                  {SelectedIcon && <SelectedIcon size={15} className="text-fuchsia-600"/>}
-                  <ChevronDown size={14} className="text-gray-400"/>
-                </div>
-              </div>
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
-              <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="Detailed description" />
             </div>
           </div>
-          <div className="flex gap-3">
-            <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-              {editingIdx !== null ? "Update" : "Add"}
-            </button>
-            {editingIdx !== null && (
-              <button onClick={() => { setForm({title:"", description:"", icon:"", image:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
-            )}
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
+            <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="Detailed description" />
           </div>
         </div>
-      )}
-    </div>
-  );
+        <div className="flex gap-3">
+          <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+            {editingIdx !== null ? "Update" : "Add"}
+          </button>
+          <button onClick={() => { setForm({title:"", description:"", icon:"", image:""}); setEditingIdx(null); if (onCloseForm) onCloseForm(); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
 
 // ── Mission & Vision Editor (icon cards, e.g. About page) ──
@@ -2069,18 +2073,20 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
                     <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</td>
                     <td className={`px-4 py-3 truncate max-w-[200px] ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", image: d.image||d.src||"" }); setEditingIdx(i); } }} 
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", image: d.image||d.src||"" }); setEditingIdx(i); } }}
                           disabled={!isEnabled}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
-                          Edit
+                          title="Edit"
+                          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${isEnabled ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-500/20" : "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"}`}>
+                          <Pencil size={12} />
                         </button>
-                        <button 
-                          onClick={() => { if(isEnabled) handleDelete(i); }} 
+                        <button
+                          onClick={() => { if(isEnabled) handleDelete(i); }}
                           disabled={!isEnabled}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
-                          Delete
+                          title="Delete"
+                          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${isEnabled ? "bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20" : "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"}`}>
+                          <Trash2 size={12} />
                         </button>
                       </div>
                     </td>
@@ -2100,7 +2106,24 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
             </div>
           )}
           {data.map((d, i) => (
-            <div key={i} className={`rounded-xl border p-3 flex gap-3 ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+            <div key={i} className={`relative rounded-xl border p-3 flex gap-3 ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+              {/* icon buttons – top-right corner */}
+              <div className="absolute top-2.5 right-2.5 flex gap-1">
+                <button
+                  onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", image: d.image||d.src||"" }); setEditingIdx(i); } }}
+                  disabled={!isEnabled}
+                  title="Edit"
+                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${isEnabled ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100" : "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"}`}>
+                  <Pencil size={11} />
+                </button>
+                <button
+                  onClick={() => { if(isEnabled) handleDelete(i); }}
+                  disabled={!isEnabled}
+                  title="Delete"
+                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${isEnabled ? "bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100" : "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"}`}>
+                  <Trash2 size={11} />
+                </button>
+              </div>
               <div className="shrink-0">
                 {(d.image || d.src) ? (
                   <img src={d.image||d.src} alt="" className="w-14 h-14 object-cover rounded-lg border border-gray-200 dark:border-white/10" onError={(e)=>e.target.style.display="none"}/>
@@ -2108,23 +2131,9 @@ function CardsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
                   <div className="w-14 h-14 rounded-lg flex items-center justify-center text-[10px] text-gray-400 bg-gray-100 dark:bg-white/[0.04] border border-gray-200 dark:border-white/10">None</div>
                 )}
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 pr-14">
                 <h4 className={`text-sm font-semibold truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title || "—"}</h4>
                 <p className={`text-xs mt-0.5 line-clamp-2 ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</p>
-                <div className="flex gap-2 mt-2">
-                  <button
-                    onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", image: d.image||d.src||"" }); setEditingIdx(i); } }}
-                    disabled={!isEnabled}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => { if(isEnabled) handleDelete(i); }}
-                    disabled={!isEnabled}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
-                    Delete
-                  </button>
-                </div>
               </div>
             </div>
           ))}
@@ -2287,7 +2296,7 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave, isEnabled = tru
 // ════════════════════════════════════════════════════
 //  CONTENT PREVIEW
 // ════════════════════════════════════════════════════
-function ContentPreview({ item, type }) {
+function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = false }) {
   // ContentPreview is only ever rendered from inside the `item ? ... : ...`
   // branch in the sections list, so `item` is always truthy here. Disabled
   // sections use SectionEditor (with isEnabled={false}) to show the
@@ -2310,7 +2319,19 @@ function ContentPreview({ item, type }) {
         {data.length > 0
           ? <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {data.map((s,i) => (
-                <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition text-center">
+                <div key={i} className="relative group bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition text-center">
+                  {isEnabled && (
+                    <div className="absolute top-2 right-2 flex gap-1 z-10">
+                      <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
+                        className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
+                        <Pencil size={11} />
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
+                        className="w-6 h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
+                        <Trash2 size={11} />
+                      </button>
+                    </div>
+                  )}
                   <p className="text-2xl font-black text-orange-500">{s.description||"—"}</p>
                   <p className="text-[11px] text-gray-500 uppercase tracking-wide mt-1">{s.title||"—"}</p>
                 </div>
@@ -2331,7 +2352,19 @@ function ContentPreview({ item, type }) {
               {data.map((c,i) => {
                 const IC = ICON_LIST[c.image] || Briefcase;
                 return (
-                  <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
+                  <div key={i} className="relative group bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
+                    {isEnabled && (
+                      <div className="absolute top-3 right-3 flex gap-1 z-10">
+                        <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
+                          className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
+                          <Pencil size={11} />
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
+                          className="w-6 h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
+                          <Trash2 size={11} />
+                        </button>
+                      </div>
+                    )}
                     <div className="w-11 h-11 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center mb-3">
                       <IC size={20} className="text-violet-600"/>
                     </div>
@@ -2363,7 +2396,19 @@ function ContentPreview({ item, type }) {
                 const IC = ICON_LIST[c.icon] || Target;
                 const clr = palette[i % palette.length];
                 return (
-                  <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
+                  <div key={i} className="relative group bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
+                    {isEnabled && (
+                      <div className="absolute top-3 right-3 flex gap-1 z-10">
+                        <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
+                          className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
+                          <Pencil size={11} />
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
+                          className="w-6 h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
+                          <Trash2 size={11} />
+                        </button>
+                      </div>
+                    )}
                     <div className={`w-11 h-11 rounded-xl ${clr.bg} flex items-center justify-center mb-3`}>
                       <IC size={20} className={clr.text}/>
                     </div>
@@ -2388,10 +2433,22 @@ function ContentPreview({ item, type }) {
               {data.map((d, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-white/[0.06] text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-white/[0.08]"
+                  className="relative group inline-flex items-center gap-1.5 pl-3 pr-14 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-white/[0.06] text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-white/[0.08]"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500" />
                   {d.title || "—"}
+                  {isEnabled && (
+                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-0.5 z-10">
+                      <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
+                        className="w-5 h-5 rounded-full bg-white dark:bg-gray-800 text-blue-600 hover:bg-blue-50 flex items-center justify-center transition border border-gray-200 dark:border-white/10">
+                        <Pencil size={9} />
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
+                        className="w-5 h-5 rounded-full bg-white dark:bg-gray-800 text-red-500 hover:bg-red-50 flex items-center justify-center transition border border-gray-200 dark:border-white/10">
+                        <Trash2 size={9} />
+                      </button>
+                    </div>
+                  )}
                 </span>
               ))}
             </div>
@@ -2465,7 +2522,19 @@ function ContentPreview({ item, type }) {
       {data.length > 0  && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-3 border-t border-gray-100 dark:border-white/10">
           {data.map((c,i) => (
-            <div key={i} className="bg-white dark:bg-[#16191f] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition overflow-hidden">
+            <div key={i} className="relative group bg-white dark:bg-[#16191f] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition overflow-hidden">
+              {isEnabled && (
+                <div className="absolute top-2 right-2 flex gap-1 z-10">
+                  <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
+                    className="w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm border border-gray-200/50">
+                    <Pencil size={11} />
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
+                    className="w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm border border-gray-200/50">
+                    <Trash2 size={11} />
+                  </button>
+                </div>
+              )}
               {c.image && (
                 <div className="h-28 w-full overflow-hidden">
                   <img src={c.image} alt="" className="w-full h-full object-cover" onError={(e)=>e.target.parentElement.style.display="none"}/>
