@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import useCMS from "../hooks/useCMS";
 import g1 from "../assets/j-1.webp";
+import { resolveImageUrl } from "../services/resolveImageUrl";
 
 function Hero({ onOpenModal }) {
 
@@ -27,11 +28,7 @@ function Hero({ onOpenModal }) {
   // Uploaded images come back as relative backend paths (e.g. "/media/..."),
   // same as in the admin dashboard preview — needs the API origin prefixed,
   // or the <img> 404s and silently falls back to nothing.
-  const heroImage = hero?.image
-    ? hero.image.startsWith("http")
-      ? hero.image
-      : `https://appointment-83q0.onrender.com${hero.image}`
-    : g1;
+  const heroImage = hero?.image ? resolveImageUrl(hero.image) : g1;
 
   return (
     <section className="relative pt-20 min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">

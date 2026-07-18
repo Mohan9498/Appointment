@@ -3,6 +3,12 @@ import { toast } from "react-hot-toast";
 
 const BASE_URL = "https://appointment-83q0.onrender.com/api/";
 
+// Shared origin (no trailing /api/) for anything that needs to build a URL
+// against this backend outside of axios — e.g. resolving relative media
+// paths for uploaded images. Keeping this here means the domain only ever
+// lives in one place in the whole frontend.
+export const API_ORIGIN = BASE_URL.replace(/\/api\/?$/, "");
+
 const API = axios.create({
   baseURL: BASE_URL,
 });

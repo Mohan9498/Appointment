@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import API from "../services/api";
+import { resolveImageUrl } from "../services/resolveImageUrl";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -805,11 +806,11 @@ function AdminDashboard() {
   //  RENDER
   // ════════════════════════════════
   return (
-    <div className="min-h-screen flex flex-row  bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
+    <div className="min-h-screen w-full overflow-x-hidden flex flex-row bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
 
       {/* ══════════════ SIDEBAR ══════════════ */}
       <aside className={`
-        fixed top-0 left-0 min-h-screen w-46 bg-white dark:bg-[#16191f]
+        fixed top-0 left-0 min-h-screen w-64 max-w-[85vw] bg-white dark:bg-[#16191f]
         flex flex-col shadow-xl border-r border-gray-100 dark:border-white/[0.06]
         z-50 transition-transform duration-300
         ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
@@ -1176,9 +1177,7 @@ function AdminDashboard() {
                 const meta    = SECTION_TYPE_META[def.type] || SECTION_TYPE_META.cards;
                 const colorCls = SECTION_COLOR_CLASSES[meta.color] || SECTION_COLOR_CLASSES.emerald;
                 const draftItem = item ? (drafts[item.id] || item) : null;
-                const bannerImage = item?.image
-                  ? (item.image.startsWith("http") ? item.image : `https://appointment-83q0.onrender.com${item.image}`)
-                  : null;
+                const bannerImage = resolveImageUrl(item?.image);
 
                 return (
                  <div  key={def.section} className={`relative w-full max-w-full rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 ${
@@ -1429,7 +1428,7 @@ function HeroEditor({ item, savedItem, updateLocal, uploadImage, savingIds, isEn
       {!isContactHero && (
         <FieldGroup >
           {item.image
-            ? <img src={item.image.startsWith("http") ? item.image : `https://appointment-83q0.onrender.com${item.image}`}
+            ? <img src={resolveImageUrl(item.image)}
                 alt="hero" className="w-full max-w-sm h-40 object-cover rounded-xl border border-gray-200 dark:border-white/10 mb-3"/>
             : <div className="w-full max-w-xs h-32 rounded-xl border-2 border-dashed border-gray-300 dark:border-white/10 flex flex-col items-center justify-center text-gray-400 mb-3 gap-1">
                 <ImageIcon size={22}/><span className="text-xs">No image yet</span>
@@ -2374,9 +2373,7 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
     const title = previewItem.title || defaults.title || "";
     const description = previewItem.description || defaults.description || "";
     // Resolve relative backend image paths the same way HeroEditor & Contact.jsx do.
-    const imgSrc = !isContactHero && previewItem.image
-      ? (previewItem.image.startsWith("http") ? previewItem.image : `https://appointment-83q0.onrender.com${previewItem.image}`)
-      : null;
+    const imgSrc = !isContactHero ? resolveImageUrl(previewItem.image) : null;
     return (
       <div className="space-y-3">
         {imgSrc && <img src={imgSrc} alt="preview" className="w-full max-w-xs h-36 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-white/10"/>}
@@ -2402,7 +2399,7 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
     <div className="relative isolate w-full min-w-0 overflow-hidden bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] p-3 sm:p-5 max-[320px]:p-2 rounded-xl space-y-3">
       {previewItem.title       && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
       {previewItem.description && <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-h-11 overflow-y-auto pr-1">{previewItem.description}</p>}
-      {previewItem.image       && <img src={previewItem.image} alt="preview" className="w-full max-w-xs h-36 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-white/10"/>}
+      {previewItem.image       && <img src={resolveImageUrl(previewItem.image)} alt="preview" className="w-full max-w-xs h-36 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-white/10"/>}
       {data.length > 0  && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-3 border-t border-gray-100 dark:border-white/10">
           {data.map((c,i) => (
@@ -2421,7 +2418,7 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
               )}
               {c.image && (
                 <div className="h-28 w-full rounded-t-2xl overflow-hidden">
-                  <img src={c.image} alt="" className="w-full h-full object-cover" onError={(e)=>e.target.parentElement.style.display="none"}/>
+                  <img src={resolveImageUrl(c.image)} alt="" className="w-full h-full object-cover" onError={(e)=>e.target.parentElement.style.display="none"}/>
                 </div>
               )}
               <div className="p-4">

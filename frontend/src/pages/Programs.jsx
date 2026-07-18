@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useCMS from "../hooks/useCMS";
+import { resolveImageUrl } from "../services/resolveImageUrl";
 import j3 from "../assets/j3.webp";
 import j5 from "../assets/j5.webp";
 import j4 from "../assets/j4.webp";
@@ -74,7 +75,7 @@ function Programs() {
               {/* IMAGE */}
               <div className="relative h-64 overflow-hidden">
                 <img
-                  src={program.image || program.src} // ✅ supports CMS image
+                  src={resolveImageUrl(program.image) || program.src} // ✅ supports CMS image
                   alt={program.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />

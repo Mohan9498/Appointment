@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useCMS from "../hooks/useCMS";
+import { resolveImageUrl } from "../services/resolveImageUrl";
 
 import c1 from "../assets/c1.jpg";
 import c2 from "../assets/c2-640.webp";
@@ -74,7 +75,7 @@ function Gallery() {
             <div
               className="w-full h-full bg-cover bg-center"
               style={{
-                backgroundImage: `url(${images[currentSlide].src || images[currentSlide].image})`,
+                backgroundImage: `url(${images[currentSlide].src || resolveImageUrl(images[currentSlide].image)})`,
               }}
             />
           </div>
@@ -88,7 +89,7 @@ function Gallery() {
             <div
               className="w-full h-full bg-cover bg-center"
               style={{
-                backgroundImage: `url(${images[nextSlide].src || images[nextSlide].image})`,
+                backgroundImage: `url(${images[nextSlide].src || resolveImageUrl(images[nextSlide].image)})`,
               }}
             />
           </div>

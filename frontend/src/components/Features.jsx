@@ -8,6 +8,7 @@ import {
   Star,
 } from "lucide-react";
 import useCMS from "../hooks/useCMS";
+import { resolveImageUrl } from "../services/resolveImageUrl";
 
 // ✅ IMPORT LOCAL IMAGES
 import therapy from "../assets/features/therapy.jpeg";
@@ -115,7 +116,7 @@ function Features() {
           <div
             className="w-full h-full bg-cover bg-center"
             style={{
-              backgroundImage: `url(${data[currentSlide].image})`,
+              backgroundImage: `url(${resolveImageUrl(data[currentSlide].image)})`,
             }}
           />
         </div>
@@ -129,7 +130,7 @@ function Features() {
           <div
             className="w-full h-full bg-cover bg-center"
             style={{
-              backgroundImage: `url(${data[nextSlide].image})`,
+              backgroundImage: `url(${resolveImageUrl(data[nextSlide].image)})`,
             }}
           />
         </div>
