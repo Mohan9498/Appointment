@@ -25,7 +25,7 @@ function Navbar({ onOpenModal = () => {} }) {
   ];
 
   return (
-    <nav className={`fixed  top-0 w-full  z-50 transition-all duration-500  
+    <nav className={`fixed  top-0 flex-wrap items-center w-full  z-50 transition-all duration-500  
       ${
       scrolled
         ? 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950  backdrop-blur-lg border-b shadow-sm'
@@ -33,9 +33,9 @@ function Navbar({ onOpenModal = () => {} }) {
       }` 
     }>
 
-      <div className="max-w-full mx-auto px-4 h-14 sm:h-16 flex justify-between items-center">
+      <div className="max-w-full top-10 mx-auto px-4 p-4 gap-2 h-10 sm:h-14 flex justify-between items-center">
 
-        <Link to="/" className="flex  items-center gap-2 sm:gap-2.5 group">     
+        <Link to="/" className="flex flex-row items-center  gap-2.5 sm:gap-2.5 group">     
           <img
             src={logo}
             alt="Tiny Todds Therapy Care logo"
@@ -51,7 +51,7 @@ function Navbar({ onOpenModal = () => {} }) {
         </Link>
 
         {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-1 font-medium">
+        <div className="hidden md:flex items-center  font-medium">
 
           {navItems.map((item, i) => (
             <Link
@@ -82,14 +82,14 @@ function Navbar({ onOpenModal = () => {} }) {
           <button
             onClick={() => setDark(!dark)}
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-            className="ml-2 p-2.5 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 transition-all duration-300 text-sm"
+            className="ml-2 p-1.5 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 transition-all duration-300 text-sm"
           >
             {dark ? "☀️" : "🌙"}
           </button>
 
           <button
             onClick={onOpenModal}
-            className="ml-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-md hover:shadow-glow-blue hover:scale-[1.03] transition-all duration-300"
+            className="ml-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-1.5 rounded-full text-sm font-semibold shadow-md hover:shadow-glow-blue hover:scale-[1.03] transition-all duration-300"
           >
             Book Appointment
           </button>
@@ -109,14 +109,14 @@ function Navbar({ onOpenModal = () => {} }) {
       <div
         className={`md:hidden transition-all duration-300 ${
           menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"
-        } bg-transparent dark:bg-slate-900/95 backdrop-blur-xl px-6 py-4 space-y-2 border-t border-gray-100 dark:border-white/5`}
+        } bg-transparent dark:bg-slate-900/95 backdrop-blur-xl px-6 py-2 flex flex-col items-center text-center space-y-2 border-t border-gray-100 dark:border-white/5`}
       >
         {navItems.map((item, i) => (
           <Link
             key={i}
             to={item.path}
             onClick={() => setMenuOpen(false)}
-            className={`block text-base font-medium px-4 py-3 rounded-xl transition-all duration-200 ${
+            className={`block w-full text-center text-base font-medium px-4 py-2 rounded-xl transition-all duration-200 ${
               location.pathname === item.path
                 ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                 : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5"
@@ -129,16 +129,16 @@ function Navbar({ onOpenModal = () => {} }) {
         <Link
           to="/login"
           onClick={() => setMenuOpen(false)}
-          className="block text-base font-medium text-blue-600 px-4 py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+          className="block w-full text-center text-base font-medium text-blue-600 px-4 py-1.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
         >
           Admin Login
         </Link>
 
-        <div className="pt-2 space-y-2">
+        <div className="pt-2 w-full space-y-2">
           <button
             onClick={() => setDark(!dark)}
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-            className="w-full py-3 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white font-medium text-sm transition hover:bg-gray-200 dark:hover:bg-white/20"
+            className="w-full py-1.5 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white font-medium text-sm transition hover:bg-gray-200 dark:hover:bg-white/20"
           >
             {dark ? "☀️ Light Mode" : "🌙 Dark Mode"}
           </button>
@@ -148,7 +148,7 @@ function Navbar({ onOpenModal = () => {} }) {
               setMenuOpen(false);
               onOpenModal();
             }}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 rounded-xl font-semibold text-sm transition hover:shadow-glow-blue"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-1.5 rounded-xl font-semibold text-sm transition hover:shadow-glow-blue"
           >
             Book Appointment
           </button>

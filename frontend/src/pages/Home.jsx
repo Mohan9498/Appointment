@@ -16,21 +16,21 @@ function Home({ onOpenModal }) {
         description="Welcome to Tiny Todds Therapy Care." 
       />
 
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-10 space-y-6 sm:space-y-8 lg:space-y-10 py-6 sm:py-8 lg:py-10">
+      <div className="max-w-full mx-auto px-3 sm:px-6 lg:px-10 space-y-4 sm:space-y-8 lg:space-y-10 py-4 sm:py-8 lg:py-10">
 
-        <div className="glass-card-hover rounded-2xl sm:rounded-3xl overflow-hidden">
+        <div className="glass-card-hover rounded-xl sm:rounded-3xl overflow-hidden">
           <Hero onOpenModal={onOpenModal} />
         </div>
 
-        <div className="glass-card-hover rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <div className="glass-card-hover rounded-xl sm:rounded-3xl p-3 sm:p-6">
           <Features />
         </div>
 
-        <div className="glass-card-hover rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <div className="glass-card-hover rounded-xl sm:rounded-3xl p-3 sm:p-6">
           <Services />
         </div>
 
-        <div className="glass-card-hover rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <div className="glass-card-hover rounded-xl sm:rounded-3xl p-3 sm:p-6">
           <Gallery />
         </div>
 

@@ -806,7 +806,7 @@ function AdminDashboard() {
   //  RENDER
   // ════════════════════════════════
   return (
-    <div className="min-h-screen min-w-fit overflow-x-hidden flex flex-row bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
+    <div className="min-h-screen w-full overflow-x-hidden flex flex-row bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
 
       {/* ══════════════ SIDEBAR ══════════════ */}
       <aside className={`
@@ -2500,12 +2500,12 @@ function StatCard({ icon, label, value, color }) {
   }[color] || { bg:"bg-blue-50", text:"text-blue-600", border:"border-l-blue-500" };
 
   return (
-    <div className={`bg-white dark:bg-white/[0.04] border border-gray-200/60 dark:border-white/[0.06] border-l-4 ${c.border} p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group`}>
-      <div className="flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-xl ${c.bg} flex items-center justify-center ${c.text} group-hover:scale-105 transition-transform`}>{icon}</div>
+    <div className={`bg-white dark:bg-white/[0.04] border border-gray-200/60 dark:border-white/[0.06] border-l-4 ${c.border} p-3 md:p-5 rounded-xl md:rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group`}>
+      <div className="flex items-center gap-2.5 md:gap-4">
+        <div className={`w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl ${c.bg} flex items-center justify-center ${c.text} group-hover:scale-105 transition-transform`}>{icon}</div>
         <div>
-          <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">{label}</p>
-          <h2 className="text-2xl font-black text-gray-900 dark:text-white mt-0.5">{value}</h2>
+          <p className="text-[10px] md:text-xs text-gray-400 font-semibold uppercase tracking-wider">{label}</p>
+          <h2 className="text-lg md:text-2xl font-black text-gray-900 dark:text-white mt-0.5">{value}</h2>
         </div>
       </div>
     </div>
@@ -2514,9 +2514,9 @@ function StatCard({ icon, label, value, color }) {
 
 function RecentCard({ title, onViewAll, children }) {
   return (
-    <div className="bg-white dark:bg-[#16191f] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
-        <h3 className="text-sm font-semibold">{title}</h3>
+    <div className="bg-white dark:bg-[#16191f] rounded-xl md:rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm overflow-hidden">
+      <div className="px-3 py-2.5 md:px-5 md:py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
+        <h3 className="text-xs md:text-sm font-semibold">{title}</h3>
         <button onClick={onViewAll} className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">View All →</button>
       </div>
       <div className="divide-y divide-gray-100 dark:divide-white/[0.04]">{children}</div>

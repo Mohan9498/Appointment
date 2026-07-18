@@ -31,7 +31,7 @@ function Hero({ onOpenModal }) {
   const heroImage = hero?.image ? resolveImageUrl(hero.image) : g1;
 
   return (
-    <section className="relative pt-20 min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <section className="relative pt-16 md:pt-20 min-h-[560px] md:min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
 
       {/* Animated Background Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -48,14 +48,14 @@ function Hero({ onOpenModal }) {
         }}
       />
 
-      <div className="relative max-w-7xl mx-auto grid md:grid-cols-2 gap-12 px-6 py-20 items-center">
+      <div className="relative max-w-7xl mx-auto grid md:grid-cols-2 gap-6 md:gap-12 px-4 md:px-6 py-10 md:py-20 items-center">
 
         {/* LEFT */}
-        <div className="space-y-6 text-center md:text-left">
+        <div className="space-y-4 md:space-y-6 text-center md:text-left">
 
           {/* Badge */}
           <div className="animate-fade-in-up">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-blue-100/80 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200/50 dark:border-blue-700/30 backdrop-blur-sm">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium bg-blue-100/80 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200/50 dark:border-blue-700/30 backdrop-blur-sm">
               {badgeText}
             </span>
           </div>
@@ -63,7 +63,7 @@ function Hero({ onOpenModal }) {
           {/* ✅ CMS TITLE — first line comes from `title`, second (accent) line
               from `data[0].highlight`. Both are editable independently in the
               admin dashboard, so there's no brittle string-splitting here. */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight text-gray-900 dark:text-white animate-fade-in-up-delay-1">
+          <h1 className="text-3xl md:text-6xl lg:text-7xl font-extrabold leading-[1.15] md:leading-[1.1] tracking-tight text-gray-900 dark:text-white animate-fade-in-up-delay-1">
             {headingLine1}{" "}
             <span className="text-gradient">
               {highlightText}
@@ -71,17 +71,17 @@ function Hero({ onOpenModal }) {
           </h1>
 
           {/* ✅ CMS DESCRIPTION */}
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-lg mx-auto md:mx-0 leading-relaxed animate-fade-in-up-delay-2">
+          <p className="text-sm md:text-xl text-gray-600 dark:text-gray-300 max-w-lg mx-auto md:mx-0 leading-relaxed animate-fade-in-up-delay-2">
             {hero?.description ||
               "Professional therapy & development programs designed to help your child grow with confidence, communication, and care."}
           </p>
 
           {/* CTA */}
-          <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-8 animate-fade-in-up-delay-3">
+          <div className="flex flex-wrap justify-center md:justify-start gap-3 md:gap-4 mt-4 md:mt-8 animate-fade-in-up-delay-3">
 
             <button
               onClick={onOpenModal}
-              className="group relative bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full font-semibold shadow-glow-blue hover:shadow-glow-indigo hover:scale-[1.03] transition-all duration-300 overflow-hidden"
+              className="group relative bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 md:px-8 md:py-4 rounded-full text-sm md:text-base font-semibold shadow-glow-blue hover:shadow-glow-indigo hover:scale-[1.03] transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10">Book Appointment</span>
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -89,7 +89,7 @@ function Hero({ onOpenModal }) {
 
             <Link
               to="/programs"
-              className="group border-2 border-gray-300 dark:border-white/20 text-gray-700 dark:text-white px-8 py-4 rounded-full font-semibold hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:text-blue-400 transition-all duration-300 hover:shadow-lg"
+              className="group border-2 border-gray-300 dark:border-white/20 text-gray-700 dark:text-white px-5 py-2.5 md:px-8 md:py-4 rounded-full text-sm md:text-base font-semibold hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:text-blue-400 transition-all duration-300 hover:shadow-lg"
             >
               Explore Programs
               <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
@@ -98,11 +98,11 @@ function Hero({ onOpenModal }) {
           </div>
 
           {/* Stats Row */}
-          <div className="flex flex-wrap justify-center md:justify-start gap-8 mt-10 pt-8 border-t border-gray-200/50 dark:border-white/10 animate-fade-in-up-delay-3">
+          <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-8 mt-5 md:mt-10 pt-4 md:pt-8 border-t border-gray-200/50 dark:border-white/10 animate-fade-in-up-delay-3">
             {stats.map((stat, i) => (
               <div key={i}>
-                <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{stat.description}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.title}</p>
+                <p className="text-lg md:text-3xl font-bold text-gray-900 dark:text-white">{stat.description}</p>
+                <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{stat.title}</p>
               </div>
             ))}
           </div>
@@ -123,7 +123,7 @@ function Hero({ onOpenModal }) {
             height={300}
             fetchPriority="high"
             decoding="async"
-            className="w-[90%] md:w-full rounded-3xl shadow-premium dark:shadow-premium-dark animate-float ring-1 ring-black/5 dark:ring-white/10"
+            className="w-[85%] md:w-full rounded-2xl md:rounded-3xl shadow-premium dark:shadow-premium-dark animate-float ring-1 ring-black/5 dark:ring-white/10"
           />
 
         </div>

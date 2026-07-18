@@ -49,22 +49,22 @@ function Gallery() {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white relative overflow-hidden">
+    <section className="py-10 md:py-24 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white relative overflow-hidden">
 
       {/* HEADER */}
-      <div className="text-center mb-16 px-4">
-        <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
+      <div className="text-center mb-8 md:mb-16 px-4">
+        <h2 className="text-2xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
           Our <span className="text-gradient-warm">Activities</span>
         </h2>
 
-        <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+        <p className="mt-2 md:mt-4 text-sm md:text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
           A glimpse into our engaging sessions that help children grow, learn, and thrive.
         </p>
       </div>
 
       {/* 🔥 SLIDER AREA */}
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="relative h-[350px] md:h-[450px] overflow-hidden rounded-2xl">
+      <div className="max-w-6xl mx-auto px-4 md:px-6">
+        <div className="relative h-[220px] md:h-[450px] overflow-hidden rounded-xl md:rounded-2xl">
 
           {/* CURRENT IMAGE */}
           <div
@@ -95,8 +95,8 @@ function Gallery() {
           </div>
 
           {/* OVERLAY */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-6">
-            <h3 className="text-white text-lg md:text-xl font-semibold">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3 md:pb-6">
+            <h3 className="text-white text-sm md:text-xl font-semibold">
               {images[currentSlide].title}
             </h3>
           </div>
@@ -104,7 +104,7 @@ function Gallery() {
       </div>
 
       {/* 🔘 DOTS — accessible: aria-label + p-2 wrapper for 26px tap target */}
-      <div className="flex justify-center mt-10 gap-1">
+      <div className="flex justify-center mt-5 md:mt-10 gap-1">
         {images.map((_, index) => (
           <button
             key={index}

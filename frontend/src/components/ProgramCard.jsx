@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 
 function ProgramCard({ title, description, image }) {
   return (
-    <div className="group relative rounded-2xl overflow-hidden bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-xl dark:hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+    <div className="group relative rounded-xl md:rounded-2xl overflow-hidden bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-xl dark:hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
 
       {/* Image */}
-      <div className="overflow-hidden relative h-56">
+      <div className="overflow-hidden relative h-36 md:h-56">
         <img
           src={image}
           alt={title}
@@ -24,19 +24,19 @@ function ProgramCard({ title, description, image }) {
       </div>
 
       {/* Content */}
-      <div className="relative p-6">
+      <div className="relative p-3 md:p-6">
 
-        <h3 className="text-gray-900 dark:text-white text-xl font-bold tracking-tight">
+        <h3 className="text-gray-900 dark:text-white text-base md:text-xl font-bold tracking-tight">
           {title}
         </h3>
 
-        <p className="text-gray-500 dark:text-gray-400 text-sm mt-3 leading-relaxed">
+        <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm mt-1.5 md:mt-3 leading-relaxed">
           {description}
         </p>
 
         <Link
           to={`/programs/${title.toLowerCase().replace(/\s+/g, "-")}`}
-          className="mt-5 inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-300 font-semibold group-hover:gap-2 transition-all duration-300"
+          className="mt-2.5 md:mt-5 inline-flex items-center gap-1 text-xs md:text-sm text-blue-600 dark:text-blue-300 font-semibold group-hover:gap-2 transition-all duration-300"
         >
           Learn More
           <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>

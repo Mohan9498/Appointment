@@ -133,7 +133,7 @@ function Contact() {
         keywords="contact, reach out, therapy consultation, appointment" 
       />
 
-      <section className="relative overflow-hidden pt-28 pb-20" id="contact-hero">
+      <section className="relative overflow-hidden pt-20 md:pt-28 pb-8 md:pb-20" id="contact-hero">
 
         {/* Background Decorations */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 to-white dark:from-slate-900/50 dark:to-slate-950 pointer-events-none" />
@@ -141,29 +141,29 @@ function Contact() {
         <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-indigo-200/20 dark:bg-indigo-900/10 blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid lg:grid-cols-2 gap-6 md:gap-12 items-start">
 
             {/* LEFT */}
-            <div className="pt-4">
+            <div className="pt-2 md:pt-4">
 
-              <span className="inline-flex items-center gap-2 rounded-full border border-gray-200/50 dark:border-white/[0.06] bg-white/80 dark:bg-white/5 text-gray-700 dark:text-gray-300 px-4 py-2 text-sm font-medium backdrop-blur-sm animate-fade-in-up">
+              <span className="inline-flex items-center gap-2 rounded-full border border-gray-200/50 dark:border-white/[0.06] bg-white/80 dark:bg-white/5 text-gray-700 dark:text-gray-300 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-medium backdrop-blur-sm animate-fade-in-up">
                 <MessageSquareText size={16} className="text-blue-600 dark:text-blue-400" />
                 {badgeText}
               </span>
 
               {/* ✅ CMS HERO HEADING — first line from `title`, accent line from
                   data entry keyed "highlight", both editable independently */}
-              <h1 className="mt-6 text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-[1.1] animate-fade-in-up-delay-1">
+              <h1 className="mt-3 md:mt-6 text-3xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-[1.15] md:leading-[1.1] animate-fade-in-up-delay-1">
                 {headingLine1} <span className="text-gradient">{highlightText}</span>
               </h1>
 
               {/* ✅ CMS SUBTITLE */}
-              <p className="mt-5 max-w-xl text-lg text-gray-500 dark:text-gray-400 leading-relaxed animate-fade-in-up-delay-2">
+              <p className="mt-3 md:mt-5 max-w-xl text-sm md:text-lg text-gray-500 dark:text-gray-400 leading-relaxed animate-fade-in-up-delay-2">
                 {heroSubtitle}
               </p>
 
               {/* ✅ CMS INFO CARDS */}
-              <div className="mt-10 grid sm:grid-cols-2 gap-4 animate-fade-in-up-delay-3">
+              <div className="mt-5 md:mt-10 grid sm:grid-cols-2 gap-2.5 md:gap-4 animate-fade-in-up-delay-3">
                 {infoCards.map((card, i) => {
                   const Icon = CMS_ICON_MAP[card.icon] || MessageSquareText;
                   const color = CMS_COLOR_CYCLE[i % CMS_COLOR_CYCLE.length];
@@ -189,36 +189,36 @@ function Contact() {
             </div>
 
             {/* RIGHT FORM */}
-            <div className="rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-6 md:p-8 shadow-sm hover:shadow-lg transition-shadow duration-500 animate-slide-in-right">
+            <div className="rounded-xl md:rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-4 md:p-8 shadow-sm hover:shadow-lg transition-shadow duration-500 animate-slide-in-right">
 
-              <div className="mb-6">
+              <div className="mb-3 md:mb-6">
                 {/* ✅ CMS: form title & subtitle come from the "Contact Form"
                     section in the dashboard — falls back to static defaults if
                     that section hasn't been created yet. */}
-                <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                <h2 className="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                   {formTitle}
                 </h2>
-                <p className="text-gray-400 dark:text-gray-500 mt-1 text-sm">
+                <p className="text-gray-400 dark:text-gray-500 mt-1 text-xs md:text-sm">
                   {formSubtitle}
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-3 md:space-y-5">
 
                 <Input label="Full Name" name="name" value={formData.name} onChange={handleChange} />
                 <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} />
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="mb-1.5 md:mb-2 block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
                     Message
                   </label>
                   <textarea
-                    rows="5"
+                    rows="4"
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Tell us how we can help"
-                    className="w-full rounded-xl border border-gray-200 dark:border-white/[0.06] bg-gray-50/50 dark:bg-white/[0.02] px-4 py-3.5 text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:focus:bg-white/[0.04] transition-all duration-300 text-sm"
+                    className="w-full rounded-lg md:rounded-xl border border-gray-200 dark:border-white/[0.06] bg-gray-50/50 dark:bg-white/[0.02] px-3 py-2.5 md:px-4 md:py-3.5 text-gray-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:focus:bg-white/[0.04] transition-all duration-300 text-sm"
                     required
                   />
                 </div>
@@ -226,7 +226,7 @@ function Contact() {
                 <button
                   type="submit"
                   disabled={!isValid || loading}
-                  className={`w-full flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-300 ${
+                  className={`w-full flex items-center justify-center gap-2 rounded-lg md:rounded-xl px-5 py-2.5 md:px-6 md:py-3.5 text-sm font-semibold transition-all duration-300 ${
                     isValid
                       ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-glow-blue hover:scale-[1.01]"
                       : "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-500 cursor-not-allowed"
@@ -275,14 +275,14 @@ function InfoCard({ icon, title, value, color = "blue" }) {
   };
 
   return (
-    <div className="group rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-      <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-xl ${colorMap[color]} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+    <div className="group rounded-xl md:rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-2.5 md:p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+      <div className="flex items-center gap-2 md:gap-3">
+        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl ${colorMap[color]} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
           {icon}
         </div>
         <div>
-          <p className="text-xs text-gray-600 dark:text-gray-500 font-medium uppercase tracking-wider">{title}</p>
-          <div className="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">{value}</div>
+          <p className="text-[10px] md:text-xs text-gray-600 dark:text-gray-500 font-medium uppercase tracking-wider">{title}</p>
+          <div className="font-semibold text-gray-900 dark:text-white text-xs md:text-sm mt-0.5">{value}</div>
         </div>
       </div>
     </div>

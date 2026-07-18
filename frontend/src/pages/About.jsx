@@ -52,7 +52,7 @@ function About() {
       />
 
       {/* HERO SECTION */}
-      <section className="relative py-32 px-6 overflow-hidden">
+      <section className="relative py-14 md:py-32 px-4 md:px-6 overflow-hidden">
 
         {/* Background Decoration */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/50 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950 pointer-events-none" />
@@ -60,42 +60,42 @@ function About() {
         <div className="absolute bottom-10 left-10 w-60 h-60 bg-indigo-200/20 dark:bg-indigo-900/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-4xl mx-auto text-center relative">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-6 animate-fade-in-up">
+          <span className="inline-block px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-3 md:mb-6 animate-fade-in-up">
             About Us
           </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6 animate-fade-in-up-delay-1">
+          <h1 className="text-3xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-3 md:mb-6 animate-fade-in-up-delay-1">
             About <span className="text-gradient">Tiny Todds</span>
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed animate-fade-in-up-delay-2">
+          <p className="text-gray-500 dark:text-gray-400 text-sm md:text-lg max-w-2xl mx-auto leading-relaxed animate-fade-in-up-delay-2">
             Helping children grow through specialized therapy programs.
           </p>
         </div>
       </section>
 
       {/* CONTENT SECTION */}
-      <section className="px-6 pb-24">
-        <div className="max-w-6xl mx-auto space-y-10">
+      <section className="px-4 md:px-6 pb-10 md:pb-24">
+        <div className="max-w-6xl mx-auto space-y-5 md:space-y-10">
 
           {/* ✅ CMS Mission & Vision — rendered as separate cards, same as before,
               but the title/description/icon of each card now comes from the
               admin dashboard's "Mission & Vision" section instead of being
               hardcoded. Each entry in `data` becomes its own card. */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-3 md:gap-6">
             {cards.map((card, i) => {
               const style = CARD_STYLES[i % CARD_STYLES.length];
               const Icon = ICON_MAP[card.icon];
               return (
                 <div
                   key={i}
-                  className="group p-8 rounded-2xl bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
+                  className="group p-4 md:p-8 rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
                 >
-                  <div className={`w-12 h-12 rounded-xl ${style.iconBg} flex items-center justify-center mb-5`}>
-                    {Icon ? <Icon size={22} className="text-blue-600 dark:text-blue-400" /> : <span className="text-2xl">{style.emoji}</span>}
+                  <div className={`w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl ${style.iconBg} flex items-center justify-center mb-3 md:mb-5`}>
+                    {Icon ? <Icon size={18} className="text-blue-600 dark:text-blue-400" /> : <span className="text-lg md:text-2xl">{style.emoji}</span>}
                   </div>
-                  <h2 className="text-2xl font-bold mb-4 tracking-tight text-gray-900 dark:text-white">
+                  <h2 className="text-lg md:text-2xl font-bold mb-2 md:mb-4 tracking-tight text-gray-900 dark:text-white">
                     {card.title || "—"}
                   </h2>
-                  <p className="text-gray-500 dark:text-gray-400 leading-7 text-sm md:text-base">
+                  <p className="text-gray-500 dark:text-gray-400 leading-6 md:leading-7 text-xs md:text-base">
                     {card.description || ""}
                   </p>
                 </div>
@@ -104,11 +104,11 @@ function About() {
           </div>
 
           {/* MAIN CONTENT */}
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-8 md:p-12 shadow-sm space-y-8">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] rounded-xl md:rounded-2xl p-4 md:p-12 shadow-sm space-y-4 md:space-y-8">
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full" />
-              <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-6">
+              <div className="w-1 h-6 md:h-8 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full" />
+              <h2 className="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {story?.title || "Our Story"}
               </h2>
             </div>
@@ -116,12 +116,12 @@ function About() {
             {/* ✅ CMS overrides FULL content safely — reads from the
                 "Our Story" section (type: text) in the admin dashboard */}
             {story?.description ? (
-              <p className="text-gray-500 dark:text-gray-400 leading-8 text-justify text-sm md:text-base whitespace-pre-line">
+              <p className="text-gray-500 dark:text-gray-400 leading-6 md:leading-8 text-justify text-xs md:text-base whitespace-pre-line">
                 {story.description}
               </p>
             ) : (
               <>
-                <p className="text-gray-500 dark:text-gray-400 leading-8 text-justify text-sm md:text-base">
+                <p className="text-gray-500 dark:text-gray-400 leading-6 md:leading-8 text-justify text-xs md:text-base">
                   Tiny Todds Therapy Care is a specialized child development center dedicated to fostering each child's unique potential
                   through evidence-based therapy and compassionate, individualized care. Recognizing that early childhood is a critical period
                   for cognitive, emotional, and social development, we emphasize early intervention and structured programs that support communication,
@@ -129,7 +129,7 @@ function About() {
                   and therefore requires a tailored pathway to growth.
                 </p>
 
-                <p className="text-gray-500 dark:text-gray-400 leading-8 text-justify text-sm md:text-base">
+                <p className="text-gray-500 dark:text-gray-400 leading-6 md:leading-8 text-justify text-xs md:text-base">
                   At Tiny Todds, we strive to provide a safe, engaging, and supportive atmosphere where children are encouraged to explore,
                   learn, and express themselves with confidence. Our therapy sessions integrate speech development, cognitive enhancement,
                   and interactive learning techniques designed to promote essential life skills and emotional well-being.

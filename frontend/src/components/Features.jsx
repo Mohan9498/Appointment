@@ -102,7 +102,7 @@ function Features() {
   };
 
   return (
-    <section className="relative w-full min-h-[520px] overflow-hidden">
+    <section className="relative w-full min-h-[360px] md:min-h-[520px] overflow-hidden">
 
       {/* 🔥 BACKGROUND IMAGES */}
       <div className="absolute inset-0">
@@ -140,29 +140,29 @@ function Features() {
       </div>
 
       {/* CONTENT */}
-      <div className="relative z-10 flex items-center justify-center text-center px-6 min-h-[520px]">
+      <div className="relative z-10 flex items-center justify-center text-center px-4 md:px-6 min-h-[360px] md:min-h-[520px]">
         <div className="max-w-2xl">
 
-          <div className="mb-5 flex justify-center">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white">
+          <div className="mb-3 md:mb-5 flex justify-center">
+            <div className="w-11 h-11 md:w-16 md:h-16 bg-white/20 backdrop-blur-md rounded-xl md:rounded-2xl flex items-center justify-center text-white">
               {typeof data[currentSlide].icon === "string" && ICON_MAP[data[currentSlide].icon] 
                 ? (() => { const IC = ICON_MAP[data[currentSlide].icon]; return <IC size={24} />; })()
                 : data[currentSlide].icon}
             </div>
           </div>
 
-          <h2 className="text-white text-2xl md:text-4xl font-bold mb-4">
+          <h2 className="text-white text-xl md:text-4xl font-bold mb-2 md:mb-4">
             {data[currentSlide].title}
           </h2>
 
-          <p className="text-white/85 text-sm md:text-base leading-relaxed">
+          <p className="text-white/85 text-xs md:text-base leading-relaxed">
             {data[currentSlide].description}
           </p>
         </div>
       </div>
 
       {/* 🔘 DOTS — accessible: aria-label + p-2 wrapper for 26px tap target */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+      <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-1 z-20">
         {data.map((_, index) => (
           <button
             key={index}
