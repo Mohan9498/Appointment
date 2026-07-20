@@ -1130,31 +1130,31 @@ function AdminDashboard() {
 
           {/* ════════ PAGES EDITOR ════════ */}
           {active === "pages" && (
-            <div className="space-y-6">
+            <div className="space-y-7">
               {/* Header */}
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-md shadow-blue-600/20 shrink-0">
-                  <FileText size={20} className="text-white" />
+              <div className="flex items-center gap-4 pb-5 border-b border-gray-100 dark:border-white/[0.06]">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-600/25 ring-1 ring-black/[0.04] shrink-0">
+                  <FileText size={21} className="text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Pages Editor</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Pages Editor</h2>
                   <p className="text-sm text-gray-500 mt-0.5">Edit your website content section by section.</p>
                 </div>
               </div>
 
               {/* Page Tabs */}
-              <div className="relative z-10 w-full bg-white dark:bg-[#16191f] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Select Page</p>
+              <div className="relative z-10 w-full bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm">
+                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-3.5">Select Page</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(PAGE_SECTIONS).map((page) => {
                     const isActive = pagesTab === page;
                     return (
                       <button key={page}
                         onClick={() => setPagesTab(page)}
-                        className={`flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-xs sm:text-sm font-medium capitalize transition-all duration-200 ${
+                        className={`flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-xs sm:text-sm font-semibold capitalize transition-all duration-200 ${
                           isActive
-                            ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-transparent shadow-md shadow-blue-600/20"
-                            : "bg-gray-50 dark:bg-white/[0.02] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-white/[0.04]"
+                            ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-transparent shadow-md shadow-blue-600/25 ring-1 ring-blue-600/20"
+                            : "bg-gray-50/80 dark:bg-white/[0.02] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/60 dark:hover:bg-white/[0.04] hover:text-blue-700 dark:hover:text-blue-300"
                         }`}
                       >
                         <span className="shrink-0 flex items-center">{PAGE_ICONS[page]}</span>
@@ -1167,7 +1167,7 @@ function AdminDashboard() {
 
               {/* Sections — each one is its own card, so it reads as a
                   distinct, self-contained unit rather than a flat list row. */}
-              <div className="relative z-10 w-full space-y-4">
+              <div className="relative z-10 w-full space-y-5">
               {PAGE_SECTIONS[pagesTab]?.map((def) => {
                 const item      = content.find((c) => c.page === pagesTab && c.section === def.section) || null;
                 const isRemoved = !item && removedSections.has(`${pagesTab}:${def.section}`);
@@ -1180,14 +1180,14 @@ function AdminDashboard() {
                 const bannerImage = resolveImageUrl(item?.image);
 
                 return (
-                 <div  key={def.section} className={`relative w-full max-w-full rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-md transition-shadow duration-200 ${
+                 <div  key={def.section} className={`group relative w-full max-w-full rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-lg hover:shadow-gray-200/60 dark:hover:shadow-black/20 transition-all duration-300 ${
                     isRemoved ? "border-dashed border-gray-300 dark:border-gray-600 opacity-75" : "border-gray-100 dark:border-white/[0.06]"
                   }`}>
 
                     {/* ── Banner / Section Header ── */}
-                    <div className="relative flex items-center gap-3 px-4 sm:px-5 py-4 rounded-t-2xl bg-gradient-to-r from-gray-50 to-white dark:from-white/[0.03] dark:to-white/[0.01] border-b border-gray-100 dark:border-white/[0.06]">
+                    <div className="relative flex items-center gap-3.5 px-4 sm:px-5 py-4 rounded-t-2xl bg-gradient-to-r from-gray-50 to-white dark:from-white/[0.03] dark:to-white/[0.01] border-b border-gray-100 dark:border-white/[0.06]">
                       {/* Icon / thumbnail */}
-                      <div className="w-10 h-10 rounded-xl overflow shrink-0 flex items-center justify-center text-white shadow-sm">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm ring-1 ring-black/[0.03]">
                         {bannerImage ? (
                           <img src={bannerImage} alt={def.label} className="h-full w-full object-cover" />
                         ) : (
@@ -1198,8 +1198,8 @@ function AdminDashboard() {
                       {/* Label + badge */}
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-bold text-gray-900  dark:text-white text-sm">{def.label}</h3>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${colorCls.badge}`}>{meta.label}</span>
+                          <h3 className="font-bold text-gray-900 dark:text-white text-sm tracking-tight">{def.label}</h3>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${colorCls.badge}`}>{meta.label}</span>
                           {/* Live status dot */}
                           {!isRemoved && !pending && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
@@ -1216,7 +1216,7 @@ function AdminDashboard() {
                       </div>
 
                       {/* ── Compact icon controls (top-right) ── */}
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0 pl-2.5 ml-1 border-l border-gray-100 dark:border-white/[0.06]">
                         {isRemoved ? (
                           <button
                             onClick={() => autoCreate(pagesTab, def.section)}
@@ -1301,9 +1301,16 @@ function AdminDashboard() {
                       ) : (
                         <>
                           {/* Always-on live preview */}
-                          <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] shadow-sm p-3 sm:p-4">
-                            <div className="mb-2 flex items-center justify-between gap-2">
-                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Live Preview</span>
+                          <div className="w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] shadow-inner p-3 sm:p-4">
+                            <div className="mb-2.5 flex items-center justify-between gap-2">
+                              <span className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <span className="flex gap-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-white/10" />
+                                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-white/10" />
+                                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-white/10" />
+                                </span>
+                                Live Preview
+                              </span>
                             </div>
                             <ContentPreview
                               item={displayItem}
