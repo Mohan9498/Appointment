@@ -1191,14 +1191,14 @@ function AdminDashboard() {
                         {bannerImage ? (
                           <img src={bannerImage} alt={def.label} className="h-full w-full object-cover" />
                         ) : (
-                          <div className={`w-full h-full flex items-center justify-center ${colorCls.solid}`}>{meta.icon}</div>
+                          <div className={`w-full h-full rounded-xl flex items-center justify-center ${colorCls.solid}`}>{meta.icon}</div>
                         )}
                       </div>
 
                       {/* Label + badge */}
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-bold text-gray-900 dark:text-white text-sm">{def.label}</h3>
+                          <h3 className="font-bold text-gray-900  dark:text-white text-sm">{def.label}</h3>
                           <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${colorCls.badge}`}>{meta.label}</span>
                           {/* Live status dot */}
                           {!isRemoved && !pending && (
