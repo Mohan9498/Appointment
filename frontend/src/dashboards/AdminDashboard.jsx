@@ -806,7 +806,7 @@ function AdminDashboard() {
   //  RENDER
   // ════════════════════════════════
   return (
-    <div className="min-h-screen w-full overflow-x-hidden flex flex-row bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
+    <div className="min-h-screen min-w-full w-fit flex flex-row bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
 
       {/* ══════════════ SIDEBAR ══════════════ */}
       <aside className={`
@@ -870,7 +870,7 @@ function AdminDashboard() {
       <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
 
         {/* ── Top Header ── */}
-        <header className="sticky top-0 z-30 h-26 sm:h-[52px] md:h-14 bg-white dark:bg-[#16191f] border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between px-3 sm:px-5 md:px-6 shadow-sm">
+        <header className="sticky top-0 z-30 h-16 sm:h-[52px] md:h-16 bg-white dark:bg-[#16191f] border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between px-3 sm:px-5 md:px-6 shadow-sm">
           <div className="flex items-center gap-2 min-w-0">
             <button onClick={() => setMobileOpen(true)} className="md:hidden p-1.5 -ml-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition shrink-0">
               <Menu size={17} />
@@ -1187,7 +1187,7 @@ function AdminDashboard() {
                     {/* ── Banner / Section Header ── */}
                     <div className="relative flex items-center gap-3 px-4 sm:px-5 py-4 rounded-t-2xl bg-gradient-to-r from-gray-50 to-white dark:from-white/[0.03] dark:to-white/[0.01] border-b border-gray-100 dark:border-white/[0.06]">
                       {/* Icon / thumbnail */}
-                      <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm">
+                      <div className="w-10 h-10 rounded-xl overflow shrink-0 flex items-center justify-center text-white shadow-sm">
                         {bannerImage ? (
                           <img src={bannerImage} alt={def.label} className="h-full w-full object-cover" />
                         ) : (
@@ -1810,7 +1810,7 @@ function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnable
 
   return (
     <div className="space-y-6">
-      <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+      <div className={`border rounded-xl overflow shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
         <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
@@ -2096,7 +2096,7 @@ function SimpleEditor({ item, savedItem, updateLocal, quickSave, isEnabled = tru
 
   return (
     <div className="space-y-6">
-      <div className={`border rounded-xl overflow-hidden shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
+      <div className={`border rounded-xl overflow shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
         <div className={`flex items-center justify-between px-4 py-2.5 border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
           <span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
             {data.length} {data.length === 1 ? "item" : "items"}{!isEnabled && data.length > 0 ? " · default preview" : ""}

@@ -31,7 +31,7 @@ function Hero({ onOpenModal }) {
   const heroImage = hero?.image ? resolveImageUrl(hero.image) : g1;
 
   return (
-    <section className="relative pt-16 md:pt-20 min-h-[560px] md:min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <section className="relative pt-16 md:pt-20 md:min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
 
       {/* Animated Background Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
