@@ -806,7 +806,7 @@ function AdminDashboard() {
   //  RENDER
   // ════════════════════════════════
   return (
-    <div className="min-h-screen min-w-full w-fit flex flex-row bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white">
+    <div className="min-h-screen w-full min-w-[320px] flex flex-row bg-[#f4f6fb] dark:bg-[#0f1117] text-gray-900 dark:text-white overflow-x-hidden">
 
       {/* ══════════════ SIDEBAR ══════════════ */}
       <aside className={`
@@ -867,7 +867,7 @@ function AdminDashboard() {
       )}
 
       {/* ══════════════ MAIN ══════════════ */}
-      <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 min-w-0 md:ml-64 flex flex-col min-h-screen">
 
         {/* ── Top Header ── */}
         <header className="sticky top-0 z-30 h-16 sm:h-[52px] md:h-16 bg-white dark:bg-[#16191f] border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between px-3 sm:px-5 md:px-6 shadow-sm">
@@ -925,7 +925,7 @@ function AdminDashboard() {
         </header>
 
         {/* ── Content Area ── */}
-        <main className="flex-1 p-3 sm:p-5 md:p-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 min-w-0 p-2.5 sm:p-5 md:p-8 max-w-7xl mx-auto w-full">
 
           {/* ════════ DASHBOARD ════════ */}
           {active === "dashboard" && (
@@ -1132,18 +1132,19 @@ function AdminDashboard() {
           {active === "pages" && (
             <div className="space-y-7">
               {/* Header */}
-              <div className="flex items-center gap-4 pb-5 border-b border-gray-100 dark:border-white/[0.06]">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-600/25 ring-1 ring-black/[0.04] shrink-0">
-                  <FileText size={21} className="text-white" />
+              <div className="flex items-center gap-3 sm:gap-4 pb-5 border-b border-gray-100 dark:border-white/[0.06]">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-600/25 ring-1 ring-black/[0.04] shrink-0">
+                  <FileText size={18} className="text-white sm:hidden" />
+                  <FileText size={21} className="text-white hidden sm:block" />
                 </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Pages Editor</h2>
-                  <p className="text-sm text-gray-500 mt-0.5">Edit your website content section by section.</p>
+                <div className="min-w-0">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Pages Editor</h2>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-0.5 truncate">Edit your website content section by section.</p>
                 </div>
               </div>
 
               {/* Page Tabs */}
-              <div className="relative z-10 w-full bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm">
+              <div className="relative z-10 w-full bg-white dark:bg-[#16191f] rounded-2xl p-3.5 sm:p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm">
                 <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-3.5">Select Page</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(PAGE_SECTIONS).map((page) => {
@@ -1180,14 +1181,14 @@ function AdminDashboard() {
                 const bannerImage = resolveImageUrl(item?.image);
 
                 return (
-                 <div  key={def.section} className={`group relative w-full max-w-full rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-lg hover:shadow-gray-200/60 dark:hover:shadow-black/20 transition-all duration-300 ${
+                 <div  key={def.section} className={`group relative w-full min-w-0 max-w-full overflow-hidden rounded-2xl border bg-white dark:bg-[#16191f] shadow-sm hover:shadow-lg hover:shadow-gray-200/60 dark:hover:shadow-black/20 transition-all duration-300 ${
                     isRemoved ? "border-dashed border-gray-300 dark:border-gray-600 opacity-75" : "border-gray-100 dark:border-white/[0.06]"
                   }`}>
 
                     {/* ── Banner / Section Header ── */}
-                    <div className="relative flex items-center gap-3.5 px-4 sm:px-5 py-4 rounded-t-2xl bg-gradient-to-r from-gray-50 to-white dark:from-white/[0.03] dark:to-white/[0.01] border-b border-gray-100 dark:border-white/[0.06]">
+                    <div className="relative flex items-center gap-2.5 sm:gap-3.5 px-3 sm:px-5 py-3 sm:py-4 rounded-t-2xl bg-gradient-to-r from-gray-50 to-white dark:from-white/[0.03] dark:to-white/[0.01] border-b border-gray-100 dark:border-white/[0.06]">
                       {/* Icon / thumbnail */}
-                      <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm ring-1 ring-black/[0.03]">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-white shadow-sm ring-1 ring-black/[0.03]">
                         {bannerImage ? (
                           <img src={bannerImage} alt={def.label} className="h-full w-full object-cover" />
                         ) : (
@@ -1216,14 +1217,14 @@ function AdminDashboard() {
                       </div>
 
                       {/* ── Compact icon controls (top-right) ── */}
-                      <div className="flex items-center gap-1.5 shrink-0 pl-2.5 ml-1 border-l border-gray-100 dark:border-white/[0.06]">
+                      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 pl-2 sm:pl-2.5 ml-0.5 sm:ml-1 border-l border-gray-100 dark:border-white/[0.06]">
                         {isRemoved ? (
                           <button
                             onClick={() => autoCreate(pagesTab, def.section)}
                             title="Restore section"
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition shadow-sm"
+                            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition shadow-sm"
                           >
-                            <Plus size={13}/> Restore
+                            <Plus size={13}/> <span className="hidden sm:inline">Restore</span>
                           </button>
                         ) : !pending && (
                           <>
@@ -1247,7 +1248,7 @@ function AdminDashboard() {
                                   }
                                 }}
                                 title="Add content item"
-                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm hover:shadow-md ${
+                                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all shadow-sm hover:shadow-md ${
                                   sectionFormState[def.section]?.mode === "add"
                                     ? "bg-emerald-600 text-white shadow-emerald-600/30"
                                     : "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20"
@@ -1260,7 +1261,7 @@ function AdminDashboard() {
                             <button
                               onClick={() => toggleEdit(def.section)}
                               title={isEdit ? "Close editor" : "Edit section details"}
-                              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm hover:shadow-md ${
+                              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all shadow-sm hover:shadow-md ${
                                 isEdit
                                   ? "bg-blue-600 text-white shadow-blue-600/30"
                                   : "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20"
@@ -1274,7 +1275,7 @@ function AdminDashboard() {
                                 onClick={() => saveContent(item)}
                                 disabled={savingIds.includes(item.id)}
                                 title="Save section"
-                                className="w-8 h-8 rounded-full flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white transition-all shadow-sm hover:shadow-md disabled:opacity-60"
+                                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white transition-all shadow-sm hover:shadow-md disabled:opacity-60"
                               >
                                 {savingIds.includes(item.id)
                                   ? <Loader2 size={13} className="animate-spin" />
@@ -1285,7 +1286,7 @@ function AdminDashboard() {
                             <button
                               onClick={() => deleteSection(item)}
                               title="Delete section"
-                              className="w-8 h-8 rounded-full flex items-center justify-center bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20 transition-all shadow-sm hover:shadow-md"
+                              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20 transition-all shadow-sm hover:shadow-md"
                             >
                               <Trash2 size={13} />
                             </button>
@@ -1295,7 +1296,7 @@ function AdminDashboard() {
                     </div>
 
                     {/* ── Section Body — preview always visible ── */}
-                    <div className="p-4 sm:p-5 space-y-4">
+                    <div className="p-3 sm:p-5 space-y-4">
                       {isRemoved ? (
                         <p className="text-sm text-gray-400">This section was removed. Click Restore to add it back with default content.</p>
                       ) : (
@@ -1636,12 +1637,13 @@ function StatsEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true
 const CARD_EDITOR_ACCENTS = {
   emerald: { grad: "from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600", icon: "text-emerald-600" },
   fuchsia: { grad: "from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700", icon: "text-fuchsia-600" },
+  rose:    { grad: "from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600",       icon: "text-rose-600" },
 };
 
 function CardBasedEditor({
   item, savedItem, updateLocal, quickSave, isEnabled = true,
   editMetaOnly = false, formState = null, onCloseForm = null,
-  showIcon = false, accent = "emerald",
+  showIcon = false, showImage = true, accent = "emerald",
   titlePlaceholder = "Card title", imageLabel = "Image URL (Required)",
 }) {
   const effectiveItem = applySectionDefaults(item);
@@ -1655,9 +1657,12 @@ function CardBasedEditor({
     )
   : [];
 
-  const emptyForm = showIcon
-    ? { title: "", description: "", icon: "", image: "" }
-    : { title: "", description: "", image: "" };
+  const emptyForm = {
+    title: "",
+    description: "",
+    ...(showIcon ? { icon: "" } : {}),
+    ...(showImage ? { image: "" } : {}),
+  };
 
   const [form, setForm] = useState(emptyForm);
   const [editingIdx, setEditingIdx] = useState(null);
@@ -1670,7 +1675,7 @@ function CardBasedEditor({
           setForm({
             title: d.title || "",
             description: d.description || "",
-            image: d.image || "",
+            ...(showImage ? { image: d.image || "" } : {}),
             ...(showIcon ? { icon: d.icon || "" } : {}),
           });
           setEditingIdx(formState.index);
@@ -1733,10 +1738,12 @@ function CardBasedEditor({
             <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
             <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder={titlePlaceholder} />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">{imageLabel}</label>
-            <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
-          </div>
+          {showImage && (
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">{imageLabel}</label>
+              <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
+            </div>
+          )}
           {showIcon && (
             <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
@@ -1789,157 +1796,20 @@ function FeaturesEditor(props) {
   );
 }
 
-// ── Mission & Vision Editor (icon cards, e.g. About page) ──
-function MissionVisionEditor({ item, savedItem, updateLocal, quickSave, isEnabled = true }) {
-  const data = Array.isArray(item.data) ? [...item.data] : [];
-  const [form, setForm] = useState({ title: "", description: "", icon: "" });
-  const [editingIdx, setEditingIdx] = useState(null);
-
-  const handleSubmit = () => {
-    if (!form.title.trim()) return;
-    const newData = [...data];
-    if (editingIdx !== null) newData[editingIdx] = form;
-    else newData.push(form);
-    updateLocal(item.id, { data: newData });
-    quickSave({ ...item, data: newData });
-    setForm({ title: "", description: "", icon: "" });
-    setEditingIdx(null);
-  };
-
-  const handleDelete = (idx) => {
-    if (!window.confirm("Delete this card?")) return;
-    const newData = data.filter((_, i) => i !== idx);
-    updateLocal(item.id, { data: newData });
-    quickSave({ ...item, data: newData });
-  };
-
-  const SelectedIcon = ICON_LIST[form.icon] || null;
-
+// ── Mission & Vision Editor (icon cards, e.g. Contact Info / About Mission & Vision) ──
+// Thin wrapper around the shared CardBasedEditor engine — same contract as
+// CardsEditor/FeaturesEditor, so existing cards are listed/edited/deleted
+// through the Live Preview grid above (small pencil/trash icon buttons)
+// instead of a separate duplicate table.
+function MissionVisionEditor(props) {
   return (
-    <div className="space-y-6">
-      <div className={`border rounded-xl overflow shadow-sm ${isEnabled ? "bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]" : "bg-gray-50 dark:bg-gray-900/20 border-gray-300 dark:border-gray-600"}`}>
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className={`border-b ${isEnabled ? "bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.06]" : "bg-gray-100 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600"}`}>
-              <tr>
-                <th className={`px-4 py-3 font-semibold w-16 text-center ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Icon</th>
-                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Title</th>
-                <th className={`px-4 py-3 font-semibold ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Description</th>
-                <th className={`px-4 py-3 font-semibold w-32 ${isEnabled ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-500"}`}>Actions</th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y ${isEnabled ? "divide-gray-100 dark:divide-white/[0.06]" : "divide-gray-200 dark:divide-gray-700"}`}>
-              {data.map((d, i) => {
-                const IC = ICON_LIST[d.icon] || Target;
-                return (
-                  <tr key={i} className={isEnabled ? "hover:bg-gray-50 dark:hover:bg-white/[0.02] transition" : ""}>
-                    <td className="px-4 py-3 text-center"><IC size={18} className={isEnabled ? "text-rose-600" : "text-rose-500/60"} /></td>
-                    <td className={`px-4 py-3 font-medium ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title}</td>
-                    <td className={`px-4 py-3 truncate max-w-[220px] ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", icon: d.icon||"" }); setEditingIdx(i); } }} 
-                          disabled={!isEnabled}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => { if(isEnabled) handleDelete(i); }} 
-                          disabled={!isEnabled}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white hover:shadow-md" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed"}`}>
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-              {data.length === 0 && <tr><td colSpan="4" className="px-4 py-8 text-center text-gray-400 text-sm">No cards added yet — add "Our Mission" and "Our Vision" below.</td></tr>}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile card list */}
-        <div className="sm:hidden divide-y divide-gray-100 dark:divide-white/[0.06]">
-          {data.length === 0 && (
-            <div className="px-4 py-8 text-center text-gray-400 text-sm">No cards added yet — add "Our Mission" and "Our Vision" below.</div>
-          )}
-          {data.map((d, i) => {
-            const IC = ICON_LIST[d.icon] || Target;
-            return (
-              <div key={i} className="flex gap-3 px-4 py-3">
-                <div className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center bg-rose-50 dark:bg-rose-500/10">
-                  <IC size={16} className={isEnabled ? "text-rose-600" : "text-rose-500/60"} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className={`text-sm font-semibold truncate ${isEnabled ? "text-gray-800 dark:text-gray-200" : "text-gray-600 dark:text-gray-400"}`}>{d.title || "—"}</h4>
-                  <p className={`text-xs mt-0.5 line-clamp-2 ${isEnabled ? "text-gray-500" : "text-gray-600"}`}>{d.description}</p>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={() => { if(isEnabled) { setForm({ title: d.title||"", description: d.description||"", icon: d.icon||"" }); setEditingIdx(i); } }}
-                      disabled={!isEnabled}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => { if(isEnabled) handleDelete(i); }}
-                      disabled={!isEnabled}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all ${isEnabled ? "bg-gradient-to-r from-red-500 to-rose-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"}`}>
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Form */}
-      {isEnabled && (
-        <div className="bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10 rounded-xl p-5 shadow-sm">
-          <h3 className="text-sm font-bold text-rose-800 dark:text-rose-500 mb-4">{editingIdx !== null ? "Edit Card" : "Add Card"}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Title</label>
-              <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className={inputCls} placeholder="e.g. Our Mission" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Icon</label>
-              <div className="relative">
-                <select
-                  value={form.icon}
-                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
-                  className={`${inputCls} appearance-none pr-9`}
-                >
-                  <option value="">Pick an icon...</option>
-                  {Object.keys(ICON_LIST).map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-                  {SelectedIcon && <SelectedIcon size={15} className="text-rose-600"/>}
-                  <ChevronDown size={14} className="text-gray-400"/>
-                </div>
-              </div>
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
-              <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="e.g. We focus on speech, cognitive, and behavioral development..." />
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button onClick={handleSubmit} className="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-              {editingIdx !== null ? "Update" : "Add"}
-            </button>
-            {editingIdx !== null && (
-              <button onClick={() => { setForm({title:"", description:"", icon:""}); setEditingIdx(null); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+    <CardBasedEditor
+      {...props}
+      showIcon
+      showImage={false}
+      accent="rose"
+      titlePlaceholder="e.g. Call us"
+    />
   );
 }
 
@@ -2207,23 +2077,23 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
       <div className="space-y-3">
         {previewItem.title && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
         {data.length > 0
-          ? <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          ? <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
               {data.map((s,i) => (
-                <div key={i} className="relative group bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition text-center">
+                <div key={i} className="relative group w-full min-w-0 bg-white dark:bg-[#16191f] rounded-2xl p-3 sm:p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition text-center overflow-hidden">
                   {isEnabled && (
-                    <div className="absolute top-2 right-2 flex gap-1 z-10">
+                    <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-1 z-10">
                       <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
-                        className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
-                        <Pencil size={11} />
+                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
+                        <Pencil size={10} />
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
-                        className="w-6 h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
-                        <Trash2 size={11} />
+                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
+                        <Trash2 size={10} />
                       </button>
                     </div>
                   )}
-                  <p className="text-2xl font-black text-orange-500">{s.description||"—"}</p>
-                  <p className="text-[11px] text-gray-500 uppercase tracking-wide mt-1">{s.title||"—"}</p>
+                  <p className="text-xl sm:text-2xl font-black text-orange-500 break-words">{s.description||"—"}</p>
+                  <p className="text-[10px] sm:text-[11px] text-gray-500 uppercase tracking-wide mt-1 break-words">{s.title||"—"}</p>
                 </div>
               ))}
             </div>
@@ -2238,28 +2108,29 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
       <div className="space-y-3">
         {previewItem.title && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
         {data.length > 0
-          ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {data.map((c,i) => {
                 const IC = ICON_LIST[c.image] || Briefcase;
                 return (
-                  <div key={i} className="relative group bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
+                  <div key={i} className="relative group w-full min-w-0 bg-white dark:bg-[#16191f] rounded-2xl p-3.5 sm:p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition overflow-hidden">
                     {isEnabled && (
-                      <div className="absolute top-3 right-3 flex gap-1 z-10">
+                      <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 flex gap-1 z-10">
                         <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
-                          className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
-                          <Pencil size={11} />
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
+                          <Pencil size={10} />
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
-                          className="w-6 h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
-                          <Trash2 size={11} />
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
+                          <Trash2 size={10} />
                         </button>
                       </div>
                     )}
-                    <div className="w-11 h-11 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center mb-3">
-                      <IC size={20} className="text-violet-600"/>
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center mb-2.5 sm:mb-3">
+                      <IC size={18} className="text-violet-600 sm:hidden"/>
+                      <IC size={20} className="text-violet-600 hidden sm:block"/>
                     </div>
-                    <h4 className="font-bold text-sm mb-1">{c.title||"—"}</h4>
-                    <p className="text-xs text-gray-500 max-h-8 overflow-y-auto pr-1">{c.description||"—"}</p>
+                    <h4 className="font-bold text-sm mb-1 pr-14 sm:pr-0 break-words">{c.title||"—"}</h4>
+                    <p className="text-xs text-gray-500 max-h-8 overflow-y-auto pr-1 break-words">{c.description||"—"}</p>
                   </div>
                 );
               })}
@@ -2281,29 +2152,30 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
       <div className="space-y-3">
         {previewItem.title && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
         {data.length > 0
-          ? <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          ? <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {data.map((c,i) => {
                 const IC = ICON_LIST[c.icon] || Target;
                 const clr = palette[i % palette.length];
                 return (
-                  <div key={i} className="relative group bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
+                  <div key={i} className="relative group w-full min-w-0 bg-white dark:bg-[#16191f] rounded-2xl p-3.5 sm:p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition overflow-hidden">
                     {isEnabled && (
-                      <div className="absolute top-3 right-3 flex gap-1 z-10">
+                      <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 flex gap-1 z-10">
                         <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
-                          className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
-                          <Pencil size={11} />
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm">
+                          <Pencil size={10} />
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
-                          className="w-6 h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
-                          <Trash2 size={11} />
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm">
+                          <Trash2 size={10} />
                         </button>
                       </div>
                     )}
-                    <div className={`w-11 h-11 rounded-xl ${clr.bg} flex items-center justify-center mb-3`}>
-                      <IC size={20} className={clr.text}/>
+                    <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl ${clr.bg} flex items-center justify-center mb-2.5 sm:mb-3`}>
+                      <IC size={18} className={`${clr.text} sm:hidden`}/>
+                      <IC size={20} className={`${clr.text} hidden sm:block`}/>
                     </div>
-                    <h4 className="font-bold text-base mb-1.5">{c.title||"—"}</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed max-h-11 overflow-y-auto pr-1">{c.description||"—"}</p>
+                    <h4 className="font-bold text-sm sm:text-base mb-1.5 pr-14 sm:pr-0 break-words">{c.title||"—"}</h4>
+                    <p className="text-xs sm:text-sm text-gray-500 leading-relaxed max-h-11 overflow-y-auto pr-1 break-words">{c.description||"—"}</p>
                   </div>
                 );
               })}
@@ -2359,12 +2231,13 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
     const iconKey = Array.isArray(previewItem.data) && previewItem.data[0]?.icon ? previewItem.data[0].icon : "";
     const IC = ICON_LIST[iconKey] || Target;
     return (
-      <div className="bg-white dark:bg-[#16191f] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
-        <div className="w-11 h-11 rounded-xl bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center mb-3">
-          <IC size={20} className="text-rose-600 dark:text-rose-400" />
+      <div className="w-full min-w-0 bg-white dark:bg-[#16191f] rounded-2xl p-3.5 sm:p-5 border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition overflow-hidden">
+        <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center mb-2.5 sm:mb-3">
+          <IC size={18} className="text-rose-600 dark:text-rose-400 sm:hidden" />
+          <IC size={20} className="text-rose-600 dark:text-rose-400 hidden sm:block" />
         </div>
-        <h4 className="font-bold text-base mb-1.5">{previewItem.title || "—"}</h4>
-        <p className="text-sm text-gray-500 leading-relaxed max-h-11 overflow-y-auto pr-1">{previewItem.description || "No description yet."}</p>
+        <h4 className="font-bold text-sm sm:text-base mb-1.5 break-words">{previewItem.title || "—"}</h4>
+        <p className="text-xs sm:text-sm text-gray-500 leading-relaxed max-h-11 overflow-y-auto pr-1 break-words">{previewItem.description || "No description yet."}</p>
       </div>
     );
   }
@@ -2403,34 +2276,34 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
 
   // Default (cards)
   return (
-    <div className="relative isolate w-full min-w-0 overflow-hidden bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] p-3 sm:p-5 max-[320px]:p-2 rounded-xl space-y-3">
-      {previewItem.title       && <h3 className="text-lg font-bold">{previewItem.title}</h3>}
-      {previewItem.description && <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-h-11 overflow-y-auto pr-1">{previewItem.description}</p>}
+    <div className="relative isolate w-full min-w-0 overflow-hidden bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] p-2.5 sm:p-5 rounded-xl space-y-3">
+      {previewItem.title       && <h3 className="text-base sm:text-lg font-bold break-words">{previewItem.title}</h3>}
+      {previewItem.description && <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-h-11 overflow-y-auto pr-1 break-words">{previewItem.description}</p>}
       {previewItem.image       && <img src={resolveImageUrl(previewItem.image)} alt="preview" className="w-full max-w-xs h-36 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-white/10"/>}
       {data.length > 0  && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-3 border-t border-gray-100 dark:border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 pt-3 border-t border-gray-100 dark:border-white/10">
           {data.map((c,i) => (
-            <div key={i} className="relative group bg-white dark:bg-[#16191f] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition">
+            <div key={i} className="relative group w-full min-w-0 bg-white dark:bg-[#16191f] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition overflow-hidden">
               {isEnabled && (
                 <div className="absolute top-2 right-2 flex gap-1 z-10">
                   <button onClick={(e) => { e.stopPropagation(); onEditCard(i); }} title="Edit"
-                    className="w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm border border-gray-200/50">
-                    <Pencil size={11} />
+                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/90 dark:bg-gray-800/90 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition shadow-sm border border-gray-200/50">
+                    <Pencil size={10} />
                   </button>
                   <button onClick={(e) => { e.stopPropagation(); onDeleteCard(i); }} title="Delete"
-                    className="w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm border border-gray-200/50">
-                    <Trash2 size={11} />
+                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/90 dark:bg-gray-800/90 text-red-500 hover:bg-red-100 flex items-center justify-center transition shadow-sm border border-gray-200/50">
+                    <Trash2 size={10} />
                   </button>
                 </div>
               )}
               {c.image && (
-                <div className="h-28 w-full rounded-t-2xl overflow-hidden">
+                <div className="h-24 sm:h-28 w-full rounded-t-2xl overflow-hidden">
                   <img src={resolveImageUrl(c.image)} alt="" className="w-full h-full object-cover" onError={(e)=>e.target.parentElement.style.display="none"}/>
                 </div>
               )}
-              <div className="p-4">
-                <h4 className="font-semibold text-sm">{c.title||"—"}</h4>
-                <p className="text-xs text-gray-500 mt-1 max-h-8 overflow-y-auto pr-1">{c.description}</p>
+              <div className={`p-3 sm:p-4 ${!c.image && isEnabled ? "pr-14" : ""}`}>
+                <h4 className="font-semibold text-sm break-words">{c.title||"—"}</h4>
+                <p className="text-xs text-gray-500 mt-1 max-h-8 overflow-y-auto pr-1 break-words">{c.description}</p>
               </div>
             </div>
           ))}
