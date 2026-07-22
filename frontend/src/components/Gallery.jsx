@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useCMS from "../hooks/useCMS";
 import { resolveImageUrl } from "../services/resolveImageUrl";
 
@@ -18,16 +18,31 @@ function Gallery() {
     { src: j7, title: "Play & Growth" },
   ];
 
-  const images =
-    cms && cms.data && cms.data.length ? cms.data : staticImages;
+  const images = useMemo(() => {
+    const data =
+      cms && Array.isArray(cms.data) && cms.data.length
+        ? cms.data.filter(Boolean)
+        : staticImages;
 
-  // 🔥 BANNER STYLE STATES
+    return data;
+  }, [cms]);
+
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [nextSlide, setNextSlide] = useState(1);
+  const [nextSlide, setNextSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // 🔄 AUTO LOOP
+  // Keep slide indexes valid whenever image count changes
   useEffect(() => {
+    if (images.length === 0) return;
+
+    setCurrentSlide((prev) => Math.min(prev, images.length - 1));
+    setNextSlide((prev) => Math.min(prev, images.length - 1));
+  }, [images.length]);
+
+  // Auto slider (only if more than one image)
+  useEffect(() => {
+    if (images.length <= 1) return;
+
     const timer = setInterval(() => {
       handleSlideChange((currentSlide + 1) % images.length);
     }, 4000);
@@ -35,9 +50,14 @@ function Gallery() {
     return () => clearInterval(timer);
   }, [currentSlide, images.length]);
 
-  // 🔁 TRANSITION CONTROL (same as banner)
   const handleSlideChange = (newIndex) => {
-    if (newIndex === currentSlide || isTransitioning) return;
+    if (
+      images.length <= 1 ||
+      newIndex === currentSlide ||
+      isTransitioning
+    ) {
+      return;
+    }
 
     setNextSlide(newIndex);
     setIsTransitioning(true);
@@ -48,9 +68,22 @@ function Gallery() {
     }, 700);
   };
 
+  // No images
+  if (images.length === 0) {
+    return null;
+  }
+
+  const currentImage = images[currentSlide] || images[0];
+  const nextImage = images[nextSlide] || currentImage;
+
+  const currentImageUrl =
+    currentImage?.src || resolveImageUrl(currentImage?.image);
+
+  const nextImageUrl =
+    nextImage?.src || resolveImageUrl(nextImage?.image);
+
   return (
     <section className="py-10 md:py-24 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white relative overflow-hidden">
-
       {/* HEADER */}
       <div className="text-center mb-8 md:mb-16 px-4">
         <h2 className="text-2xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
@@ -58,15 +91,15 @@ function Gallery() {
         </h2>
 
         <p className="mt-2 md:mt-4 text-sm md:text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
-          A glimpse into our engaging sessions that help children grow, learn, and thrive.
+          A glimpse into our engaging sessions that help children grow, learn,
+          and thrive.
         </p>
       </div>
 
-      {/* 🔥 SLIDER AREA */}
+      {/* SLIDER */}
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="relative h-[220px] md:h-[450px] overflow-hidden rounded-xl md:rounded-2xl">
-
-          {/* CURRENT IMAGE */}
+          {/* Current */}
           <div
             className={`absolute inset-0 transition-opacity duration-700 ${
               isTransitioning ? "opacity-0" : "opacity-100"
@@ -75,12 +108,14 @@ function Gallery() {
             <div
               className="w-full h-full bg-cover bg-center"
               style={{
-                backgroundImage: `url(${images[currentSlide].src || resolveImageUrl(images[currentSlide].image)})`,
+                backgroundImage: currentImageUrl
+                  ? `url(${currentImageUrl})`
+                  : "none",
               }}
             />
           </div>
 
-          {/* NEXT IMAGE */}
+          {/* Next */}
           <div
             className={`absolute inset-0 transition-opacity duration-700 ${
               isTransitioning ? "opacity-100" : "opacity-0"
@@ -89,41 +124,45 @@ function Gallery() {
             <div
               className="w-full h-full bg-cover bg-center"
               style={{
-                backgroundImage: `url(${images[nextSlide].src || resolveImageUrl(images[nextSlide].image)})`,
+                backgroundImage: nextImageUrl
+                  ? `url(${nextImageUrl})`
+                  : "none",
               }}
             />
           </div>
 
-          {/* OVERLAY */}
+          {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3 md:pb-6">
             <h3 className="text-white text-sm md:text-xl font-semibold">
-              {images[currentSlide].title}
+              {currentImage?.title || ""}
             </h3>
           </div>
         </div>
       </div>
 
-      {/* 🔘 DOTS — accessible: aria-label + p-2 wrapper for 26px tap target */}
-      <div className="flex justify-center mt-5 md:mt-10 gap-1">
-        {images.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => handleSlideChange(index)}
-            aria-label={`Go to slide ${index + 1}`}
-            className="p-2 flex items-center justify-center"
-          >
-            <span
-              className={`h-2.5 rounded-full transition-all duration-300 block ${
-                currentSlide === index && !isTransitioning
-                  ? "w-8 bg-blue-500"
-                  : nextSlide === index && isTransitioning
-                  ? "w-8 bg-blue-500"
-                  : "w-2.5 bg-gray-400 hover:bg-gray-600"
-              }`}
-            />
-          </button>
-        ))}
-      </div>
+      {/* Dots */}
+      {images.length > 1 && (
+        <div className="flex justify-center mt-5 md:mt-10 gap-1">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handleSlideChange(index)}
+              aria-label={`Go to slide ${index + 1}`}
+              className="p-2 flex items-center justify-center"
+            >
+              <span
+                className={`h-2.5 rounded-full transition-all duration-300 block ${
+                  currentSlide === index && !isTransitioning
+                    ? "w-8 bg-blue-500"
+                    : nextSlide === index && isTransitioning
+                    ? "w-8 bg-blue-500"
+                    : "w-2.5 bg-gray-400 hover:bg-gray-600"
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
