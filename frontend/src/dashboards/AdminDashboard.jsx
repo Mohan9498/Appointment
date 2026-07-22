@@ -698,7 +698,18 @@ function AdminDashboard() {
   };
 
   const quickSave = async (updatedItem) => {
-    const draftItem = drafts[updatedItem.id] || updatedItem;
+    // updatedItem is always the authoritative, freshly-built object from the
+    // caller (e.g. CardBasedEditor.handleSubmit passes `{ ...item, data: newData }`
+    // right after calling updateLocal in the same synchronous tick). `drafts`
+    // here is a snapshot from the LAST render, so drafts[updatedItem.id] can
+    // still be the pre-edit draft at this point — React hasn't re-rendered
+    // yet. Previously `drafts[updatedItem.id] || updatedItem` let that stale
+    // draft win whenever it existed, silently discarding the new card/image
+    // data and PATCHing the old version instead (save "succeeds", but the
+    // edit never actually reaches the backend). Spreading updatedItem LAST
+    // guarantees its fields always win, while still falling back to any
+    // other pending draft fields it didn't explicitly set.
+    const draftItem = { ...(drafts[updatedItem.id] || {}), ...updatedItem };
     try {
       setSaving(updatedItem.id, true);
       const res = await API.patch(`content/${updatedItem.id}/`, {
@@ -1666,6 +1677,7 @@ function CardBasedEditor({
 
   const [form, setForm] = useState(emptyForm);
   const [editingIdx, setEditingIdx] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (formState) {
@@ -1698,6 +1710,31 @@ function CardBasedEditor({
     setForm(emptyForm);
     setEditingIdx(null);
     if (onCloseForm) onCloseForm();
+  };
+
+  // Card images live inside the JSON `data` array (not the section's own
+  // top-level `image` field), so the multipart uploadImage() helper — which
+  // PATCHes the *section's* image — can't be reused as-is here. Instead we
+  // read the chosen file client-side and store it as a base64 data URI
+  // string directly in form.image. That keeps everything on the existing
+  // JSON quickSave() path (no new backend endpoint required) while fixing
+  // the actual bug: a blob:/object URL from <input type="file"> is a
+  // temporary in-memory reference that dies on refresh, so anything typed
+  // as "the uploaded image" silently vanished after save/reload. A data URI
+  // is a real, stable string the backend can store and the browser can
+  // always render, so the image persists correctly.
+  const handleImageFile = (file) => {
+    if (!file) return;
+    setUploading(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setForm((prev) => ({ ...prev, image: reader.result }));
+      setUploading(false);
+    };
+    reader.onerror = () => {
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const SelectedIcon = showIcon ? (ICON_LIST[form.icon] || null) : null;
@@ -1741,7 +1778,29 @@ function CardBasedEditor({
           {showImage && (
             <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">{imageLabel}</label>
-              <input value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} className={inputCls} placeholder="https://..." />
+              <div className="flex flex-col gap-2">
+                {form.image && (
+                  <img
+                    src={form.image}
+                    alt="preview"
+                    className="w-full h-28 object-cover rounded-lg border border-gray-200 dark:border-white/10"
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageFile(e.target.files?.[0])}
+                  className="text-xs text-gray-500 dark:text-gray-400"
+                />
+                {uploading && <p className="text-[11px] text-gray-400">Processing image…</p>}
+                <input
+                  value={form.image && form.image.startsWith("data:") ? "" : form.image}
+                  onChange={(e) => setForm({...form, image: e.target.value})}
+                  className={inputCls}
+                  placeholder="...or paste an image URL"
+                />
+              </div>
             </div>
           )}
           {showIcon && (
@@ -1771,7 +1830,7 @@ function CardBasedEditor({
           </div>
         </div>
         <div className="flex gap-3">
-          <button onClick={handleSubmit} className={`px-6 py-2.5 bg-gradient-to-r ${accentCls.grad} text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all`}>
+          <button onClick={handleSubmit} disabled={uploading} className={`px-6 py-2.5 bg-gradient-to-r ${accentCls.grad} text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50`}>
             {editingIdx !== null ? "Update" : "Add"}
           </button>
           <button onClick={() => { setForm(emptyForm); setEditingIdx(null); if (onCloseForm) onCloseForm(); }} className="px-6 py-2.5 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">Cancel</button>
@@ -2072,6 +2131,19 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
     )
   : [];
 
+  // Card images may now be real absolute URLs, backend-relative paths (which
+  // resolveImageUrl needs to expand), or self-contained base64 data URIs
+  // (from the new client-side upload in CardBasedEditor). Data URIs and
+  // already-absolute URLs must be rendered as-is — passing them through
+  // resolveImageUrl could otherwise mangle or truncate them.
+  const resolveCardImage = (src) => {
+    if (!src) return src;
+    if (src.startsWith("data:") || src.startsWith("http://") || src.startsWith("https://") || src.startsWith("blob:")) {
+      return src;
+    }
+    return resolveImageUrl(src);
+  };
+
   if (type === "stats") {
     return (
       <div className="space-y-3">
@@ -2298,7 +2370,7 @@ function ContentPreview({ item, type, onEditCard, onDeleteCard, isEnabled = fals
               )}
               {c.image && (
                 <div className="h-24 sm:h-28 w-full rounded-t-2xl overflow-hidden">
-                  <img src={resolveImageUrl(c.image)} alt="" className="w-full h-full object-cover" onError={(e)=>e.target.parentElement.style.display="none"}/>
+                  <img src={resolveCardImage(c.image)} alt="" className="w-full h-full object-cover" onError={(e)=>e.target.parentElement.style.display="none"}/>
                 </div>
               )}
               <div className={`p-3 sm:p-4 ${!c.image && isEnabled ? "pr-14" : ""}`}>
