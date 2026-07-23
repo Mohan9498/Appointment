@@ -229,11 +229,16 @@ const CONTACT_HERO_DEFAULTS = {
   ],
 };
 
+// NOTE: WhatsApp's `description` is deliberately display text ("Chat on
+// WhatsApp"), not the phone number — unlike Call/Email/Location, where the
+// description IS the raw contact value. Contact.jsx's link-builder needs an
+// actual number to build the wa.me link, so it's stored separately in
+// `value`. Without this, the WhatsApp card renders with no link at all.
 const CONTACT_INFO_DEFAULTS = [
   { title: "Call us", description: "+91 99413 50646", icon: "Phone" },
   { title: "Email", description: "support@tinytodds.com", icon: "Mail" },
   { title: "Location", description: "Chennai, Tamil Nadu", icon: "MapPin" },
-  { title: "WhatsApp", description: "Chat on WhatsApp", icon: "Phone" },
+  { title: "WhatsApp", description: "Chat on WhatsApp", icon: "Phone", value: "+91 99413 50646" },
   { title: "Hours", description: "Mon - Sat, 10 AM - 8 PM", icon: "Clock" },
 ];
 
@@ -1656,6 +1661,7 @@ function CardBasedEditor({
   editMetaOnly = false, formState = null, onCloseForm = null,
   showIcon = false, showImage = true, accent = "emerald",
   titlePlaceholder = "Card title", imageLabel = "Image URL (Required)",
+  showValueField = false,
 }) {
   const effectiveItem = applySectionDefaults(item);
   const data = Array.isArray(effectiveItem.data)
@@ -1673,6 +1679,7 @@ function CardBasedEditor({
     description: "",
     ...(showIcon ? { icon: "" } : {}),
     ...(showImage ? { image: "" } : {}),
+    ...(showValueField ? { value: "" } : {}),
   };
 
   const [form, setForm] = useState(emptyForm);
@@ -1689,6 +1696,7 @@ function CardBasedEditor({
             description: d.description || "",
             ...(showImage ? { image: d.image || "" } : {}),
             ...(showIcon ? { icon: d.icon || "" } : {}),
+            ...(showValueField ? { value: d.value || "" } : {}),
           });
           setEditingIdx(formState.index);
           return;
@@ -1828,6 +1836,19 @@ function CardBasedEditor({
             <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Description</label>
             <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className={`${inputCls} min-h-[80px]`} placeholder="Card description" />
           </div>
+          {showValueField && (
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                Link Value <span className="normal-case font-normal text-gray-400">(optional — only needed if the button's link should use different info than the Description above)</span>
+              </label>
+              <input
+                value={form.value || ""}
+                onChange={(e) => setForm({...form, value: e.target.value})}
+                className={inputCls}
+                placeholder="e.g. phone number for WhatsApp/Call, if the Description above is just a label like &quot;Chat on WhatsApp&quot;"
+              />
+            </div>
+          )}
         </div>
         <div className="flex gap-3">
           <button onClick={handleSubmit} disabled={uploading} className={`px-6 py-2.5 bg-gradient-to-r ${accentCls.grad} text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50`}>
@@ -1868,6 +1889,7 @@ function MissionVisionEditor(props) {
       showImage={false}
       accent="rose"
       titlePlaceholder="e.g. Call us"
+      showValueField
     />
   );
 }

@@ -27,7 +27,12 @@ const CMS_COLOR_CYCLE = ["green", "red", "blue", "emerald", "amber"];
 function buildCardHref(card) {
   if (card.href) return card.href; // explicit override always wins
   const title = (card.title || "").toLowerCase();
-  const value = (card.description || "").trim();
+  // `value` holds the raw contact data (phone/email/address) when it needs
+  // to differ from the display text in `description` — e.g. a WhatsApp card
+  // that shows "Chat on WhatsApp" but links using the real number. Falls
+  // back to `description` for cards where the display text already is the
+  // raw value (Call/Email/Location).
+  const value = (card.value || card.description || "").trim();
   if (!value) return null;
 
   if (title.includes("call") || title.includes("phone")) {
@@ -168,20 +173,15 @@ function Contact() {
                   const Icon = CMS_ICON_MAP[card.icon] || MessageSquareText;
                   const color = CMS_COLOR_CYCLE[i % CMS_COLOR_CYCLE.length];
                   const href = buildCardHref(card);
-                  const content = href ? (
-                    <a
-                      href={href}
-                      target={href.startsWith("http") ? "_blank" : undefined}
-                      rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      className="hover:text-blue-600 transition-colors"
-                    >
-                      {card.description}
-                    </a>
-                  ) : (
-                    card.description
-                  );
                   return (
-                    <InfoCard key={i} icon={<Icon size={18} />} color={color} title={card.title} value={content} />
+                    <InfoCard
+                      key={i}
+                      icon={<Icon size={18} />}
+                      color={color}
+                      title={card.title}
+                      value={card.description}
+                      href={href}
+                    />
                   );
                 })}
               </div>
@@ -265,7 +265,7 @@ function Input({ label, name, value, onChange, type = "text" }) {
   );
 }
 
-function InfoCard({ icon, title, value, color = "blue" }) {
+function InfoCard({ icon, title, value, color = "blue", href }) {
   const colorMap = {
     blue: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
     green: "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400",
@@ -274,19 +274,37 @@ function InfoCard({ icon, title, value, color = "blue" }) {
     amber: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
   };
 
-  return (
-    <div className="group rounded-xl md:rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-2.5 md:p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-      <div className="flex items-center gap-2 md:gap-3">
-        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl ${colorMap[color]} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-[10px] md:text-xs text-gray-600 dark:text-gray-500 font-medium uppercase tracking-wider">{title}</p>
-          <div className="font-semibold text-gray-900 dark:text-white text-xs md:text-sm mt-0.5">{value}</div>
-        </div>
+  const cardBody = (
+    <div className="flex items-center gap-2 md:gap-3">
+      <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl ${colorMap[color]} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-[10px] md:text-xs text-gray-600 dark:text-gray-500 font-medium uppercase tracking-wider">{title}</p>
+        <div className="font-semibold text-gray-900 dark:text-white text-xs md:text-sm mt-0.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{value}</div>
       </div>
     </div>
   );
+
+  const className =
+    "group rounded-xl md:rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-2.5 md:p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5";
+
+  // Whole card is clickable when a link can be derived; otherwise it's a
+  // plain (non-interactive) card, e.g. for "Hours".
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={href.startsWith("http") ? "_blank" : undefined}
+        rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+        className={`${className} block`}
+      >
+        {cardBody}
+      </a>
+    );
+  }
+
+  return <div className={className}>{cardBody}</div>;
 }
 
 export default Contact;
