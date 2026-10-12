@@ -507,6 +507,8 @@ function AdminDashboard() {
   const logout   = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
   const profileRef = useRef(null);
+  // Prevent duplicate section-creation requests while one is still in flight.
+  const creatingSections = useRef(new Set());
 
   // close profile dropdown on outside click
   useEffect(() => {
@@ -565,10 +567,16 @@ function AdminDashboard() {
 
   const fetchContent = async () => {
     try {
-      const res  = await API.get("content/");
+      const res = await API.get("content/");
       const data = Array.isArray(res.data) ? res.data : res.data?.results ?? [];
       setContent(data);
-    } catch { setContent([]); }
+      return data;
+    } catch (err) {
+      console.error("Failed to load CMS content:", err.response?.status, err.response?.data || err.message);
+      // Preserve current content on a temporary fetch error. Clearing it can
+      // trigger the auto-create effect for sections that already exist.
+      return null;
+    }
   };
 
   useEffect(() => {
@@ -615,7 +623,14 @@ function AdminDashboard() {
 
   const autoCreate = async (page, section, opts = {}) => {
     const { silent = false } = opts;
-    if (content.find((c) => c.page === page && c.section === section)) return;
+    const key = `${page}:${section}`;
+
+    if (content.some((c) => c.page === page && c.section === section)) return;
+    if (creatingSections.current.has(key)) return;
+
+    // Mark before the first await so rapid effect reruns cannot POST the same
+    // page/section pair twice.
+    creatingSections.current.add(key);
     let payload;
     try {
       payload = buildSectionPayload(page, section, content.length + 1);
@@ -658,7 +673,17 @@ function AdminDashboard() {
         JSON.stringify(data) ||
         "Failed to create section";
 
-      if (!silent) toast.error(error);
+      // Content has a unique (page, section) constraint. If it already exists,
+      // reload the server list instead of leaving local state stale.
+      const duplicate = Array.isArray(data.non_field_errors) &&
+        data.non_field_errors.some((message) => /unique|already exists|must make a unique set/i.test(String(message)));
+      if (duplicate) {
+        await fetchContent();
+      } else if (!silent) {
+        toast.error(error);
+      }
+    } finally {
+      creatingSections.current.delete(key);
     }
   };
 
