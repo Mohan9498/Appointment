@@ -31,9 +31,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ENV VARIABLES
 # ======================
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
+DEBUG = os.environ.get("DEBUG", "False").strip().lower() == "true"
 
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+# Never ship a predictable production secret. Configure SECRET_KEY in deployment.
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "django-insecure-local-development-only"
+    else:
+        raise RuntimeError("SECRET_KEY must be configured in the environment when DEBUG=False")
 
 ALLOWED_HOSTS = [
     "appointment-83q0.onrender.com",
@@ -106,16 +112,19 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ✅ Set DATABASE_URL in Render environment variables
 # Never hardcode credentials here
 # ======================
-DATABASE_URL = os.environ.get(
-    'DATABASE_URL',
-    'postgresql://postgres_5wdj_user:flTdBymynKgSZ1akeraQgRNqfuvWU9E4@dpg-d92aq1a8qa3s73d3ksog-a.oregon-postgres.render.com/postgres_5wdj?sslmode=require'
-)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    # Local development default only; production must provide DATABASE_URL.
+    if DEBUG:
+        DATABASE_URL = "postgresql://postgres:postgres@127.0.0.1:5432/appointment"
+    else:
+        raise RuntimeError("DATABASE_URL must be configured in the environment when DEBUG=False")
 
 DATABASES = {
     'default': dj_database_url.config(
         default=DATABASE_URL,
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=not DEBUG,
     )
 }
 
@@ -222,6 +231,7 @@ else:
 # ======================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:5174",  # Vite dev server currently used by the frontend
     "http://localhost:3000",
     "https://appointment-tttc.vercel.app",
 ]
@@ -235,6 +245,7 @@ CORS_ALLOW_CREDENTIALS = True
 # ======================
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:5174",  # Local frontend origin
     "https://appointment-tttc.vercel.app",
 ]
 
@@ -252,5 +263,5 @@ SIMPLE_JWT = {
 # ======================
 # ADMIN CREDENTIALS (set in Render env vars)
 # ======================
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Admin@1234!")
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
